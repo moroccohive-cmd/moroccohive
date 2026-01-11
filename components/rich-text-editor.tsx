@@ -134,8 +134,8 @@ export function RichTextEditor({ value, onChange, placeholder = "Enter descripti
             // Lists
             .replace(/\n- /g, "<br />• ")
             .replace(/\n\d+\. /g, "<br />1. ")
-            // Line breaks
-            .replace(/\n/g, "<br />")
+        // Line breaks
+        // .replace(/\n/g, "<br />")
 
     }
 

@@ -12,6 +12,7 @@ export default function LoginPage() {
     const router = useRouter()
     const [formData, setFormData] = useState({ email: "", password: "" })
     const [error, setError] = useState("")
+    const [errors, setErrors] = useState<Record<string, string>>({})
     const [loading, setLoading] = useState(false)
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,9 +20,36 @@ export default function LoginPage() {
         setFormData((prev) => ({ ...prev, [name]: value }))
     }
 
+    const validateForm = (): boolean => {
+        const newErrors: Record<string, string> = {}
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+        if (!formData.email.trim()) {
+            newErrors.email = "Email is required"
+        } else if (!emailRegex.test(formData.email.trim())) {
+            newErrors.email = "Please enter a valid email"
+        } else if (formData.email.trim().length > 100) {
+            newErrors.email = "Email is too long"
+        }
+
+        if (!formData.password) {
+            newErrors.password = "Password is required"
+        } else if (formData.password.length < 6) {
+            newErrors.password = "Password must be at least 6 characters"
+        } else if (formData.password.length > 128) {
+            newErrors.password = "Password is too long"
+        }
+
+        setErrors(newErrors)
+        return Object.keys(newErrors).length === 0
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError("")
+
+        if (!validateForm()) return
+
         setLoading(true)
 
         try {
@@ -59,9 +87,10 @@ export default function LoginPage() {
                             value={formData.email}
                             onChange={handleChange}
                             placeholder="youremail@example.com"
-                            required
-                            className="bg-background border-input"
+                            maxLength={100}
+                            className={`bg-background border-input ${errors.email ? "border-destructive" : ""}`}
                         />
+                        {errors.email && <p className="text-sm text-destructive mt-1">{errors.email}</p>}
                     </div>
 
                     <div>
@@ -72,9 +101,10 @@ export default function LoginPage() {
                             value={formData.password}
                             onChange={handleChange}
                             placeholder="••••••••"
-                            required
-                            className="bg-background border-input"
+                            maxLength={128}
+                            className={`bg-background border-input ${errors.password ? "border-destructive" : ""}`}
                         />
+                        {errors.password && <p className="text-sm text-destructive mt-1">{errors.password}</p>}
                     </div>
 
                     {error && <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded">{error}</div>}
@@ -94,3 +124,4 @@ export default function LoginPage() {
         </div>
     )
 }
+

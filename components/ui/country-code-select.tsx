@@ -3,7 +3,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import * as Flags from "country-flag-icons/react/3x2"
 
 export const COUNTRY_CODES = [
-    { code: "+212", country: "MA" },
     { code: "+1", country: "US" },
     { code: "+1", country: "CA" },
     { code: "+44", country: "GB" },
@@ -40,6 +39,7 @@ export const COUNTRY_CODES = [
     { code: "+973", country: "BH" },
     { code: "+968", country: "OM" },
     { code: "+20", country: "EG" },
+    { code: "+212", country: "MA" },
     { code: "+213", country: "DZ" },
     { code: "+216", country: "TN" },
     { code: "+218", country: "LY" },
@@ -68,7 +68,7 @@ export const COUNTRY_CODES = [
 
 function getFlagIcon(country: string) {
     const FlagComponent = Flags[country as keyof typeof Flags]
-    return FlagComponent || Flags.MA // Fallback to MA flag if country not found
+    return FlagComponent || Flags.US // Fallback to US flag if country not found
 }
 
 interface CountryCodeSelectProps {

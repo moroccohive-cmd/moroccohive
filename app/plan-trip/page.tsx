@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -60,12 +60,31 @@ export default function PlanTripPage() {
         fullName: "",
         email: "",
         phone: "",
-        countryCode: "+212",
+        countryCode: "+1",
     })
 
     const [errors, setErrors] = useState<Record<string, string>>({})
     const [submitting, setSubmitting] = useState(false)
     const [submitted, setSubmitted] = useState(false)
+
+    // Auto-set travelers when travel style is solo or couple
+    useEffect(() => {
+        if (formData.travelStyle === "solo") {
+            setTravelers({ adults: 1, children: 0, infants: 0 })
+            setFormData((prev) => ({
+                ...prev,
+                numberOfTravelers: 1,
+                travelerAges: "1 adult",
+            }))
+        } else if (formData.travelStyle === "couple") {
+            setTravelers({ adults: 2, children: 0, infants: 0 })
+            setFormData((prev) => ({
+                ...prev,
+                numberOfTravelers: 2,
+                travelerAges: "2 adults",
+            }))
+        }
+    }, [formData.travelStyle])
 
     const experiencesList = [
         {
@@ -201,27 +220,69 @@ export default function PlanTripPage() {
 
     const validateStep = (step: number): boolean => {
         const newErrors: Record<string, string> = {}
+        const nameRegex = /^[a-zA-Z\s]+$/
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        const phoneRegex = /^[0-9]+$/
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
 
         if (step === 1) {
             if (!formData.travelStyle) newErrors.travelStyle = "Please select your travel style"
-            if (!formData.numberOfTravelers || formData.numberOfTravelers < 1) {
+            // Only validate number of travelers for family/group
+            if ((formData.travelStyle === "family" || formData.travelStyle === "group") &&
+                (!formData.numberOfTravelers || formData.numberOfTravelers < 1)) {
                 newErrors.numberOfTravelers = "Please enter number of travelers"
             }
         } else if (step === 2) {
-            if (!formData.travelDates) newErrors.travelDates = "Please provide your travel dates"
+            const dates = formData.travelDates.split(" to ")
+            const startDateStr = dates[0] || ""
+            const endDateStr = dates[1] || ""
+
+            if (!startDateStr || !endDateStr) {
+                newErrors.travelDates = "Please provide both start and end dates"
+            } else {
+                const startDate = new Date(startDateStr)
+                const endDate = new Date(endDateStr)
+
+                if (startDate < today) {
+                    newErrors.travelDates = "Start date cannot be in the past"
+                } else if (endDate < today) {
+                    newErrors.travelDates = "End date cannot be in the past"
+                } else if (startDateStr === endDateStr) {
+                    newErrors.travelDates = "Start and end dates cannot be the same"
+                } else if (endDate <= startDate) {
+                    newErrors.travelDates = "End date must be after start date"
+                }
+            }
             if (!formData.arrivalCity) newErrors.arrivalCity = "Please select arrival city"
             if (!formData.departureCity) newErrors.departureCity = "Please select departure city"
         } else if (step === 3) {
             if (!formData.accommodation) newErrors.accommodation = "Please select accommodation"
             if (!formData.budget) newErrors.budget = "Please select budget"
-            // desiredExperiences is now optional
         } else if (step === 4) {
-            if (!formData.fullName.trim()) newErrors.fullName = "Please enter your name"
-            if (!formData.email.trim()) newErrors.email = "Please enter your email"
-            if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-                newErrors.email = "Please enter a valid email"
+            if (!formData.fullName.trim()) {
+                newErrors.fullName = "Please enter your name"
+            } else if (!nameRegex.test(formData.fullName.trim())) {
+                newErrors.fullName = "Name can only contain letters"
+            } else if (formData.fullName.trim().length > 50) {
+                newErrors.fullName = "Name is too long (max 50 characters)"
             }
-            if (!formData.phone.trim()) newErrors.phone = "Please enter your phone"
+
+            if (!formData.email.trim()) {
+                newErrors.email = "Please enter your email"
+            } else if (!emailRegex.test(formData.email.trim())) {
+                newErrors.email = "Please enter a valid email"
+            } else if (formData.email.trim().length > 100) {
+                newErrors.email = "Email is too long"
+            }
+
+            if (!formData.phone.trim()) {
+                newErrors.phone = "Please enter your phone"
+            } else if (!phoneRegex.test(formData.phone.trim())) {
+                newErrors.phone = "Phone can only contain numbers"
+            } else if (formData.phone.trim().length > 20) {
+                newErrors.phone = "Phone number is too long"
+            }
         }
 
         setErrors(newErrors)
@@ -413,96 +474,114 @@ export default function PlanTripPage() {
 
                                 <div>
                                     <label className="block text-sm font-semibold mb-3">Who will be traveling?</label>
-                                    <div className="space-y-4 bg-muted/30 p-6 rounded-lg border border-border">
-                                        {/* Adults */}
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <div className="font-semibold text-foreground">Adults</div>
-                                                <div className="text-sm text-muted-foreground">Above 12</div>
-                                            </div>
-                                            <div className="flex items-center gap-4">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleTravelerChange("adults", -1)}
-                                                    disabled={travelers.adults <= 1}
-                                                    className="w-10 h-10 rounded-full border-2 border-border hover:border-primary disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-all hover:bg-primary/10"
-                                                >
-                                                    <span className="text-xl font-semibold">−</span>
-                                                </button>
-                                                <span className="text-lg font-semibold w-8 text-center">{travelers.adults}</span>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleTravelerChange("adults", 1)}
-                                                    className="w-10 h-10 rounded-full border-2 border-border hover:border-primary flex items-center justify-center transition-all hover:bg-primary/10"
-                                                >
-                                                    <span className="text-xl font-semibold">+</span>
-                                                </button>
-                                            </div>
-                                        </div>
 
-                                        {/* Children */}
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <div className="font-semibold text-foreground">Children</div>
-                                                <div className="text-sm text-muted-foreground">Ages 2-12</div>
-                                            </div>
-                                            <div className="flex items-center gap-4">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleTravelerChange("children", -1)}
-                                                    disabled={travelers.children <= 0}
-                                                    className="w-10 h-10 rounded-full border-2 border-border hover:border-primary disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-all hover:bg-primary/10"
-                                                >
-                                                    <span className="text-xl font-semibold">−</span>
-                                                </button>
-                                                <span className="text-lg font-semibold w-8 text-center">{travelers.children}</span>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleTravelerChange("children", 1)}
-                                                    className="w-10 h-10 rounded-full border-2 border-border hover:border-primary flex items-center justify-center transition-all hover:bg-primary/10"
-                                                >
-                                                    <span className="text-xl font-semibold">+</span>
-                                                </button>
+                                    {/* Show simplified summary for solo/couple */}
+                                    {(formData.travelStyle === "solo" || formData.travelStyle === "couple") ? (
+                                        <div className="bg-muted/30 p-6 rounded-lg border border-border">
+                                            <div className="text-center">
+                                                <div className="text-lg font-semibold text-foreground mb-1">
+                                                    {formData.travelStyle === "solo" ? "1 Adult" : "2 Adults"}
+                                                </div>
+                                                <div className="text-sm text-muted-foreground">
+                                                    {formData.travelStyle === "solo"
+                                                        ? "Solo travel selected"
+                                                        : "Couple travel selected"}
+                                                </div>
                                             </div>
                                         </div>
+                                    ) : (
+                                        /* Show full travelers selection for family/group */
+                                        <div className="space-y-4 bg-muted/30 p-6 rounded-lg border border-border">
+                                            {/* Adults */}
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <div className="font-semibold text-foreground">Adults</div>
+                                                    <div className="text-sm text-muted-foreground">Above 12</div>
+                                                </div>
+                                                <div className="flex items-center gap-4">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleTravelerChange("adults", -1)}
+                                                        disabled={travelers.adults <= 1}
+                                                        className="w-10 h-10 rounded-full border-2 border-border hover:border-primary disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-all hover:bg-primary/10"
+                                                    >
+                                                        <span className="text-xl font-semibold">−</span>
+                                                    </button>
+                                                    <span className="text-lg font-semibold w-8 text-center">{travelers.adults}</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleTravelerChange("adults", 1)}
+                                                        className="w-10 h-10 rounded-full border-2 border-border hover:border-primary flex items-center justify-center transition-all hover:bg-primary/10"
+                                                    >
+                                                        <span className="text-xl font-semibold">+</span>
+                                                    </button>
+                                                </div>
+                                            </div>
 
-                                        {/* Infants */}
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <div className="font-semibold text-foreground">Infants</div>
-                                                <div className="text-sm text-muted-foreground">Under 2</div>
+                                            {/* Children */}
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <div className="font-semibold text-foreground">Children</div>
+                                                    <div className="text-sm text-muted-foreground">Ages 2-12</div>
+                                                </div>
+                                                <div className="flex items-center gap-4">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleTravelerChange("children", -1)}
+                                                        disabled={travelers.children <= 0}
+                                                        className="w-10 h-10 rounded-full border-2 border-border hover:border-primary disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-all hover:bg-primary/10"
+                                                    >
+                                                        <span className="text-xl font-semibold">−</span>
+                                                    </button>
+                                                    <span className="text-lg font-semibold w-8 text-center">{travelers.children}</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleTravelerChange("children", 1)}
+                                                        className="w-10 h-10 rounded-full border-2 border-border hover:border-primary flex items-center justify-center transition-all hover:bg-primary/10"
+                                                    >
+                                                        <span className="text-xl font-semibold">+</span>
+                                                    </button>
+                                                </div>
                                             </div>
-                                            <div className="flex items-center gap-4">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleTravelerChange("infants", -1)}
-                                                    disabled={travelers.infants <= 0}
-                                                    className="w-10 h-10 rounded-full border-2 border-border hover:border-primary disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-all hover:bg-primary/10"
-                                                >
-                                                    <span className="text-xl font-semibold">−</span>
-                                                </button>
-                                                <span className="text-lg font-semibold w-8 text-center">{travelers.infants}</span>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleTravelerChange("infants", 1)}
-                                                    className="w-10 h-10 rounded-full border-2 border-border hover:border-primary flex items-center justify-center transition-all hover:bg-primary/10"
-                                                >
-                                                    <span className="text-xl font-semibold">+</span>
-                                                </button>
-                                            </div>
-                                        </div>
 
-                                        {/* Summary */}
-                                        <div className="pt-4 border-t border-border">
-                                            <div className="text-sm text-muted-foreground">
-                                                Total travelers:{" "}
-                                                <span className="font-semibold text-foreground">{formData.numberOfTravelers}</span>
+                                            {/* Infants */}
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <div className="font-semibold text-foreground">Infants</div>
+                                                    <div className="text-sm text-muted-foreground">Under 2</div>
+                                                </div>
+                                                <div className="flex items-center gap-4">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleTravelerChange("infants", -1)}
+                                                        disabled={travelers.infants <= 0}
+                                                        className="w-10 h-10 rounded-full border-2 border-border hover:border-primary disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-all hover:bg-primary/10"
+                                                    >
+                                                        <span className="text-xl font-semibold">−</span>
+                                                    </button>
+                                                    <span className="text-lg font-semibold w-8 text-center">{travelers.infants}</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleTravelerChange("infants", 1)}
+                                                        className="w-10 h-10 rounded-full border-2 border-border hover:border-primary flex items-center justify-center transition-all hover:bg-primary/10"
+                                                    >
+                                                        <span className="text-xl font-semibold">+</span>
+                                                    </button>
+                                                </div>
                                             </div>
-                                            {formData.travelerAges && (
-                                                <div className="text-sm text-muted-foreground mt-1">{formData.travelerAges}</div>
-                                            )}
+
+                                            {/* Summary */}
+                                            <div className="pt-4 border-t border-border">
+                                                <div className="text-sm text-muted-foreground">
+                                                    Total travelers:{" "}
+                                                    <span className="font-semibold text-foreground">{formData.numberOfTravelers}</span>
+                                                </div>
+                                                {formData.travelerAges && (
+                                                    <div className="text-sm text-muted-foreground mt-1">{formData.travelerAges}</div>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
                                     {errors.numberOfTravelers && (
                                         <p className="text-sm text-destructive mt-2">{errors.numberOfTravelers}</p>
                                     )}
@@ -578,7 +657,6 @@ export default function PlanTripPage() {
                                             <option value="Ouarzazate">Ouarzazate</option>
                                             <option value="Essaouira">Essaouira</option>
                                             <option value="Rabat">Rabat</option>
-                                            <option value="Other">Other</option>
                                         </select>
                                         {errors.arrivalCity && <p className="text-sm text-destructive mt-2">{errors.arrivalCity}</p>}
                                     </div>
@@ -603,7 +681,6 @@ export default function PlanTripPage() {
                                             <option value="Ouarzazate">Ouarzazate</option>
                                             <option value="Essaouira">Essaouira</option>
                                             <option value="Rabat">Rabat</option>
-                                            <option value="Other">Other</option>
                                         </select>
                                         {errors.departureCity && <p className="text-sm text-destructive mt-2">{errors.departureCity}</p>}
                                     </div>
@@ -889,8 +966,9 @@ export default function PlanTripPage() {
                                         id="fullName"
                                         value={formData.fullName}
                                         onChange={(e) => setFormData((prev) => ({ ...prev, fullName: e.target.value }))}
+                                        maxLength={50}
                                         placeholder=""
-                                        className="w-full px-4 h-11 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background"
+                                        className={`w-full px-4 h-11 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background ${errors.fullName ? "border-destructive" : ""}`}
                                     />
                                     {errors.fullName && <p className="text-sm text-destructive mt-2">{errors.fullName}</p>}
                                 </div>
@@ -906,8 +984,9 @@ export default function PlanTripPage() {
                                             id="email"
                                             value={formData.email}
                                             onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
+                                            maxLength={100}
                                             placeholder=""
-                                            className="w-full px-4 h-11 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background"
+                                            className={`w-full px-4 h-11 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background ${errors.email ? "border-destructive" : ""}`}
                                         />
                                         {errors.email && <p className="text-sm text-destructive mt-2">{errors.email}</p>}
                                     </div>
@@ -927,8 +1006,9 @@ export default function PlanTripPage() {
                                                 id="phone"
                                                 value={formData.phone}
                                                 onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
+                                                maxLength={20}
                                                 placeholder=""
-                                                className="w-full px-4 h-11 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background"
+                                                className={`w-full px-4 h-11 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background ${errors.phone ? "border-destructive" : ""}`}
                                             />
                                         </div>
                                         {errors.phone && <p className="text-sm text-destructive mt-2">{errors.phone}</p>}

@@ -16,6 +16,7 @@ export default function RegisterPage() {
         confirmPassword: "",
     })
     const [error, setError] = useState("")
+    const [errors, setErrors] = useState<Record<string, string>>({})
     const [loading, setLoading] = useState(false)
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,16 +24,43 @@ export default function RegisterPage() {
         setFormData((prev) => ({ ...prev, [name]: value }))
     }
 
+    const validateForm = (): boolean => {
+        const newErrors: Record<string, string> = {}
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+        if (!formData.email.trim()) {
+            newErrors.email = "Email is required"
+        } else if (!emailRegex.test(formData.email.trim())) {
+            newErrors.email = "Please enter a valid email"
+        } else if (formData.email.trim().length > 100) {
+            newErrors.email = "Email is too long"
+        }
+
+        if (!formData.password) {
+            newErrors.password = "Password is required"
+        } else if (formData.password.length < 8) {
+            newErrors.password = "Password must be at least 8 characters"
+        } else if (formData.password.length > 128) {
+            newErrors.password = "Password is too long"
+        }
+
+        if (!formData.confirmPassword) {
+            newErrors.confirmPassword = "Please confirm your password"
+        } else if (formData.password !== formData.confirmPassword) {
+            newErrors.confirmPassword = "Passwords do not match"
+        }
+
+        setErrors(newErrors)
+        return Object.keys(newErrors).length === 0
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError("")
-        setLoading(true)
 
-        if (formData.password !== formData.confirmPassword) {
-            setError("Passwords do not match")
-            setLoading(false)
-            return
-        }
+        if (!validateForm()) return
+
+        setLoading(true)
 
         try {
             const { data, error } = await authClient.signUp.email({
@@ -71,9 +99,10 @@ export default function RegisterPage() {
                             value={formData.email}
                             onChange={handleChange}
                             placeholder="youremail@example.com"
-                            required
-                            className="bg-background border-input"
+                            maxLength={100}
+                            className={`bg-background border-input ${errors.email ? "border-destructive" : ""}`}
                         />
+                        {errors.email && <p className="text-sm text-destructive mt-1">{errors.email}</p>}
                     </div>
 
                     <div>
@@ -84,9 +113,10 @@ export default function RegisterPage() {
                             value={formData.password}
                             onChange={handleChange}
                             placeholder="••••••••"
-                            required
-                            className="bg-background border-input"
+                            maxLength={128}
+                            className={`bg-background border-input ${errors.password ? "border-destructive" : ""}`}
                         />
+                        {errors.password && <p className="text-sm text-destructive mt-1">{errors.password}</p>}
                     </div>
 
                     <div>
@@ -97,9 +127,10 @@ export default function RegisterPage() {
                             value={formData.confirmPassword}
                             onChange={handleChange}
                             placeholder="••••••••"
-                            required
-                            className="bg-background border-input"
+                            maxLength={128}
+                            className={`bg-background border-input ${errors.confirmPassword ? "border-destructive" : ""}`}
                         />
+                        {errors.confirmPassword && <p className="text-sm text-destructive mt-1">{errors.confirmPassword}</p>}
                     </div>
 
                     {error && <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded text-sm">{error}</div>}
@@ -119,3 +150,4 @@ export default function RegisterPage() {
         </div>
     )
 }
+

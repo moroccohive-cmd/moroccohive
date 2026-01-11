@@ -149,12 +149,13 @@ export default function HomePage() {
     name: "",
     email: "",
     phone: "",
-    countryCode: "+212",
+    countryCode: "+1",
     subject: "",
     message: ""
   })
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
+  const [contactErrors, setContactErrors] = useState<Record<string, string>>({})
 
   useEffect(() => {
     fetchFeaturedCircuits()
@@ -189,9 +190,59 @@ export default function HomePage() {
     }
   }
 
+  const validateContactForm = (): boolean => {
+    const errors: Record<string, string> = {}
+    const nameRegex = /^[a-zA-Z\s]+$/
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const phoneRegex = /^[0-9]+$/
+
+    if (!contactForm.name.trim()) {
+      errors.name = "Name is required"
+    } else if (!nameRegex.test(contactForm.name.trim())) {
+      errors.name = "Name can only contain letters"
+    } else if (contactForm.name.trim().length > 50) {
+      errors.name = "Name is too long (max 50 characters)"
+    }
+
+    if (!contactForm.email.trim()) {
+      errors.email = "Email is required"
+    } else if (!emailRegex.test(contactForm.email.trim())) {
+      errors.email = "Please enter a valid email"
+    } else if (contactForm.email.trim().length > 100) {
+      errors.email = "Email is too long"
+    }
+
+    if (!contactForm.phone.trim()) {
+      errors.phone = "Phone is required"
+    } else if (!phoneRegex.test(contactForm.phone.trim())) {
+      errors.phone = "Phone can only contain numbers"
+    } else if (contactForm.phone.trim().length > 20) {
+      errors.phone = "Phone number is too long"
+    }
+
+    if (!contactForm.subject.trim()) {
+      errors.subject = "Subject is required"
+    } else if (contactForm.subject.trim().length > 200) {
+      errors.subject = "Subject is too long (max 200 characters)"
+    }
+
+    if (!contactForm.message.trim()) {
+      errors.message = "Message is required"
+    } else if (contactForm.message.trim().length > 2000) {
+      errors.message = "Message is too long (max 2000 characters)"
+    }
+
+    setContactErrors(errors)
+    return Object.keys(errors).length === 0
+  }
+
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!validateContactForm()) return
+
     setSending(true)
+    setContactErrors({})
 
     try {
       const response = await fetch("/api/contact", {
@@ -770,10 +821,11 @@ export default function HomePage() {
                         id="name"
                         value={contactForm.name}
                         onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
-                        required
+                        maxLength={50}
                         placeholder=""
-                        className="bg-background border-input h-11 rounded-md focus:ring-ring focus:border-ring"
+                        className={`bg-background border-input h-11 rounded-md focus:ring-ring focus:border-ring ${contactErrors.name ? "border-destructive" : ""}`}
                       />
+                      {contactErrors.name && <p className="text-sm text-destructive">{contactErrors.name}</p>}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Email</Label>
@@ -782,10 +834,11 @@ export default function HomePage() {
                         type="email"
                         value={contactForm.email}
                         onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                        required
+                        maxLength={100}
                         placeholder=""
-                        className="bg-background border-input h-11 rounded-md focus:ring-ring focus:border-ring"
+                        className={`bg-background border-input h-11 rounded-md focus:ring-ring focus:border-ring ${contactErrors.email ? "border-destructive" : ""}`}
                       />
+                      {contactErrors.email && <p className="text-sm text-destructive">{contactErrors.email}</p>}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="phone" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Phone Number</Label>
@@ -799,11 +852,12 @@ export default function HomePage() {
                           type="tel"
                           value={contactForm.phone}
                           onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
-                          required
+                          maxLength={20}
                           placeholder=""
-                          className="flex-1 bg-background border-input h-11 rounded-md focus:ring-ring focus:border-ring"
+                          className={`flex-1 bg-background border-input h-11 rounded-md focus:ring-ring focus:border-ring ${contactErrors.phone ? "border-destructive" : ""}`}
                         />
                       </div>
+                      {contactErrors.phone && <p className="text-sm text-destructive">{contactErrors.phone}</p>}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="subject" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Subject</Label>
@@ -811,10 +865,11 @@ export default function HomePage() {
                         id="subject"
                         value={contactForm.subject}
                         onChange={(e) => setContactForm({ ...contactForm, subject: e.target.value })}
-                        required
+                        maxLength={200}
                         placeholder="Trip Inquiry..."
-                        className="bg-background border-input h-11 rounded-md focus:ring-ring focus:border-ring"
+                        className={`bg-background border-input h-11 rounded-md focus:ring-ring focus:border-ring ${contactErrors.subject ? "border-destructive" : ""}`}
                       />
+                      {contactErrors.subject && <p className="text-sm text-destructive">{contactErrors.subject}</p>}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="message" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Message</Label>
@@ -822,10 +877,11 @@ export default function HomePage() {
                         id="message"
                         value={contactForm.message}
                         onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
-                        required
+                        maxLength={2000}
                         placeholder="Tell us about your dream trip..."
-                        className="bg-background border-input min-h-[140px] rounded-md focus:ring-ring focus:border-ring resize-none p-4"
+                        className={`bg-background border-input min-h-[140px] rounded-md focus:ring-ring focus:border-ring resize-none p-4 ${contactErrors.message ? "border-destructive" : ""}`}
                       />
+                      {contactErrors.message && <p className="text-sm text-destructive">{contactErrors.message}</p>}
                     </div>
                     <Button
                       type="submit"

@@ -50,7 +50,7 @@ export default function BlogDetailPage() {
             .replace(/^> (.*?)$/gm, "<blockquote class='border-l-4 border-primary pl-6 italic text-xl text-muted-foreground my-8'>$1</blockquote>")
             .replace(/\n- /g, "<br />• ")
             .replace(/\n\d+\. /g, "<br />1. ")
-            .replace(/\n/g, "<br />")
+        // .replace(/\n/g, "<br />")
     }
 
     if (loading) {
