@@ -23,6 +23,12 @@ interface TripRequest {
     phone: string
     status: string
     createdAt: string
+    preferredPaymentMethod?: string
+    user?: {
+        name: string
+        email: string
+        image?: string
+    }
 }
 
 const statusStyles = {
@@ -74,8 +80,7 @@ export default function TripRequestsPage() {
                 }
                 setHasMore(data.pagination.currentPage < data.pagination.pages)
             }
-        } catch (error) {
-            console.error("Failed to fetch:", error)
+        } catch {
         } finally {
             setLoading(false)
             setLoadingMore(false)
@@ -203,7 +208,11 @@ export default function TripRequestsPage() {
                                                 <span>{request.arrivalCity}</span>
                                             </div>
                                             <div className="flex items-center gap-1.5">
-                                                <Users className="h-4 w-4 text-muted-foreground" />
+                                                {request.user?.image ? (
+                                                    <img src={request.user.image} alt={request.user.name} className="w-4 h-4 rounded-full object-cover" />
+                                                ) : (
+                                                    <Users className="h-4 w-4 text-muted-foreground" />
+                                                )}
                                                 <span>{request.numberOfTravelers} travelers</span>
                                             </div>
                                             <div className="text-xs text-muted-foreground">
@@ -235,140 +244,219 @@ export default function TripRequestsPage() {
             {/* Detail Modal */}
             {selectedRequest && (
                 <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-card rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-border">
+                    <div className="bg-card rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-border shadow-2xl">
+                        {/* Header */}
                         <div className="sticky top-0 bg-card border-b border-border p-6 flex items-center justify-between z-10">
-                            <div>
-                                <h2 className="text-xl font-semibold text-foreground">{selectedRequest.fullName}</h2>
-                                <p className="text-sm text-muted-foreground mt-1">
-                                    {new Date(selectedRequest.createdAt).toLocaleString()}
-                                </p>
+                            <div className="flex items-center gap-4">
+                                <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl">
+                                    {selectedRequest.fullName.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-bold text-foreground">{selectedRequest.fullName}</h2>
+                                    <p className="text-sm text-muted-foreground">
+                                        Submitted {new Date(selectedRequest.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} at {new Date(selectedRequest.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                                    </p>
+                                </div>
                             </div>
                             <button
                                 onClick={() => setSelectedRequest(null)}
-                                className="text-muted-foreground hover:text-foreground"
+                                className="p-2 rounded-full hover:bg-muted transition-colors"
                             >
                                 <X className="h-5 w-5" />
                             </button>
                         </div>
 
                         <div className="p-6 space-y-6">
-                            {/* Status Update */}
-                            <div className="bg-muted/50 border border-border rounded-lg p-4">
-                                <h3 className="text-sm font-medium text-foreground mb-3">Update Status</h3>
+                            {/* Registered User Badge */}
+                            {selectedRequest.user && (
+                                <div className="bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-xl p-5 flex items-center gap-4">
+                                    {selectedRequest.user.image ? (
+                                        <img src={selectedRequest.user.image} alt={selectedRequest.user.name} className="w-14 h-14 rounded-full object-cover border-2 border-primary/30" />
+                                    ) : (
+                                        <div className="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                                            <Users className="w-7 h-7" />
+                                        </div>
+                                    )}
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <h3 className="font-bold text-lg text-foreground">{selectedRequest.user.name}</h3>
+                                        </div>
+                                        <p className="text-muted-foreground">{selectedRequest.user.email}</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Status Update Card */}
+                            <div className="bg-muted/30 border border-border rounded-xl p-5">
+                                <h3 className="text-sm font-bold text-foreground uppercase tracking-wider mb-4 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-primary"></span>
+                                    Update Status
+                                </h3>
                                 <div className="flex flex-wrap gap-2">
-                                    {["new", "contacted", "in-progress", "quoted", "confirmed", "cancelled"].map((status) => (
+                                    {[
+                                        { status: "new", color: "bg-blue-500/10 text-blue-600 border-blue-500/30" },
+                                        { status: "contacted", color: "bg-amber-500/10 text-amber-600 border-amber-500/30" },
+                                        { status: "in-progress", color: "bg-purple-500/10 text-purple-600 border-purple-500/30" },
+                                        { status: "quoted", color: "bg-cyan-500/10 text-cyan-600 border-cyan-500/30" },
+                                        { status: "confirmed", color: "bg-emerald-500/10 text-emerald-600 border-emerald-500/30" },
+                                        { status: "cancelled", color: "bg-red-500/10 text-red-600 border-red-500/30" },
+                                    ].map(({ status, color }) => (
                                         <button
                                             key={status}
                                             onClick={() => updateStatus(selectedRequest.id, status)}
                                             disabled={updating}
-                                            className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${selectedRequest.status === status
-                                                ? "bg-primary text-primary-foreground"
-                                                : "bg-card text-foreground border border-input hover:bg-accent hover:text-accent-foreground"
+                                            className={`px-4 py-2 text-sm font-semibold rounded-lg border transition-all ${selectedRequest.status === status
+                                                ? "bg-primary text-primary-foreground border-primary shadow-md scale-105"
+                                                : `${color} hover:scale-105`
                                                 }`}
                                         >
-                                            {status.replace("-", " ")}
+                                            {status.replace("-", " ").charAt(0).toUpperCase() + status.replace("-", " ").slice(1)}
                                         </button>
                                     ))}
                                 </div>
                             </div>
 
-                            {/* Details Grid */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-4">
-                                    <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">Travel Details</h3>
-                                    <div className="space-y-3 text-sm">
-                                        <div>
-                                            <span className="text-muted-foreground">Style:</span>
-                                            <p className="text-foreground font-medium capitalize">{selectedRequest.travelStyle}</p>
+                            {/* Main Info Grid */}
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                {/* Travel Details Card */}
+                                <div className="bg-card border border-border rounded-xl p-5 space-y-4">
+                                    <h3 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
+                                        <MapPin className="w-4 h-4 text-primary" />
+                                        Travel Details
+                                    </h3>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-muted/50 rounded-lg p-3">
+                                            <span className="text-xs text-muted-foreground uppercase tracking-wide">Style</span>
+                                            <p className="text-foreground font-semibold capitalize mt-1">{selectedRequest.travelStyle}</p>
                                         </div>
-                                        <div>
-                                            <span className="text-muted-foreground">Dates:</span>
-                                            <p className="text-foreground font-medium">{selectedRequest.travelDates}</p>
+                                        <div className="bg-muted/50 rounded-lg p-3">
+                                            <span className="text-xs text-muted-foreground uppercase tracking-wide">Travelers</span>
+                                            <p className="text-foreground font-semibold mt-1">{selectedRequest.numberOfTravelers}</p>
                                         </div>
-                                        <div>
-                                            <span className="text-muted-foreground">Route:</span>
-                                            <p className="text-foreground font-medium">{selectedRequest.arrivalCity} → {selectedRequest.departureCity}</p>
+                                        <div className="bg-muted/50 rounded-lg p-3 col-span-2">
+                                            <span className="text-xs text-muted-foreground uppercase tracking-wide">Dates</span>
+                                            <p className="text-foreground font-semibold mt-1">{selectedRequest.travelDates}</p>
                                         </div>
-                                        <div>
-                                            <span className="text-muted-foreground">Accommodation:</span>
-                                            <p className="text-foreground font-medium capitalize">{selectedRequest.accommodation}</p>
+                                        <div className="bg-muted/50 rounded-lg p-3 col-span-2">
+                                            <span className="text-xs text-muted-foreground uppercase tracking-wide">Route</span>
+                                            <p className="text-foreground font-semibold mt-1 flex items-center gap-2">
+                                                {selectedRequest.arrivalCity}
+                                                <span className="text-primary">→</span>
+                                                {selectedRequest.departureCity}
+                                            </p>
                                         </div>
-                                        <div>
-                                            <span className="text-muted-foreground">Budget:</span>
-                                            <p className="text-foreground font-medium">{selectedRequest.budget}</p>
+                                        <div className="bg-muted/50 rounded-lg p-3">
+                                            <span className="text-xs text-muted-foreground uppercase tracking-wide">Accommodation</span>
+                                            <p className="text-foreground font-semibold capitalize mt-1">{selectedRequest.accommodation}</p>
                                         </div>
+                                        <div className="bg-primary/10 border border-primary/20 rounded-lg p-3">
+                                            <span className="text-xs text-primary uppercase tracking-wide">Budget</span>
+                                            <p className="text-primary font-bold text-lg mt-1">{selectedRequest.budget}</p>
+                                        </div>
+                                        {selectedRequest.preferredPaymentMethod && (
+                                            <div className="bg-muted/50 rounded-lg p-3 col-span-2">
+                                                <span className="text-xs text-muted-foreground uppercase tracking-wide">Payment Method</span>
+                                                <p className="text-foreground font-semibold mt-1">{selectedRequest.preferredPaymentMethod}</p>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
-                                <div className="space-y-4">
-                                    <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">Contact</h3>
-                                    <div className="space-y-3 text-sm">
-                                        <div className="flex items-center gap-2">
-                                            <Mail className="h-4 w-4 text-muted-foreground" />
-                                            <a href={`mailto:${selectedRequest.email}`} className="text-primary hover:underline">
-                                                {selectedRequest.email}
-                                            </a>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Phone className="h-4 w-4 text-muted-foreground" />
-                                            <a href={`tel:${selectedRequest.phone}`} className="text-primary hover:underline">
-                                                {selectedRequest.phone}
-                                            </a>
-                                        </div>
-                                        <div className="pt-2">
-                                            <Button
-                                                onClick={() => window.location.href = `mailto:${selectedRequest.email}?subject=Regarding Your Trip Request to Morocco`}
-                                                size="sm"
-                                                className="w-full bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20"
-                                            >
-                                                <Mail className="w-4 h-4 mr-2" />
-                                                Contact via Email
-                                            </Button>
-                                        </div>
-                                        <div>
-                                            <span className="text-muted-foreground">Travelers:</span>
-                                            <p className="text-foreground font-medium">{selectedRequest.numberOfTravelers}</p>
-                                            <p className="text-foreground font-medium">{selectedRequest.travelerAges}</p>
-                                        </div>
+                                {/* Contact Card */}
+                                <div className="bg-card border border-border rounded-xl p-5 space-y-4">
+                                    <h3 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
+                                        <Mail className="w-4 h-4 text-primary" />
+                                        Contact Information
+                                    </h3>
+                                    <div className="space-y-3">
+                                        <a
+                                            href={`mailto:${selectedRequest.email}`}
+                                            className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group"
+                                        >
+                                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                                <Mail className="h-5 w-5 text-primary" />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs text-muted-foreground uppercase tracking-wide">Email</p>
+                                                <p className="text-foreground font-medium group-hover:text-primary transition-colors">{selectedRequest.email}</p>
+                                            </div>
+                                        </a>
+                                        <a
+                                            href={`tel:${selectedRequest.phone}`}
+                                            className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group"
+                                        >
+                                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                                <Phone className="h-5 w-5 text-primary" />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs text-muted-foreground uppercase tracking-wide">Phone</p>
+                                                <p className="text-foreground font-medium group-hover:text-primary transition-colors">{selectedRequest.phone}</p>
+                                            </div>
+                                        </a>
+                                        {selectedRequest.travelerAges && (
+                                            <div className="p-3 bg-muted/50 rounded-lg">
+                                                <p className="text-xs text-muted-foreground uppercase tracking-wide">Traveler Ages</p>
+                                                <p className="text-foreground font-medium mt-1">{selectedRequest.travelerAges}</p>
+                                            </div>
+                                        )}
                                     </div>
+                                    <Button
+                                        onClick={() => window.location.href = `mailto:${selectedRequest.email}?subject=Regarding Your Trip Request to Morocco`}
+                                        className="w-full mt-2"
+                                    >
+                                        <Mail className="w-4 h-4 mr-2" />
+                                        Send Email
+                                    </Button>
                                 </div>
                             </div>
 
-                            {/* Activities */}
-                            {selectedRequest.adventureActivities.length > 0 && (
-                                <div>
-                                    <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-3">Activities</h3>
-                                    <div className="flex flex-wrap gap-2">
-                                        {selectedRequest.adventureActivities.map((activity) => (
-                                            <span key={activity} className="px-3 py-1 bg-muted text-foreground rounded text-sm">
-                                                {activity}
-                                            </span>
-                                        ))}
-                                    </div>
+                            {/* Activities & Experiences */}
+                            {(selectedRequest.adventureActivities.length > 0 || (selectedRequest.experiences && selectedRequest.experiences.length > 0)) && (
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    {selectedRequest.adventureActivities.length > 0 && (
+                                        <div className="bg-card border border-border rounded-xl p-5">
+                                            <h3 className="text-sm font-bold text-foreground uppercase tracking-wider mb-4 flex items-center gap-2">
+                                                <span className="w-6 h-6 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-600">🏔️</span>
+                                                Activities
+                                            </h3>
+                                            <div className="flex flex-wrap gap-2">
+                                                {selectedRequest.adventureActivities.map((activity) => (
+                                                    <span key={activity} className="px-3 py-1.5 bg-amber-500/10 text-amber-700 border border-amber-500/20 rounded-full text-sm font-medium">
+                                                        {activity}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {selectedRequest.experiences && selectedRequest.experiences.length > 0 && (
+                                        <div className="bg-card border border-border rounded-xl p-5">
+                                            <h3 className="text-sm font-bold text-foreground uppercase tracking-wider mb-4 flex items-center gap-2">
+                                                <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary">✨</span>
+                                                Target Experiences
+                                            </h3>
+                                            <div className="flex flex-wrap gap-2">
+                                                {selectedRequest.experiences.map((exp) => (
+                                                    <span key={exp} className="px-3 py-1.5 bg-primary/10 text-primary border border-primary/20 rounded-full text-sm font-medium">
+                                                        {exp}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             )}
 
-                            {/* Target Experiences */}
-                            {selectedRequest.experiences && selectedRequest.experiences.length > 0 && (
-                                <div>
-                                    <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-3">Target Experiences</h3>
-                                    <div className="flex flex-wrap gap-2">
-                                        {selectedRequest.experiences.map((exp) => (
-                                            <span key={exp} className="px-3 py-1 bg-primary/10 text-primary rounded text-sm border border-primary/20">
-                                                {exp}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Important Factors */}
+                            {/* Key Priorities */}
                             {selectedRequest.importantFactors && selectedRequest.importantFactors.length > 0 && (
-                                <div>
-                                    <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-3">Key Priorities</h3>
+                                <div className="bg-card border border-border rounded-xl p-5">
+                                    <h3 className="text-sm font-bold text-foreground uppercase tracking-wider mb-4 flex items-center gap-2">
+                                        <span className="w-6 h-6 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-600">⭐</span>
+                                        Key Priorities
+                                    </h3>
                                     <div className="flex flex-wrap gap-2">
                                         {selectedRequest.importantFactors.map((factor) => (
-                                            <span key={factor} className="px-3 py-1 bg-accent/10 text-accent rounded text-sm border border-accent/20">
+                                            <span key={factor} className="px-3 py-1.5 bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 rounded-full text-sm font-medium">
                                                 {factor}
                                             </span>
                                         ))}
@@ -376,13 +464,18 @@ export default function TripRequestsPage() {
                                 </div>
                             )}
 
-                            {/* Desired Experiences (Additional Info) */}
-                            <div>
-                                <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-3">Additional Information</h3>
-                                <p className="text-sm text-foreground bg-muted p-4 rounded-lg border border-border">
-                                    {selectedRequest.desiredExperiences}
-                                </p>
-                            </div>
+                            {/* Additional Information */}
+                            {selectedRequest.desiredExperiences && (
+                                <div className="bg-card border border-border rounded-xl p-5">
+                                    <h3 className="text-sm font-bold text-foreground uppercase tracking-wider mb-4 flex items-center gap-2">
+                                        <span className="w-6 h-6 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-600">📝</span>
+                                        Additional Notes
+                                    </h3>
+                                    <div className="bg-muted/50 p-4 rounded-lg border border-border">
+                                        <p className="text-foreground leading-relaxed whitespace-pre-wrap">{selectedRequest.desiredExperiences}</p>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

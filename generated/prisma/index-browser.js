@@ -177,6 +177,20 @@ exports.Prisma.TripRequestScalarFieldEnum = {
   status: 'status',
   adminNotes: 'adminNotes',
   createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId',
+  preferredPaymentMethod: 'preferredPaymentMethod'
+};
+
+exports.Prisma.SiteSettingsScalarFieldEnum = {
+  id: 'id',
+  paymentMethodsEnabled: 'paymentMethodsEnabled',
+  paymentMethodOptions: 'paymentMethodOptions',
+  budgetType: 'budgetType',
+  budgetDropdownOptions: 'budgetDropdownOptions',
+  budgetMin: 'budgetMin',
+  budgetMax: 'budgetMax',
+  budgetStep: 'budgetStep',
   updatedAt: 'updatedAt'
 };
 
@@ -201,7 +215,10 @@ exports.Prisma.UserScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   password: 'password',
-  role: 'role'
+  role: 'role',
+  phone: 'phone',
+  bio: 'bio',
+  location: 'location'
 };
 
 exports.Prisma.FavoriteScalarFieldEnum = {
@@ -262,6 +279,7 @@ exports.Prisma.ModelName = {
   Circuit: 'Circuit',
   BlogPost: 'BlogPost',
   TripRequest: 'TripRequest',
+  SiteSettings: 'SiteSettings',
   ContactMessage: 'ContactMessage',
   User: 'User',
   Favorite: 'Favorite',

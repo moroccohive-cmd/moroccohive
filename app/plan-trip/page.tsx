@@ -6,6 +6,8 @@ import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useAuth } from "@/hooks/use-auth"
+import { authClient } from "@/lib/auth-client"
 import { CountryCodeSelect } from "@/components/ui/country-code-select"
 import {
     Check,
@@ -17,24 +19,48 @@ import {
     Home,
     DollarSign,
     Heart,
-    Mail,
-    Phone,
     User,
     Sparkles,
     Plane,
     Star,
+    Mail,
+    Lock,
+    Phone,
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { Slider } from "@/components/ui/slider"
+import { toast } from "sonner"
 
 const STEPS = [
     { id: 1, name: "Travel Style", icon: Users },
     { id: 2, name: "When & Where", icon: MapPin },
     { id: 3, name: "Preferences", icon: Heart },
-    { id: 4, name: "Contact", icon: Mail },
+    { id: 4, name: "Complete", icon: Mail },
+]
+
+// Accommodation levels defined outside component to prevent re-renders
+const ACCOMMODATION_LEVELS = [
+    {
+        name: "Standard",
+        stars: 3,
+        iconSrc: "/furniture-bedroom-single-bed.svg",
+    },
+    {
+        name: "Comfort",
+        stars: 4,
+        iconSrc: "/double-bed-bedroom-pillow.svg",
+    },
+    {
+        name: "Luxury",
+        stars: 5,
+        iconSrc: "/double-bed-bedroom-pillow.svg",
+        extraIconSrc: "/nightstand.svg",
+    },
 ]
 
 export default function PlanTripPage() {
+    const { user } = useAuth()
     const [currentStep, setCurrentStep] = useState(1)
     const [travelers, setTravelers] = useState({
         adults: 2,
@@ -61,11 +87,87 @@ export default function PlanTripPage() {
         email: "",
         phone: "",
         countryCode: "+1",
+        preferredPaymentMethod: "",
     })
 
     const [errors, setErrors] = useState<Record<string, string>>({})
     const [submitting, setSubmitting] = useState(false)
     const [submitted, setSubmitted] = useState(false)
+
+    interface PaymentSettings {
+        enabled: boolean
+        options: string[]
+        budgetType?: "dropdown" | "slider"
+        budgetDropdownOptions?: string[]
+        budgetMin?: number
+        budgetMax?: number
+        budgetStep?: number
+    }
+    // Payment method settings
+    const [paymentSettings, setPaymentSettings] = useState<PaymentSettings>({ enabled: false, options: [] })
+
+    // Separate state for slider display to prevent full form re-renders
+    const [sliderBudget, setSliderBudget] = useState<number>(500)
+
+    // Inline auth form state
+    const [authMode, setAuthMode] = useState<"login" | "register">("login")
+    const [authForm, setAuthForm] = useState({
+        fullName: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        phone: "",
+        countryCode: "+1",
+    })
+    const [authErrors, setAuthErrors] = useState<Record<string, string>>({})
+    const [authLoading, setAuthLoading] = useState(false)
+
+    // Pre-fill user data when authenticated (only once when user data becomes available)
+    const userEmail = user?.email
+    const userName = user?.name
+    const userVerified = user?.emailVerified
+    useEffect(() => {
+        if (userEmail && userVerified) {
+            setFormData((prev) => {
+                // Only update if the fields are empty to avoid overwriting user input
+                if (!prev.email && !prev.fullName) {
+                    return {
+                        ...prev,
+                        fullName: userName || "",
+                        email: userEmail,
+                    }
+                }
+                return prev
+            })
+        }
+    }, [userEmail, userName, userVerified])
+
+    // Fetch payment settings
+    useEffect(() => {
+        const fetchPaymentSettings = async () => {
+            try {
+                const res = await fetch("/api/settings")
+                if (res.ok) {
+                    const data = await res.json()
+                    setPaymentSettings({
+                        enabled: data.paymentMethodsEnabled,
+                        options: data.paymentMethodOptions,
+                        budgetType: data.budgetType,
+                        budgetDropdownOptions: data.budgetDropdownOptions,
+                        budgetMin: data.budgetMin,
+                        budgetMax: data.budgetMax,
+                        budgetStep: data.budgetStep
+                    })
+                    // Initialize slider budget from settings
+                    if (data.budgetType === "slider") {
+                        setSliderBudget(data.budgetMin || 500)
+                    }
+                }
+            } catch {
+            }
+        }
+        fetchPaymentSettings()
+    }, [])
 
     // Auto-set travelers when travel style is solo or couple
     useEffect(() => {
@@ -238,20 +340,30 @@ export default function PlanTripPage() {
             const startDateStr = dates[0] || ""
             const endDateStr = dates[1] || ""
 
-            if (!startDateStr || !endDateStr) {
-                newErrors.travelDates = "Please provide both start and end dates"
+            // Separate validation for start date
+            if (!startDateStr) {
+                newErrors.startDate = "Start date is required"
             } else {
                 const startDate = new Date(startDateStr)
-                const endDate = new Date(endDateStr)
-
                 if (startDate < today) {
-                    newErrors.travelDates = "Start date cannot be in the past"
-                } else if (endDate < today) {
-                    newErrors.travelDates = "End date cannot be in the past"
-                } else if (startDateStr === endDateStr) {
-                    newErrors.travelDates = "Start and end dates cannot be the same"
-                } else if (endDate <= startDate) {
-                    newErrors.travelDates = "End date must be after start date"
+                    newErrors.startDate = "Start date cannot be in the past"
+                }
+            }
+
+            // Separate validation for end date
+            if (!endDateStr) {
+                newErrors.endDate = "End date is required"
+            } else {
+                const endDate = new Date(endDateStr)
+                if (endDate < today) {
+                    newErrors.endDate = "End date cannot be in the past"
+                } else if (startDateStr && endDateStr) {
+                    const startDate = new Date(startDateStr)
+                    if (startDateStr === endDateStr) {
+                        newErrors.endDate = "End date must be different from start date"
+                    } else if (endDate <= startDate) {
+                        newErrors.endDate = "End date must be after start date"
+                    }
                 }
             }
             if (!formData.arrivalCity) newErrors.arrivalCity = "Please select arrival city"
@@ -259,30 +371,6 @@ export default function PlanTripPage() {
         } else if (step === 3) {
             if (!formData.accommodation) newErrors.accommodation = "Please select accommodation"
             if (!formData.budget) newErrors.budget = "Please select budget"
-        } else if (step === 4) {
-            if (!formData.fullName.trim()) {
-                newErrors.fullName = "Please enter your name"
-            } else if (!nameRegex.test(formData.fullName.trim())) {
-                newErrors.fullName = "Name can only contain letters"
-            } else if (formData.fullName.trim().length > 50) {
-                newErrors.fullName = "Name is too long (max 50 characters)"
-            }
-
-            if (!formData.email.trim()) {
-                newErrors.email = "Please enter your email"
-            } else if (!emailRegex.test(formData.email.trim())) {
-                newErrors.email = "Please enter a valid email"
-            } else if (formData.email.trim().length > 100) {
-                newErrors.email = "Email is too long"
-            }
-
-            if (!formData.phone.trim()) {
-                newErrors.phone = "Please enter your phone"
-            } else if (!phoneRegex.test(formData.phone.trim())) {
-                newErrors.phone = "Phone can only contain numbers"
-            } else if (formData.phone.trim().length > 20) {
-                newErrors.phone = "Phone number is too long"
-            }
         }
 
         setErrors(newErrors)
@@ -293,6 +381,14 @@ export default function PlanTripPage() {
         if (validateStep(currentStep)) {
             setCurrentStep((prev) => Math.min(prev + 1, STEPS.length))
             window.scrollTo({ top: 0, behavior: "smooth" })
+        } else {
+            // Scroll to first error with a slight delay to ensure UI updates
+            setTimeout(() => {
+                const firstErrorField = document.querySelector('[class*="border-destructive"], [class*="text-destructive"]')
+                if (firstErrorField) {
+                    firstErrorField.scrollIntoView({ behavior: "smooth", block: "center" })
+                }
+            }, 100)
         }
     }
 
@@ -301,8 +397,134 @@ export default function PlanTripPage() {
         window.scrollTo({ top: 0, behavior: "smooth" })
     }
 
+    // Validate inline auth form
+    const validateAuthForm = (): boolean => {
+        const newErrors: Record<string, string> = {}
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+        if (!authForm.email.trim()) {
+            newErrors.email = "Email is required"
+        } else if (!emailRegex.test(authForm.email.trim())) {
+            newErrors.email = "Please enter a valid email"
+        }
+
+        if (!authForm.password) {
+            newErrors.password = "Password is required"
+        } else if (authForm.password.length < 8) {
+            newErrors.password = "Password must be at least 8 characters"
+        }
+
+        if (authMode === "register") {
+            if (!authForm.fullName.trim()) {
+                newErrors.fullName = "Full name is required"
+            } else if (authForm.fullName.trim().length < 2) {
+                newErrors.fullName = "Name must be at least 2 characters"
+            }
+
+            if (!authForm.phone.trim()) {
+                newErrors.phone = "Phone number is required"
+            } else if (authForm.phone.trim().length < 6) {
+                newErrors.phone = "Please enter a valid phone number"
+            }
+
+            if (!authForm.confirmPassword) {
+                newErrors.confirmPassword = "Please confirm your password"
+            } else if (authForm.password !== authForm.confirmPassword) {
+                newErrors.confirmPassword = "Passwords do not match"
+            }
+        }
+
+        setAuthErrors(newErrors)
+        return Object.keys(newErrors).length === 0
+    }
+
+    // Handle inline login
+    const handleInlineLogin = async () => {
+        if (!validateAuthForm()) return
+
+        setAuthLoading(true)
+        setAuthErrors({})
+
+        try {
+            await authClient.signIn.email({
+                email: authForm.email.trim(),
+                password: authForm.password,
+            }, {
+                onSuccess: () => {
+                    // User state will update automatically
+                },
+                onError: (ctx) => {
+                    // Map common error codes to user-friendly messages
+                    const errorMessage = ctx.error.message || "Login failed"
+                    if (errorMessage.includes("Invalid password") || errorMessage.includes("password")) {
+                        setAuthErrors({ form: "Invalid email or password" })
+                    } else if (errorMessage.includes("not found") || errorMessage.includes("User not found")) {
+                        setAuthErrors({ form: "No account found with this email" })
+                    } else if (errorMessage.includes("verified") || errorMessage.includes("verify")) {
+                        setAuthErrors({ form: "Please verify your email before logging in" })
+                    } else {
+                        setAuthErrors({ form: errorMessage })
+                    }
+                }
+            })
+        } catch {
+            setAuthErrors({ form: "An error occurred during login" })
+        } finally {
+            setAuthLoading(false)
+        }
+    }
+
+    // Handle inline register
+    const handleInlineRegister = async () => {
+        if (!validateAuthForm()) return
+
+        setAuthLoading(true)
+        setAuthErrors({})
+
+        try {
+            const fullPhone = `${authForm.countryCode} ${authForm.phone.trim()}`
+            await authClient.signUp.email({
+                email: authForm.email.trim(),
+                password: authForm.password,
+                name: authForm.fullName.trim(),
+                role: "user",
+                phone: fullPhone,
+            } as any, {
+                onSuccess: () => {
+                    setAuthErrors({ form: "Please check your email to verify your account, then come back to submit your request!" })
+                },
+                onError: (ctx) => {
+                    // Map common error codes to user-friendly messages
+                    const errorMessage = ctx.error.message || "Registration failed"
+                    const lowerError = errorMessage.toLowerCase()
+
+                    if (lowerError.includes("already exists") || lowerError.includes("already registered") || lowerError.includes("user already exists")) {
+                        setAuthErrors({ form: "An account with this email already exists. Please sign in instead." })
+                    } else if (lowerError.includes("failed to create user") || lowerError.includes("name can only contain")) {
+                        // Better Auth wraps validation errors as "Failed to create user"
+                        // The actual error is logged server-side, so provide helpful guidance
+                        setAuthErrors({ form: "Please check your information: Name should only contain letters (no numbers or special characters), and password must be at least 8 characters." })
+                    } else if (lowerError.includes("password") || lowerError.includes("at least")) {
+                        setAuthErrors({ form: "Password must be at least 8 characters" })
+                    } else if (lowerError.includes("email") && lowerError.includes("valid")) {
+                        setAuthErrors({ form: "Please enter a valid email address" })
+                    } else {
+                        setAuthErrors({ form: errorMessage })
+                    }
+                }
+            })
+        } catch {
+            setAuthErrors({ form: "An error occurred during registration. Please check your information and try again." })
+        } finally {
+            setAuthLoading(false)
+        }
+    }
+
     const handleSubmit = async () => {
-        if (!validateStep(4)) return
+        if (!user?.email || !user?.emailVerified) {
+            setAuthErrors({ form: "Please verify your email before submitting." })
+            return
+        }
 
         setSubmitting(true)
         try {
@@ -311,7 +533,10 @@ export default function PlanTripPage() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     ...formData,
-                    phone: `${formData.countryCode} ${formData.phone}`,
+                    fullName: user.name || user.email.split("@")[0],
+                    email: user.email,
+                    phone: (user as any).phone || "",
+                    preferredPaymentMethod: formData.preferredPaymentMethod,
                 }),
             })
 
@@ -614,9 +839,11 @@ export default function PlanTripPage() {
                                                 onChange={(e) => {
                                                     const end = formData.travelDates.split(" to ")[1] || ""
                                                     setFormData({ ...formData, travelDates: `${e.target.value}${end ? ` to ${end}` : ""}` })
+                                                    setErrors(prev => ({ ...prev, startDate: "" }))
                                                 }}
-                                                className="bg-background h-11 border-border focus:ring-primary/20"
+                                                className={`bg-background h-11 border-border focus:ring-primary/20 ${errors.startDate ? "border-destructive" : ""}`}
                                             />
+                                            {errors.startDate && <p className="text-sm text-destructive">{errors.startDate}</p>}
                                         </div>
                                         <div className="space-y-1.5">
                                             <Label className="text-[10px] uppercase tracking-widest text-muted-foreground ml-1">
@@ -628,12 +855,13 @@ export default function PlanTripPage() {
                                                 onChange={(e) => {
                                                     const start = formData.travelDates.split(" to ")[0] || ""
                                                     setFormData({ ...formData, travelDates: `${start ? `${start} to ` : ""}${e.target.value}` })
+                                                    setErrors(prev => ({ ...prev, endDate: "" }))
                                                 }}
-                                                className="bg-background h-11 border-border focus:ring-primary/20"
+                                                className={`bg-background h-11 border-border focus:ring-primary/20 ${errors.endDate ? "border-destructive" : ""}`}
                                             />
+                                            {errors.endDate && <p className="text-sm text-destructive">{errors.endDate}</p>}
                                         </div>
                                     </div>
-                                    {errors.travelDates && <p className="text-sm text-destructive mt-2">{errors.travelDates}</p>}
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -701,45 +929,14 @@ export default function PlanTripPage() {
                                     <label className="block text-sm font-semibold mb-6 text-center">
                                         What is your preferred accommodation type?
                                     </label>
-                                    {/* CHANGE: Changed from flex-wrap to grid layout for 3 columns on all screens */}
                                     <div className="grid grid-cols-3 justify-items-center gap-4 md:gap-8 lg:gap-12">
-                                        {[
-                                            {
-                                                name: "Standard",
-                                                stars: 3,
-                                                icon: ({ className }: { className?: string }) => (
-                                                    <div className={`relative flex items-end justify-center${className ?? ""}`}>
-                                                        <Image src="/furniture-bedroom-single-bed.svg" alt="bed" width={40} height={40} />
-                                                    </div>
-                                                ),
-                                            },
-                                            {
-                                                name: "Comfort",
-                                                stars: 4,
-                                                icon: ({ className }: { className?: string }) => (
-                                                    <div className={`relative flex items-end justify-center ${className ?? ""}`}>
-                                                        <Image src="/double-bed-bedroom-pillow.svg" alt="bed" width={40} height={40} />
-                                                    </div>
-                                                ),
-                                            },
-                                            {
-                                                name: "Luxury",
-                                                stars: 5,
-                                                icon: ({ className }: { className?: string }) => (
-                                                    <div className={`relative flex items-end justify-center ${className ?? ""}`}>
-                                                        <Image src="/double-bed-bedroom-pillow.svg" alt="bed" width={38} height={38} />
-                                                        <Image className="pb-3" src="/nightstand.svg" alt="television" width={20} height={20} />
-                                                    </div>
-                                                ),
-                                            },
-                                        ].map((level) => (
+                                        {ACCOMMODATION_LEVELS.map((level) => (
                                             <button
                                                 key={level.name}
                                                 type="button"
                                                 onClick={() => setFormData((prev) => ({ ...prev, accommodation: level.name.toLowerCase() }))}
                                                 className="flex flex-col cursor-pointer items-center group w-full"
                                             >
-                                                {/* CHANGE: Made circle sizes responsive for mobile */}
                                                 <div
                                                     className={`w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full border border-border/50 flex flex-col items-center justify-center transition-all duration-300 ${formData.accommodation === level.name.toLowerCase()
                                                         ? "bg-primary/5 border-primary shadow-[0_0_20px_rgba(var(--primary),0.1)] scale-110"
@@ -754,9 +951,12 @@ export default function PlanTripPage() {
                                                             />
                                                         ))}
                                                     </div>
-                                                    <level.icon
-                                                        className={`w-8 h-8 sm:w-10 sm:h-10 transition-colors duration-300 ${formData.accommodation === level.name.toLowerCase() ? "text-primary" : "text-muted-foreground/40"}`}
-                                                    />
+                                                    <div className="relative flex items-end justify-center">
+                                                        <Image src={level.iconSrc} alt={level.name} width={40} height={40} />
+                                                        {level.extraIconSrc && (
+                                                            <Image className="pb-3" src={level.extraIconSrc} alt="" width={20} height={20} />
+                                                        )}
+                                                    </div>
                                                 </div>
                                                 <span
                                                     className={`mt-3 sm:mt-4 md:mt-5 font-bold tracking-widest text-[10px] sm:text-xs uppercase transition-all duration-300 ${formData.accommodation === level.name.toLowerCase() ? "text-primary scale-110" : "text-muted-foreground/70"}`}
@@ -776,18 +976,37 @@ export default function PlanTripPage() {
                                         <DollarSign className="inline w-4 h-4 mr-1" />
                                         Budget Range (per person)
                                     </label>
-                                    <select
-                                        id="budget"
-                                        value={formData.budget}
-                                        onChange={(e) => setFormData((prev) => ({ ...prev, budget: e.target.value }))}
-                                        className="w-full px-4 py-3 cursor-pointer border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background"
-                                    >
-                                        <option value="">Select budget</option>
-                                        <option value="$500-$1000">$500 - $1,000</option>
-                                        <option value="$1000-$2000">$1,000 - $2,000</option>
-                                        <option value="$2000-$3500">$2,000 - $3,500</option>
-                                        <option value="$3500+">$3,500+</option>
-                                    </select>
+
+                                    {paymentSettings && paymentSettings.budgetType === "slider" ? (
+                                        <div className="pt-6 pb-2 px-1">
+                                            <Slider
+                                                value={[sliderBudget]}
+                                                min={paymentSettings.budgetMin || 100}
+                                                max={paymentSettings.budgetMax || 10000}
+                                                step={paymentSettings.budgetStep || 100}
+                                                onValueChange={(vals) => setSliderBudget(vals[0])}
+                                                onValueCommit={(vals) => setFormData(prev => ({ ...prev, budget: vals[0].toString() }))}
+                                                className="mb-4"
+                                            />
+                                            <div className="flex justify-between text-sm text-muted-foreground">
+                                                <span>Minimum: ${paymentSettings.budgetMin}</span>
+                                                <span className="font-semibold text-foreground text-lg">${sliderBudget}</span>
+                                                <span>Maximum: ${paymentSettings.budgetMax}</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <select
+                                            id="budget"
+                                            value={formData.budget}
+                                            onChange={(e) => setFormData((prev) => ({ ...prev, budget: e.target.value }))}
+                                            className="w-full px-4 py-3 cursor-pointer border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background"
+                                        >
+                                            <option value="">Select budget</option>
+                                            {(paymentSettings?.budgetDropdownOptions || ["$500-$1000", "$1000-$2000", "$2000-$3500", "$3500+"]).map(opt => (
+                                                <option key={opt} value={opt}>{opt}</option>
+                                            ))}
+                                        </select>
+                                    )}
                                     {errors.budget && <p className="text-sm text-destructive mt-2">{errors.budget}</p>}
                                 </div>
 
@@ -947,87 +1166,209 @@ export default function PlanTripPage() {
                             </div>
                         )}
 
-                        {/* Step 4: Contact */}
+                        {/* Step 4: Complete - Auth & Submit */}
                         {currentStep === 4 && (
                             <div className="space-y-6 animate-fade-in">
                                 <div className="text-center mb-6">
                                     <Mail className="w-12 h-12 text-primary mx-auto mb-3" />
                                     <h2 className="text-2xl font-bold mb-2">Almost Done!</h2>
-                                    <p className="text-muted-foreground">How can we reach you?</p>
+                                    <p className="text-muted-foreground">
+                                        {user?.emailVerified
+                                            ? "Review your trip details and submit your request"
+                                            : "Sign in or create an account to submit your trip request"
+                                        }
+                                    </p>
                                 </div>
 
-                                <div>
-                                    <label htmlFor="fullName" className="block text-sm font-semibold mb-2">
-                                        <User className="inline w-4 h-4 mr-1" />
-                                        Name
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="fullName"
-                                        value={formData.fullName}
-                                        onChange={(e) => setFormData((prev) => ({ ...prev, fullName: e.target.value }))}
-                                        maxLength={50}
-                                        placeholder=""
-                                        className={`w-full px-4 h-11 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background ${errors.fullName ? "border-destructive" : ""}`}
-                                    />
-                                    {errors.fullName && <p className="text-sm text-destructive mt-2">{errors.fullName}</p>}
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label htmlFor="email" className="block text-sm font-semibold mb-2">
-                                            <Mail className="inline w-4 h-4 mr-1" />
-                                            Email
-                                        </label>
-                                        <input
-                                            type="email"
-                                            id="email"
-                                            value={formData.email}
-                                            onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
-                                            maxLength={100}
-                                            placeholder=""
-                                            className={`w-full px-4 h-11 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background ${errors.email ? "border-destructive" : ""}`}
-                                        />
-                                        {errors.email && <p className="text-sm text-destructive mt-2">{errors.email}</p>}
-                                    </div>
-
-                                    <div>
-                                        <label htmlFor="phone" className="block text-sm font-semibold mb-2">
-                                            <Phone className="inline w-4 h-4 mr-1" />
-                                            Phone
-                                        </label>
-                                        <div className="flex gap-2">
-                                            <CountryCodeSelect
-                                                value={formData.countryCode}
-                                                onChange={(val) => setFormData((prev) => ({ ...prev, countryCode: val }))}
-                                            />
-                                            <input
-                                                type="tel"
-                                                id="phone"
-                                                value={formData.phone}
-                                                onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
-                                                maxLength={20}
-                                                placeholder=""
-                                                className={`w-full px-4 h-11 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background ${errors.phone ? "border-destructive" : ""}`}
-                                            />
+                                {user?.emailVerified ? (
+                                    // User is logged in and verified - show summary and submit
+                                    <div className="bg-primary/5 border border-primary/20 rounded-xl p-6">
+                                        <div className="flex items-center gap-4 mb-4">
+                                            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                                                <Check className="w-6 h-6 text-primary" />
+                                            </div>
+                                            <div>
+                                                <p className="font-semibold">{user.name || "Welcome!"}</p>
+                                                <p className="text-sm text-muted-foreground">{user.email}</p>
+                                            </div>
                                         </div>
-                                        {errors.phone && <p className="text-sm text-destructive mt-2">{errors.phone}</p>}
-                                    </div>
-                                </div>
+                                        <p className="text-muted-foreground text-sm mb-4">
+                                            Click submit to send your personalized trip request. We&apos;ll get back to you within 24 hours.
+                                        </p>
 
-                                <div>
-                                    <label htmlFor="extraDetails" className="block text-sm font-semibold mb-2">
-                                        Additional Details (Optional)
-                                    </label>
-                                    <textarea
-                                        id="extraDetails"
-                                        value={formData.extraDetails}
-                                        onChange={(e) => setFormData((prev) => ({ ...prev, extraDetails: e.target.value }))}
-                                        rows={3}
-                                        placeholder="Dietary restrictions, accessibility needs, special occasions, etc."
-                                        className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background resize-none"
-                                    />
-                                </div>
+                                        {/* Payment Method Dropdown */}
+                                        {paymentSettings.enabled && paymentSettings.options.length > 0 && (
+                                            <div className="mb-4">
+                                                <label className="block text-sm font-medium mb-2">Preferred Payment Method</label>
+                                                <select
+                                                    value={formData.preferredPaymentMethod}
+                                                    onChange={(e) => setFormData(prev => ({ ...prev, preferredPaymentMethod: e.target.value }))}
+                                                    className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background"
+                                                >
+                                                    <option value="">Select payment method (optional)</option>
+                                                    {paymentSettings.options.map((option) => (
+                                                        <option key={option} value={option}>{option}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        )}
+                                        <Button
+                                            type="button"
+                                            onClick={handleSubmit}
+                                            disabled={submitting}
+                                            className="w-full flex items-center justify-center gap-2"
+                                        >
+                                            {submitting ? "Submitting..." : "Submit Trip Request"}
+                                            <Sparkles className="w-4 h-4" />
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    // User is not logged in or not verified - show auth forms
+                                    <div className="bg-card border border-border rounded-xl p-6">
+                                        {/* Auth mode toggle */}
+                                        <div className="flex mb-6 bg-muted/50 rounded-lg p-1">
+                                            <button
+                                                type="button"
+                                                className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${authMode === "login" ? "bg-background shadow-sm" : "text-muted-foreground"}`}
+                                                onClick={() => { setAuthMode("login"); setAuthErrors({}) }}
+                                            >
+                                                Sign In
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${authMode === "register" ? "bg-background shadow-sm" : "text-muted-foreground"}`}
+                                                onClick={() => { setAuthMode("register"); setAuthErrors({}) }}
+                                            >
+                                                Create Account
+                                            </button>
+                                        </div>
+
+                                        {/* Registration form */}
+                                        {authMode === "register" && (
+                                            <div className="space-y-4 mb-4">
+                                                <div>
+                                                    <label className="block text-sm font-medium mb-2">Full Name</label>
+                                                    <div className="relative">
+                                                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                                        <Input
+                                                            type="text"
+                                                            value={authForm.fullName}
+                                                            onChange={(e) => setAuthForm(prev => ({ ...prev, fullName: e.target.value }))}
+                                                            placeholder="John Doe"
+                                                            maxLength={30}
+                                                            className={`pl-10 ${authErrors.fullName ? "border-destructive" : ""}`}
+                                                        />
+                                                    </div>
+                                                    {authErrors.fullName && <p className="text-sm text-destructive mt-1">{authErrors.fullName}</p>}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Email field (both modes) */}
+                                        <div className="mb-4">
+                                            <label className="block text-sm font-medium mb-2">Email</label>
+                                            <div className="relative">
+                                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                                <Input
+                                                    type="email"
+                                                    value={authForm.email}
+                                                    onChange={(e) => setAuthForm(prev => ({ ...prev, email: e.target.value }))}
+                                                    placeholder="youremail@example.com"
+                                                    maxLength={40}
+                                                    className={`pl-10 ${authErrors.email ? "border-destructive" : ""}`}
+                                                />
+                                            </div>
+                                            {authErrors.email && <p className="text-sm text-destructive mt-1">{authErrors.email}</p>}
+                                        </div>
+
+                                        {/* Phone field (register only) */}
+                                        {authMode === "register" && (
+                                            <div className="mb-4">
+                                                <label className="block text-sm font-medium mb-2">Phone Number</label>
+                                                <div className="flex gap-2">
+                                                    <CountryCodeSelect
+                                                        value={authForm.countryCode}
+                                                        onChange={(val) => setAuthForm(prev => ({ ...prev, countryCode: val }))}
+                                                    />
+                                                    <div className="relative flex-1">
+                                                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                                        <Input
+                                                            type="tel"
+                                                            value={authForm.phone}
+                                                            onChange={(e) => setAuthForm(prev => ({ ...prev, phone: e.target.value }))}
+                                                            placeholder="123 456 7890"
+                                                            maxLength={12}
+                                                            className={`pl-10 ${authErrors.phone ? "border-destructive" : ""}`}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                {authErrors.phone && <p className="text-sm text-destructive mt-1">{authErrors.phone}</p>}
+                                            </div>
+                                        )}
+
+                                        {/* Password field */}
+                                        <div className="mb-4">
+                                            <label className="block text-sm font-medium mb-2">Password</label>
+                                            <div className="relative">
+                                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                                <Input
+                                                    type="password"
+                                                    value={authForm.password}
+                                                    onChange={(e) => setAuthForm(prev => ({ ...prev, password: e.target.value }))}
+                                                    placeholder="••••••••"
+                                                    className={`pl-10 ${authErrors.password ? "border-destructive" : ""}`}
+                                                />
+                                            </div>
+                                            {authErrors.password && <p className="text-sm text-destructive mt-1">{authErrors.password}</p>}
+                                        </div>
+
+                                        {/* Confirm password (register only) */}
+                                        {authMode === "register" && (
+                                            <div className="mb-4">
+                                                <label className="block text-sm font-medium mb-2">Confirm Password</label>
+                                                <div className="relative">
+                                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                                    <Input
+                                                        type="password"
+                                                        value={authForm.confirmPassword}
+                                                        onChange={(e) => setAuthForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                                                        placeholder="••••••••"
+                                                        className={`pl-10 ${authErrors.confirmPassword ? "border-destructive" : ""}`}
+                                                    />
+                                                </div>
+                                                {authErrors.confirmPassword && <p className="text-sm text-destructive mt-1">{authErrors.confirmPassword}</p>}
+                                            </div>
+                                        )}
+
+                                        {/* Form error message */}
+                                        {authErrors.form && (
+                                            <div className={`px-4 py-3 rounded text-sm mb-4 ${authErrors.form.includes("verify") || authErrors.form.includes("check") ? "bg-primary/10 text-primary border border-primary/20" : "bg-destructive/10 text-destructive border border-destructive/20"}`}>
+                                                {authErrors.form}
+                                            </div>
+                                        )}
+
+                                        {/* Submit button */}
+                                        <Button
+                                            type="button"
+                                            onClick={authMode === "login" ? handleInlineLogin : handleInlineRegister}
+                                            disabled={authLoading}
+                                            className="w-full"
+                                        >
+                                            {authLoading
+                                                ? (authMode === "login" ? "Signing in..." : "Creating account...")
+                                                : (authMode === "login" ? "Sign In & Continue" : "Create Account & Continue")
+                                            }
+                                        </Button>
+
+                                        {authMode === "login" && (
+                                            <p className="text-center text-sm text-muted-foreground mt-4">
+                                                <Link href="/forgot-password" className="text-primary hover:underline">
+                                                    Forgot your password?
+                                                </Link>
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -1062,8 +1403,8 @@ export default function PlanTripPage() {
                             )}
                         </div>
                     </div>
-                </div>
-            </main>
+                </div >
+            </main >
 
             <Footer />
 
@@ -1082,6 +1423,6 @@ export default function PlanTripPage() {
           animation: fade-in 0.3s ease-out;
         }
       `}</style>
-        </div>
+        </div >
     )
 }

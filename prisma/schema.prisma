@@ -79,6 +79,24 @@ model TripRequest {
   adminNotes          String? // Internal notes
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
+  userId              String?
+  user                User?    @relation(fields: [userId], references: [id])
+  preferredPaymentMethod String?
+}
+
+model SiteSettings {
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  paymentMethodsEnabled Boolean  @default(true)
+  paymentMethodOptions  String[] @default(["Cash on arrival", "Bank transfer", "Credit card", "PayPal"])
+  
+  // Budget Configuration
+  budgetType            String   @default("dropdown") // "dropdown" or "slider"
+  budgetDropdownOptions String[] @default(["$500-$1000", "$1000-$2000", "$2000-$3500", "$3500+"])
+  budgetMin             Int      @default(500)
+  budgetMax             Int      @default(5000)
+  budgetStep            Int      @default(100)
+  
+  updatedAt             DateTime @updatedAt
 }
 
 model ContactMessage {
@@ -104,9 +122,13 @@ model User {
   sessions      Session[]
   accounts      Account[]
   favorites     Favorite[]
+  tripRequests  TripRequest[]
 
   password String?
   role     String? @default("user")
+  phone    String?
+  bio      String?
+  location String?
 
   @@map("user")
 }

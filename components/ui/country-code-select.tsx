@@ -78,10 +78,19 @@ interface CountryCodeSelectProps {
 }
 
 export function CountryCodeSelect({ value, onChange, disabled }: CountryCodeSelectProps) {
+    // Find the first matching country for this code (for display)
     const selectedCountry = COUNTRY_CODES.find((item) => item.code === value)
+    // Create a unique value for the Select (code|country)
+    const selectedValue = selectedCountry ? `${selectedCountry.code}|${selectedCountry.country}` : value
+
+    const handleChange = (uniqueValue: string) => {
+        // Extract just the code portion (before the |)
+        const code = uniqueValue.split("|")[0]
+        onChange(code)
+    }
 
     return (
-        <Select value={value} onValueChange={onChange} disabled={disabled}>
+        <Select value={selectedValue} onValueChange={handleChange} disabled={disabled}>
             <SelectTrigger className="w-[110px] h-11">
                 <SelectValue placeholder="Code">
                     {selectedCountry && (
@@ -100,13 +109,15 @@ export function CountryCodeSelect({ value, onChange, disabled }: CountryCodeSele
             <SelectContent>
                 {COUNTRY_CODES.map((item) => {
                     const Flag = getFlagIcon(item.country)
+                    const uniqueValue = `${item.code}|${item.country}`
                     return (
-                        <SelectItem key={`${item.code}-${item.country}`} value={item.code}>
+                        <SelectItem key={uniqueValue} value={uniqueValue}>
                             <span className="flex items-center gap-2">
                                 <span className="w-5 h-4 flex-shrink-0">
                                     <Flag className="w-full h-full rounded-sm" />
                                 </span>
                                 <span className="font-mono text-sm">{item.code}</span>
+                                <span className="text-xs text-muted-foreground">{item.country}</span>
                             </span>
                         </SelectItem>
                     )

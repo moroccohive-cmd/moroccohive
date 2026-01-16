@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
 import { checkRateLimit } from "@/lib/limiter";
+import { auth } from "@/lib/auth";
 
 // Validation helpers
 const NAME_REGEX = /^[a-zA-Z\s]+$/
@@ -113,6 +114,11 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: `Extra details is too long (max ${MAX_LENGTHS.extraDetails} characters)` }, { status: 400 })
         }
 
+        // Check for session to link user
+        const session = await auth.api.getSession({
+            headers: request.headers
+        })
+
         // Create trip request
         const tripRequest = await prisma.tripRequest.create({
             data: {
@@ -134,6 +140,8 @@ export async function POST(request: NextRequest) {
                 fullName: trimmedName,
                 email: trimmedEmail,
                 phone: body.phone.trim(),
+                userId: session?.user?.id,
+                preferredPaymentMethod: body.preferredPaymentMethod,
             },
         })
 
@@ -145,10 +153,40 @@ export async function POST(request: NextRequest) {
             },
             { status: 201 }
         )
-    } catch (error) {
+    }
+    catch (error) {
         console.error("Error creating trip request:", error)
         return NextResponse.json(
             { error: "Failed to submit trip request" },
+            { status: 500 }
+        )
+    }
+}
+
+export async function GET(request: NextRequest) {
+    try {
+        const session = await auth.api.getSession({
+            headers: request.headers
+        })
+
+        if (!session?.user) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        }
+
+        const tripRequests = await prisma.tripRequest.findMany({
+            where: {
+                userId: session.user.id
+            },
+            orderBy: {
+                createdAt: "desc"
+            }
+        })
+
+        return NextResponse.json({ tripRequests })
+    } catch (error) {
+        console.error("Error fetching trip requests:", error)
+        return NextResponse.json(
+            { error: "Failed to fetch trip requests" },
             { status: 500 }
         )
     }

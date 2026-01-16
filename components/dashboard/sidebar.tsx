@@ -4,7 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Map, Calendar, Mail, LogOut, User, FileText } from "lucide-react"
+import { LayoutDashboard, Map, Calendar, Mail, LogOut, User, FileText, Settings } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 
 const navigation = [
@@ -14,6 +14,7 @@ const navigation = [
     { name: "Trip Requests", href: "/dashboard/trip-requests", icon: Calendar },
     { name: "Messages", href: "/dashboard/messages", icon: Mail },
     { name: "Profile", href: "/dashboard/profile", icon: User },
+    { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ]
 
 export function SidebarContent() {
@@ -37,29 +38,112 @@ export function SidebarContent() {
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
-                {navigation.map((item) => {
-                    const Icon = item.icon
-                    const isActive = item.href === "/dashboard"
-                        ? pathname === "/dashboard"
-                        : pathname === item.href || pathname?.startsWith(item.href + "/")
+            <nav className="flex-1 space-y-6 px-3 py-4 overflow-y-auto">
+                <div>
+                    <p className="px-3 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                        Overview
+                    </p>
+                    <Link
+                        href="/dashboard"
+                        className={cn(
+                            "flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
+                            pathname === "/dashboard"
+                                ? "bg-secondary text-secondary-foreground"
+                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        )}
+                    >
+                        <LayoutDashboard className="h-5 w-5" />
+                        Dashboard
+                    </Link>
+                </div>
 
-                    return (
-                        <Link
-                            key={item.name}
-                            href={item.href}
-                            className={cn(
-                                "flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
-                                isActive
-                                    ? "bg-secondary/80 text-secondary-foreground"
-                                    : "text-foreground/70 hover:bg-secondary/80 hover:text-secondary-foreground/80"
-                            )}
-                        >
-                            <Icon className="h-5 w-5" />
-                            {item.name}
-                        </Link>
-                    )
-                })}
+                <div>
+                    <p className="px-3 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                        Content
+                    </p>
+                    <div className="space-y-1">
+                        {[
+                            { name: "Circuits", href: "/dashboard/circuits", icon: Map },
+                            { name: "Blog", href: "/dashboard/blog", icon: FileText },
+                        ].map((item) => (
+                            <Link
+                                key={item.name}
+                                href={item.href}
+                                className={cn(
+                                    "flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
+                                    pathname.startsWith(item.href)
+                                        ? "bg-secondary text-secondary-foreground"
+                                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                                )}
+                            >
+                                <item.icon className="h-5 w-5" />
+                                {item.name}
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+
+                <div>
+                    <p className="px-3 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                        Management
+                    </p>
+                    <div className="space-y-1">
+                        {[
+                            { name: "Trip Requests", href: "/dashboard/trip-requests", icon: Calendar },
+                            { name: "Messages", href: "/dashboard/messages", icon: Mail },
+                        ].map((item) => (
+                            <Link
+                                key={item.name}
+                                href={item.href}
+                                className={cn(
+                                    "flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
+                                    pathname.startsWith(item.href)
+                                        ? "bg-secondary text-secondary-foreground"
+                                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                                )}
+                            >
+                                <item.icon className="h-5 w-5" />
+                                {item.name}
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+
+                <div>
+                    <p className="px-3 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                        System
+                    </p>
+                    <Link
+                        href="/dashboard/settings"
+                        className={cn(
+                            "flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
+                            pathname.startsWith("/dashboard/settings")
+                                ? "bg-secondary text-secondary-foreground"
+                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        )}
+                    >
+                        <Settings className="h-5 w-5" />
+                        Settings
+                    </Link>
+                </div>
+
+                <div>
+                    <p className="px-3 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                        Account
+                    </p>
+                    <Link
+                        href="/dashboard/profile"
+                        className={cn(
+                            "flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
+                            pathname.startsWith("/dashboard/profile")
+                                ? "bg-secondary text-secondary-foreground"
+                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        )}
+                    >
+                        <User className="h-5 w-5" />
+                        Profile
+                    </Link>
+                </div>
             </nav>
 
             {/* Logout */}

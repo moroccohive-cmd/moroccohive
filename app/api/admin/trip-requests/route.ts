@@ -33,6 +33,15 @@ export async function GET(request: NextRequest) {
                 orderBy: {
                     createdAt: "desc",
                 },
+                include: {
+                    user: {
+                        select: {
+                            name: true,
+                            email: true,
+                            image: true
+                        }
+                    }
+                }
             }),
             prisma.tripRequest.count({ where })
         ]);

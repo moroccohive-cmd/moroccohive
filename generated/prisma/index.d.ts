@@ -29,6 +29,11 @@ export type BlogPost = $Result.DefaultSelection<Prisma.$BlogPostPayload>
  */
 export type TripRequest = $Result.DefaultSelection<Prisma.$TripRequestPayload>
 /**
+ * Model SiteSettings
+ * 
+ */
+export type SiteSettings = $Result.DefaultSelection<Prisma.$SiteSettingsPayload>
+/**
  * Model ContactMessage
  * 
  */
@@ -173,6 +178,16 @@ export class PrismaClient<
     * ```
     */
   get tripRequest(): Prisma.TripRequestDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.siteSettings`: Exposes CRUD operations for the **SiteSettings** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SiteSettings
+    * const siteSettings = await prisma.siteSettings.findMany()
+    * ```
+    */
+  get siteSettings(): Prisma.SiteSettingsDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.contactMessage`: Exposes CRUD operations for the **ContactMessage** model.
@@ -677,6 +692,7 @@ export namespace Prisma {
     Circuit: 'Circuit',
     BlogPost: 'BlogPost',
     TripRequest: 'TripRequest',
+    SiteSettings: 'SiteSettings',
     ContactMessage: 'ContactMessage',
     User: 'User',
     Favorite: 'Favorite',
@@ -701,7 +717,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "circuit" | "blogPost" | "tripRequest" | "contactMessage" | "user" | "favorite" | "session" | "account" | "verification"
+      modelProps: "circuit" | "blogPost" | "tripRequest" | "siteSettings" | "contactMessage" | "user" | "favorite" | "session" | "account" | "verification"
       txIsolationLevel: never
     }
     model: {
@@ -924,6 +940,80 @@ export namespace Prisma {
           count: {
             args: Prisma.TripRequestCountArgs<ExtArgs>
             result: $Utils.Optional<TripRequestCountAggregateOutputType> | number
+          }
+        }
+      }
+      SiteSettings: {
+        payload: Prisma.$SiteSettingsPayload<ExtArgs>
+        fields: Prisma.SiteSettingsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SiteSettingsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteSettingsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SiteSettingsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteSettingsPayload>
+          }
+          findFirst: {
+            args: Prisma.SiteSettingsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteSettingsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SiteSettingsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteSettingsPayload>
+          }
+          findMany: {
+            args: Prisma.SiteSettingsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteSettingsPayload>[]
+          }
+          create: {
+            args: Prisma.SiteSettingsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteSettingsPayload>
+          }
+          createMany: {
+            args: Prisma.SiteSettingsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.SiteSettingsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteSettingsPayload>
+          }
+          update: {
+            args: Prisma.SiteSettingsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteSettingsPayload>
+          }
+          deleteMany: {
+            args: Prisma.SiteSettingsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SiteSettingsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.SiteSettingsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteSettingsPayload>
+          }
+          aggregate: {
+            args: Prisma.SiteSettingsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSiteSettings>
+          }
+          groupBy: {
+            args: Prisma.SiteSettingsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SiteSettingsGroupByOutputType>[]
+          }
+          findRaw: {
+            args: Prisma.SiteSettingsFindRawArgs<ExtArgs>
+            result: JsonObject
+          }
+          aggregateRaw: {
+            args: Prisma.SiteSettingsAggregateRawArgs<ExtArgs>
+            result: JsonObject
+          }
+          count: {
+            args: Prisma.SiteSettingsCountArgs<ExtArgs>
+            result: $Utils.Optional<SiteSettingsCountAggregateOutputType> | number
           }
         }
       }
@@ -1453,6 +1543,7 @@ export namespace Prisma {
     circuit?: CircuitOmit
     blogPost?: BlogPostOmit
     tripRequest?: TripRequestOmit
+    siteSettings?: SiteSettingsOmit
     contactMessage?: ContactMessageOmit
     user?: UserOmit
     favorite?: FavoriteOmit
@@ -1573,12 +1664,14 @@ export namespace Prisma {
     sessions: number
     accounts: number
     favorites: number
+    tripRequests: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     sessions?: boolean | UserCountOutputTypeCountSessionsArgs
     accounts?: boolean | UserCountOutputTypeCountAccountsArgs
     favorites?: boolean | UserCountOutputTypeCountFavoritesArgs
+    tripRequests?: boolean | UserCountOutputTypeCountTripRequestsArgs
   }
 
   // Custom InputTypes
@@ -1611,6 +1704,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountFavoritesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: FavoriteWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountTripRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TripRequestWhereInput
   }
 
 
@@ -3874,6 +3974,8 @@ export namespace Prisma {
     adminNotes: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    userId: string | null
+    preferredPaymentMethod: string | null
   }
 
   export type TripRequestMaxAggregateOutputType = {
@@ -3897,6 +3999,8 @@ export namespace Prisma {
     adminNotes: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    userId: string | null
+    preferredPaymentMethod: string | null
   }
 
   export type TripRequestCountAggregateOutputType = {
@@ -3923,6 +4027,8 @@ export namespace Prisma {
     adminNotes: number
     createdAt: number
     updatedAt: number
+    userId: number
+    preferredPaymentMethod: number
     _all: number
   }
 
@@ -3956,6 +4062,8 @@ export namespace Prisma {
     adminNotes?: true
     createdAt?: true
     updatedAt?: true
+    userId?: true
+    preferredPaymentMethod?: true
   }
 
   export type TripRequestMaxAggregateInputType = {
@@ -3979,6 +4087,8 @@ export namespace Prisma {
     adminNotes?: true
     createdAt?: true
     updatedAt?: true
+    userId?: true
+    preferredPaymentMethod?: true
   }
 
   export type TripRequestCountAggregateInputType = {
@@ -4005,6 +4115,8 @@ export namespace Prisma {
     adminNotes?: true
     createdAt?: true
     updatedAt?: true
+    userId?: true
+    preferredPaymentMethod?: true
     _all?: true
   }
 
@@ -4118,6 +4230,8 @@ export namespace Prisma {
     adminNotes: string | null
     createdAt: Date
     updatedAt: Date
+    userId: string | null
+    preferredPaymentMethod: string | null
     _count: TripRequestCountAggregateOutputType | null
     _avg: TripRequestAvgAggregateOutputType | null
     _sum: TripRequestSumAggregateOutputType | null
@@ -4163,6 +4277,9 @@ export namespace Prisma {
     adminNotes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    userId?: boolean
+    preferredPaymentMethod?: boolean
+    user?: boolean | TripRequest$userArgs<ExtArgs>
   }, ExtArgs["result"]["tripRequest"]>
 
 
@@ -4191,13 +4308,20 @@ export namespace Prisma {
     adminNotes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    userId?: boolean
+    preferredPaymentMethod?: boolean
   }
 
-  export type TripRequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "travelStyle" | "travelDates" | "arrivalCity" | "departureCity" | "accommodation" | "budget" | "adventureActivities" | "experiences" | "importantFactors" | "desiredExperiences" | "transportation" | "importantCriteria" | "numberOfTravelers" | "travelerAges" | "extraDetails" | "fullName" | "email" | "phone" | "status" | "adminNotes" | "createdAt" | "updatedAt", ExtArgs["result"]["tripRequest"]>
+  export type TripRequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "travelStyle" | "travelDates" | "arrivalCity" | "departureCity" | "accommodation" | "budget" | "adventureActivities" | "experiences" | "importantFactors" | "desiredExperiences" | "transportation" | "importantCriteria" | "numberOfTravelers" | "travelerAges" | "extraDetails" | "fullName" | "email" | "phone" | "status" | "adminNotes" | "createdAt" | "updatedAt" | "userId" | "preferredPaymentMethod", ExtArgs["result"]["tripRequest"]>
+  export type TripRequestInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | TripRequest$userArgs<ExtArgs>
+  }
 
   export type $TripRequestPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "TripRequest"
-    objects: {}
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs> | null
+    }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       travelStyle: string
@@ -4222,6 +4346,8 @@ export namespace Prisma {
       adminNotes: string | null
       createdAt: Date
       updatedAt: Date
+      userId: string | null
+      preferredPaymentMethod: string | null
     }, ExtArgs["result"]["tripRequest"]>
     composites: {}
   }
@@ -4585,6 +4711,7 @@ export namespace Prisma {
    */
   export interface Prisma__TripRequestClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends TripRequest$userArgs<ExtArgs> = {}>(args?: Subset<T, TripRequest$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4637,6 +4764,8 @@ export namespace Prisma {
     readonly adminNotes: FieldRef<"TripRequest", 'String'>
     readonly createdAt: FieldRef<"TripRequest", 'DateTime'>
     readonly updatedAt: FieldRef<"TripRequest", 'DateTime'>
+    readonly userId: FieldRef<"TripRequest", 'String'>
+    readonly preferredPaymentMethod: FieldRef<"TripRequest", 'String'>
   }
     
 
@@ -4653,6 +4782,10 @@ export namespace Prisma {
      * Omit specific fields from the TripRequest
      */
     omit?: TripRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TripRequestInclude<ExtArgs> | null
     /**
      * Filter, which TripRequest to fetch.
      */
@@ -4672,6 +4805,10 @@ export namespace Prisma {
      */
     omit?: TripRequestOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TripRequestInclude<ExtArgs> | null
+    /**
      * Filter, which TripRequest to fetch.
      */
     where: TripRequestWhereUniqueInput
@@ -4689,6 +4826,10 @@ export namespace Prisma {
      * Omit specific fields from the TripRequest
      */
     omit?: TripRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TripRequestInclude<ExtArgs> | null
     /**
      * Filter, which TripRequest to fetch.
      */
@@ -4738,6 +4879,10 @@ export namespace Prisma {
      */
     omit?: TripRequestOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TripRequestInclude<ExtArgs> | null
+    /**
      * Filter, which TripRequest to fetch.
      */
     where?: TripRequestWhereInput
@@ -4786,6 +4931,10 @@ export namespace Prisma {
      */
     omit?: TripRequestOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TripRequestInclude<ExtArgs> | null
+    /**
      * Filter, which TripRequests to fetch.
      */
     where?: TripRequestWhereInput
@@ -4829,6 +4978,10 @@ export namespace Prisma {
      */
     omit?: TripRequestOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TripRequestInclude<ExtArgs> | null
+    /**
      * The data needed to create a TripRequest.
      */
     data: XOR<TripRequestCreateInput, TripRequestUncheckedCreateInput>
@@ -4856,6 +5009,10 @@ export namespace Prisma {
      * Omit specific fields from the TripRequest
      */
     omit?: TripRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TripRequestInclude<ExtArgs> | null
     /**
      * The data needed to update a TripRequest.
      */
@@ -4897,6 +5054,10 @@ export namespace Prisma {
      */
     omit?: TripRequestOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TripRequestInclude<ExtArgs> | null
+    /**
      * The filter to search for the TripRequest to update in case it exists.
      */
     where: TripRequestWhereUniqueInput
@@ -4922,6 +5083,10 @@ export namespace Prisma {
      * Omit specific fields from the TripRequest
      */
     omit?: TripRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TripRequestInclude<ExtArgs> | null
     /**
      * Filter which TripRequest to delete.
      */
@@ -4971,6 +5136,25 @@ export namespace Prisma {
   }
 
   /**
+   * TripRequest.user
+   */
+  export type TripRequest$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
    * TripRequest without action
    */
   export type TripRequestDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4982,6 +5166,1020 @@ export namespace Prisma {
      * Omit specific fields from the TripRequest
      */
     omit?: TripRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TripRequestInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model SiteSettings
+   */
+
+  export type AggregateSiteSettings = {
+    _count: SiteSettingsCountAggregateOutputType | null
+    _avg: SiteSettingsAvgAggregateOutputType | null
+    _sum: SiteSettingsSumAggregateOutputType | null
+    _min: SiteSettingsMinAggregateOutputType | null
+    _max: SiteSettingsMaxAggregateOutputType | null
+  }
+
+  export type SiteSettingsAvgAggregateOutputType = {
+    budgetMin: number | null
+    budgetMax: number | null
+    budgetStep: number | null
+  }
+
+  export type SiteSettingsSumAggregateOutputType = {
+    budgetMin: number | null
+    budgetMax: number | null
+    budgetStep: number | null
+  }
+
+  export type SiteSettingsMinAggregateOutputType = {
+    id: string | null
+    paymentMethodsEnabled: boolean | null
+    budgetType: string | null
+    budgetMin: number | null
+    budgetMax: number | null
+    budgetStep: number | null
+    updatedAt: Date | null
+  }
+
+  export type SiteSettingsMaxAggregateOutputType = {
+    id: string | null
+    paymentMethodsEnabled: boolean | null
+    budgetType: string | null
+    budgetMin: number | null
+    budgetMax: number | null
+    budgetStep: number | null
+    updatedAt: Date | null
+  }
+
+  export type SiteSettingsCountAggregateOutputType = {
+    id: number
+    paymentMethodsEnabled: number
+    paymentMethodOptions: number
+    budgetType: number
+    budgetDropdownOptions: number
+    budgetMin: number
+    budgetMax: number
+    budgetStep: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type SiteSettingsAvgAggregateInputType = {
+    budgetMin?: true
+    budgetMax?: true
+    budgetStep?: true
+  }
+
+  export type SiteSettingsSumAggregateInputType = {
+    budgetMin?: true
+    budgetMax?: true
+    budgetStep?: true
+  }
+
+  export type SiteSettingsMinAggregateInputType = {
+    id?: true
+    paymentMethodsEnabled?: true
+    budgetType?: true
+    budgetMin?: true
+    budgetMax?: true
+    budgetStep?: true
+    updatedAt?: true
+  }
+
+  export type SiteSettingsMaxAggregateInputType = {
+    id?: true
+    paymentMethodsEnabled?: true
+    budgetType?: true
+    budgetMin?: true
+    budgetMax?: true
+    budgetStep?: true
+    updatedAt?: true
+  }
+
+  export type SiteSettingsCountAggregateInputType = {
+    id?: true
+    paymentMethodsEnabled?: true
+    paymentMethodOptions?: true
+    budgetType?: true
+    budgetDropdownOptions?: true
+    budgetMin?: true
+    budgetMax?: true
+    budgetStep?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type SiteSettingsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SiteSettings to aggregate.
+     */
+    where?: SiteSettingsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SiteSettings to fetch.
+     */
+    orderBy?: SiteSettingsOrderByWithRelationInput | SiteSettingsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SiteSettingsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SiteSettings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SiteSettings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SiteSettings
+    **/
+    _count?: true | SiteSettingsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: SiteSettingsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: SiteSettingsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SiteSettingsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SiteSettingsMaxAggregateInputType
+  }
+
+  export type GetSiteSettingsAggregateType<T extends SiteSettingsAggregateArgs> = {
+        [P in keyof T & keyof AggregateSiteSettings]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSiteSettings[P]>
+      : GetScalarType<T[P], AggregateSiteSettings[P]>
+  }
+
+
+
+
+  export type SiteSettingsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SiteSettingsWhereInput
+    orderBy?: SiteSettingsOrderByWithAggregationInput | SiteSettingsOrderByWithAggregationInput[]
+    by: SiteSettingsScalarFieldEnum[] | SiteSettingsScalarFieldEnum
+    having?: SiteSettingsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SiteSettingsCountAggregateInputType | true
+    _avg?: SiteSettingsAvgAggregateInputType
+    _sum?: SiteSettingsSumAggregateInputType
+    _min?: SiteSettingsMinAggregateInputType
+    _max?: SiteSettingsMaxAggregateInputType
+  }
+
+  export type SiteSettingsGroupByOutputType = {
+    id: string
+    paymentMethodsEnabled: boolean
+    paymentMethodOptions: string[]
+    budgetType: string
+    budgetDropdownOptions: string[]
+    budgetMin: number
+    budgetMax: number
+    budgetStep: number
+    updatedAt: Date
+    _count: SiteSettingsCountAggregateOutputType | null
+    _avg: SiteSettingsAvgAggregateOutputType | null
+    _sum: SiteSettingsSumAggregateOutputType | null
+    _min: SiteSettingsMinAggregateOutputType | null
+    _max: SiteSettingsMaxAggregateOutputType | null
+  }
+
+  type GetSiteSettingsGroupByPayload<T extends SiteSettingsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SiteSettingsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SiteSettingsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SiteSettingsGroupByOutputType[P]>
+            : GetScalarType<T[P], SiteSettingsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SiteSettingsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    paymentMethodsEnabled?: boolean
+    paymentMethodOptions?: boolean
+    budgetType?: boolean
+    budgetDropdownOptions?: boolean
+    budgetMin?: boolean
+    budgetMax?: boolean
+    budgetStep?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["siteSettings"]>
+
+
+
+  export type SiteSettingsSelectScalar = {
+    id?: boolean
+    paymentMethodsEnabled?: boolean
+    paymentMethodOptions?: boolean
+    budgetType?: boolean
+    budgetDropdownOptions?: boolean
+    budgetMin?: boolean
+    budgetMax?: boolean
+    budgetStep?: boolean
+    updatedAt?: boolean
+  }
+
+  export type SiteSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "paymentMethodsEnabled" | "paymentMethodOptions" | "budgetType" | "budgetDropdownOptions" | "budgetMin" | "budgetMax" | "budgetStep" | "updatedAt", ExtArgs["result"]["siteSettings"]>
+
+  export type $SiteSettingsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SiteSettings"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      paymentMethodsEnabled: boolean
+      paymentMethodOptions: string[]
+      budgetType: string
+      budgetDropdownOptions: string[]
+      budgetMin: number
+      budgetMax: number
+      budgetStep: number
+      updatedAt: Date
+    }, ExtArgs["result"]["siteSettings"]>
+    composites: {}
+  }
+
+  type SiteSettingsGetPayload<S extends boolean | null | undefined | SiteSettingsDefaultArgs> = $Result.GetResult<Prisma.$SiteSettingsPayload, S>
+
+  type SiteSettingsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SiteSettingsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SiteSettingsCountAggregateInputType | true
+    }
+
+  export interface SiteSettingsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SiteSettings'], meta: { name: 'SiteSettings' } }
+    /**
+     * Find zero or one SiteSettings that matches the filter.
+     * @param {SiteSettingsFindUniqueArgs} args - Arguments to find a SiteSettings
+     * @example
+     * // Get one SiteSettings
+     * const siteSettings = await prisma.siteSettings.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SiteSettingsFindUniqueArgs>(args: SelectSubset<T, SiteSettingsFindUniqueArgs<ExtArgs>>): Prisma__SiteSettingsClient<$Result.GetResult<Prisma.$SiteSettingsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SiteSettings that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SiteSettingsFindUniqueOrThrowArgs} args - Arguments to find a SiteSettings
+     * @example
+     * // Get one SiteSettings
+     * const siteSettings = await prisma.siteSettings.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SiteSettingsFindUniqueOrThrowArgs>(args: SelectSubset<T, SiteSettingsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SiteSettingsClient<$Result.GetResult<Prisma.$SiteSettingsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SiteSettings that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SiteSettingsFindFirstArgs} args - Arguments to find a SiteSettings
+     * @example
+     * // Get one SiteSettings
+     * const siteSettings = await prisma.siteSettings.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SiteSettingsFindFirstArgs>(args?: SelectSubset<T, SiteSettingsFindFirstArgs<ExtArgs>>): Prisma__SiteSettingsClient<$Result.GetResult<Prisma.$SiteSettingsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SiteSettings that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SiteSettingsFindFirstOrThrowArgs} args - Arguments to find a SiteSettings
+     * @example
+     * // Get one SiteSettings
+     * const siteSettings = await prisma.siteSettings.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SiteSettingsFindFirstOrThrowArgs>(args?: SelectSubset<T, SiteSettingsFindFirstOrThrowArgs<ExtArgs>>): Prisma__SiteSettingsClient<$Result.GetResult<Prisma.$SiteSettingsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SiteSettings that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SiteSettingsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SiteSettings
+     * const siteSettings = await prisma.siteSettings.findMany()
+     * 
+     * // Get first 10 SiteSettings
+     * const siteSettings = await prisma.siteSettings.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const siteSettingsWithIdOnly = await prisma.siteSettings.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SiteSettingsFindManyArgs>(args?: SelectSubset<T, SiteSettingsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SiteSettingsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SiteSettings.
+     * @param {SiteSettingsCreateArgs} args - Arguments to create a SiteSettings.
+     * @example
+     * // Create one SiteSettings
+     * const SiteSettings = await prisma.siteSettings.create({
+     *   data: {
+     *     // ... data to create a SiteSettings
+     *   }
+     * })
+     * 
+     */
+    create<T extends SiteSettingsCreateArgs>(args: SelectSubset<T, SiteSettingsCreateArgs<ExtArgs>>): Prisma__SiteSettingsClient<$Result.GetResult<Prisma.$SiteSettingsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SiteSettings.
+     * @param {SiteSettingsCreateManyArgs} args - Arguments to create many SiteSettings.
+     * @example
+     * // Create many SiteSettings
+     * const siteSettings = await prisma.siteSettings.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SiteSettingsCreateManyArgs>(args?: SelectSubset<T, SiteSettingsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a SiteSettings.
+     * @param {SiteSettingsDeleteArgs} args - Arguments to delete one SiteSettings.
+     * @example
+     * // Delete one SiteSettings
+     * const SiteSettings = await prisma.siteSettings.delete({
+     *   where: {
+     *     // ... filter to delete one SiteSettings
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SiteSettingsDeleteArgs>(args: SelectSubset<T, SiteSettingsDeleteArgs<ExtArgs>>): Prisma__SiteSettingsClient<$Result.GetResult<Prisma.$SiteSettingsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SiteSettings.
+     * @param {SiteSettingsUpdateArgs} args - Arguments to update one SiteSettings.
+     * @example
+     * // Update one SiteSettings
+     * const siteSettings = await prisma.siteSettings.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SiteSettingsUpdateArgs>(args: SelectSubset<T, SiteSettingsUpdateArgs<ExtArgs>>): Prisma__SiteSettingsClient<$Result.GetResult<Prisma.$SiteSettingsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SiteSettings.
+     * @param {SiteSettingsDeleteManyArgs} args - Arguments to filter SiteSettings to delete.
+     * @example
+     * // Delete a few SiteSettings
+     * const { count } = await prisma.siteSettings.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SiteSettingsDeleteManyArgs>(args?: SelectSubset<T, SiteSettingsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SiteSettings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SiteSettingsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SiteSettings
+     * const siteSettings = await prisma.siteSettings.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SiteSettingsUpdateManyArgs>(args: SelectSubset<T, SiteSettingsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one SiteSettings.
+     * @param {SiteSettingsUpsertArgs} args - Arguments to update or create a SiteSettings.
+     * @example
+     * // Update or create a SiteSettings
+     * const siteSettings = await prisma.siteSettings.upsert({
+     *   create: {
+     *     // ... data to create a SiteSettings
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SiteSettings we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SiteSettingsUpsertArgs>(args: SelectSubset<T, SiteSettingsUpsertArgs<ExtArgs>>): Prisma__SiteSettingsClient<$Result.GetResult<Prisma.$SiteSettingsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SiteSettings that matches the filter.
+     * @param {SiteSettingsFindRawArgs} args - Select which filters you would like to apply.
+     * @example
+     * const siteSettings = await prisma.siteSettings.findRaw({
+     *   filter: { age: { $gt: 25 } }
+     * })
+     */
+    findRaw(args?: SiteSettingsFindRawArgs): Prisma.PrismaPromise<JsonObject>
+
+    /**
+     * Perform aggregation operations on a SiteSettings.
+     * @param {SiteSettingsAggregateRawArgs} args - Select which aggregations you would like to apply.
+     * @example
+     * const siteSettings = await prisma.siteSettings.aggregateRaw({
+     *   pipeline: [
+     *     { $match: { status: "registered" } },
+     *     { $group: { _id: "$country", total: { $sum: 1 } } }
+     *   ]
+     * })
+     */
+    aggregateRaw(args?: SiteSettingsAggregateRawArgs): Prisma.PrismaPromise<JsonObject>
+
+
+    /**
+     * Count the number of SiteSettings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SiteSettingsCountArgs} args - Arguments to filter SiteSettings to count.
+     * @example
+     * // Count the number of SiteSettings
+     * const count = await prisma.siteSettings.count({
+     *   where: {
+     *     // ... the filter for the SiteSettings we want to count
+     *   }
+     * })
+    **/
+    count<T extends SiteSettingsCountArgs>(
+      args?: Subset<T, SiteSettingsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SiteSettingsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SiteSettings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SiteSettingsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SiteSettingsAggregateArgs>(args: Subset<T, SiteSettingsAggregateArgs>): Prisma.PrismaPromise<GetSiteSettingsAggregateType<T>>
+
+    /**
+     * Group by SiteSettings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SiteSettingsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SiteSettingsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SiteSettingsGroupByArgs['orderBy'] }
+        : { orderBy?: SiteSettingsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SiteSettingsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSiteSettingsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SiteSettings model
+   */
+  readonly fields: SiteSettingsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SiteSettings.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SiteSettingsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SiteSettings model
+   */
+  interface SiteSettingsFieldRefs {
+    readonly id: FieldRef<"SiteSettings", 'String'>
+    readonly paymentMethodsEnabled: FieldRef<"SiteSettings", 'Boolean'>
+    readonly paymentMethodOptions: FieldRef<"SiteSettings", 'String[]'>
+    readonly budgetType: FieldRef<"SiteSettings", 'String'>
+    readonly budgetDropdownOptions: FieldRef<"SiteSettings", 'String[]'>
+    readonly budgetMin: FieldRef<"SiteSettings", 'Int'>
+    readonly budgetMax: FieldRef<"SiteSettings", 'Int'>
+    readonly budgetStep: FieldRef<"SiteSettings", 'Int'>
+    readonly updatedAt: FieldRef<"SiteSettings", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SiteSettings findUnique
+   */
+  export type SiteSettingsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteSettings
+     */
+    select?: SiteSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SiteSettings
+     */
+    omit?: SiteSettingsOmit<ExtArgs> | null
+    /**
+     * Filter, which SiteSettings to fetch.
+     */
+    where: SiteSettingsWhereUniqueInput
+  }
+
+  /**
+   * SiteSettings findUniqueOrThrow
+   */
+  export type SiteSettingsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteSettings
+     */
+    select?: SiteSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SiteSettings
+     */
+    omit?: SiteSettingsOmit<ExtArgs> | null
+    /**
+     * Filter, which SiteSettings to fetch.
+     */
+    where: SiteSettingsWhereUniqueInput
+  }
+
+  /**
+   * SiteSettings findFirst
+   */
+  export type SiteSettingsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteSettings
+     */
+    select?: SiteSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SiteSettings
+     */
+    omit?: SiteSettingsOmit<ExtArgs> | null
+    /**
+     * Filter, which SiteSettings to fetch.
+     */
+    where?: SiteSettingsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SiteSettings to fetch.
+     */
+    orderBy?: SiteSettingsOrderByWithRelationInput | SiteSettingsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SiteSettings.
+     */
+    cursor?: SiteSettingsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SiteSettings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SiteSettings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SiteSettings.
+     */
+    distinct?: SiteSettingsScalarFieldEnum | SiteSettingsScalarFieldEnum[]
+  }
+
+  /**
+   * SiteSettings findFirstOrThrow
+   */
+  export type SiteSettingsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteSettings
+     */
+    select?: SiteSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SiteSettings
+     */
+    omit?: SiteSettingsOmit<ExtArgs> | null
+    /**
+     * Filter, which SiteSettings to fetch.
+     */
+    where?: SiteSettingsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SiteSettings to fetch.
+     */
+    orderBy?: SiteSettingsOrderByWithRelationInput | SiteSettingsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SiteSettings.
+     */
+    cursor?: SiteSettingsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SiteSettings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SiteSettings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SiteSettings.
+     */
+    distinct?: SiteSettingsScalarFieldEnum | SiteSettingsScalarFieldEnum[]
+  }
+
+  /**
+   * SiteSettings findMany
+   */
+  export type SiteSettingsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteSettings
+     */
+    select?: SiteSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SiteSettings
+     */
+    omit?: SiteSettingsOmit<ExtArgs> | null
+    /**
+     * Filter, which SiteSettings to fetch.
+     */
+    where?: SiteSettingsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SiteSettings to fetch.
+     */
+    orderBy?: SiteSettingsOrderByWithRelationInput | SiteSettingsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SiteSettings.
+     */
+    cursor?: SiteSettingsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SiteSettings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SiteSettings.
+     */
+    skip?: number
+    distinct?: SiteSettingsScalarFieldEnum | SiteSettingsScalarFieldEnum[]
+  }
+
+  /**
+   * SiteSettings create
+   */
+  export type SiteSettingsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteSettings
+     */
+    select?: SiteSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SiteSettings
+     */
+    omit?: SiteSettingsOmit<ExtArgs> | null
+    /**
+     * The data needed to create a SiteSettings.
+     */
+    data: XOR<SiteSettingsCreateInput, SiteSettingsUncheckedCreateInput>
+  }
+
+  /**
+   * SiteSettings createMany
+   */
+  export type SiteSettingsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SiteSettings.
+     */
+    data: SiteSettingsCreateManyInput | SiteSettingsCreateManyInput[]
+  }
+
+  /**
+   * SiteSettings update
+   */
+  export type SiteSettingsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteSettings
+     */
+    select?: SiteSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SiteSettings
+     */
+    omit?: SiteSettingsOmit<ExtArgs> | null
+    /**
+     * The data needed to update a SiteSettings.
+     */
+    data: XOR<SiteSettingsUpdateInput, SiteSettingsUncheckedUpdateInput>
+    /**
+     * Choose, which SiteSettings to update.
+     */
+    where: SiteSettingsWhereUniqueInput
+  }
+
+  /**
+   * SiteSettings updateMany
+   */
+  export type SiteSettingsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SiteSettings.
+     */
+    data: XOR<SiteSettingsUpdateManyMutationInput, SiteSettingsUncheckedUpdateManyInput>
+    /**
+     * Filter which SiteSettings to update
+     */
+    where?: SiteSettingsWhereInput
+    /**
+     * Limit how many SiteSettings to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SiteSettings upsert
+   */
+  export type SiteSettingsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteSettings
+     */
+    select?: SiteSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SiteSettings
+     */
+    omit?: SiteSettingsOmit<ExtArgs> | null
+    /**
+     * The filter to search for the SiteSettings to update in case it exists.
+     */
+    where: SiteSettingsWhereUniqueInput
+    /**
+     * In case the SiteSettings found by the `where` argument doesn't exist, create a new SiteSettings with this data.
+     */
+    create: XOR<SiteSettingsCreateInput, SiteSettingsUncheckedCreateInput>
+    /**
+     * In case the SiteSettings was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SiteSettingsUpdateInput, SiteSettingsUncheckedUpdateInput>
+  }
+
+  /**
+   * SiteSettings delete
+   */
+  export type SiteSettingsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteSettings
+     */
+    select?: SiteSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SiteSettings
+     */
+    omit?: SiteSettingsOmit<ExtArgs> | null
+    /**
+     * Filter which SiteSettings to delete.
+     */
+    where: SiteSettingsWhereUniqueInput
+  }
+
+  /**
+   * SiteSettings deleteMany
+   */
+  export type SiteSettingsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SiteSettings to delete
+     */
+    where?: SiteSettingsWhereInput
+    /**
+     * Limit how many SiteSettings to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SiteSettings findRaw
+   */
+  export type SiteSettingsFindRawArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The query predicate filter. If unspecified, then all documents in the collection will match the predicate. ${@link https://docs.mongodb.com/manual/reference/operator/query MongoDB Docs}.
+     */
+    filter?: InputJsonValue
+    /**
+     * Additional options to pass to the `find` command ${@link https://docs.mongodb.com/manual/reference/command/find/#command-fields MongoDB Docs}.
+     */
+    options?: InputJsonValue
+  }
+
+  /**
+   * SiteSettings aggregateRaw
+   */
+  export type SiteSettingsAggregateRawArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * An array of aggregation stages to process and transform the document stream via the aggregation pipeline. ${@link https://docs.mongodb.com/manual/reference/operator/aggregation-pipeline MongoDB Docs}.
+     */
+    pipeline?: InputJsonValue[]
+    /**
+     * Additional options to pass to the `aggregate` command ${@link https://docs.mongodb.com/manual/reference/command/aggregate/#command-fields MongoDB Docs}.
+     */
+    options?: InputJsonValue
+  }
+
+  /**
+   * SiteSettings without action
+   */
+  export type SiteSettingsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteSettings
+     */
+    select?: SiteSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SiteSettings
+     */
+    omit?: SiteSettingsOmit<ExtArgs> | null
   }
 
 
@@ -5981,6 +7179,9 @@ export namespace Prisma {
     updatedAt: Date | null
     password: string | null
     role: string | null
+    phone: string | null
+    bio: string | null
+    location: string | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -5993,6 +7194,9 @@ export namespace Prisma {
     updatedAt: Date | null
     password: string | null
     role: string | null
+    phone: string | null
+    bio: string | null
+    location: string | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -6005,6 +7209,9 @@ export namespace Prisma {
     updatedAt: number
     password: number
     role: number
+    phone: number
+    bio: number
+    location: number
     _all: number
   }
 
@@ -6019,6 +7226,9 @@ export namespace Prisma {
     updatedAt?: true
     password?: true
     role?: true
+    phone?: true
+    bio?: true
+    location?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -6031,6 +7241,9 @@ export namespace Prisma {
     updatedAt?: true
     password?: true
     role?: true
+    phone?: true
+    bio?: true
+    location?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -6043,6 +7256,9 @@ export namespace Prisma {
     updatedAt?: true
     password?: true
     role?: true
+    phone?: true
+    bio?: true
+    location?: true
     _all?: true
   }
 
@@ -6128,6 +7344,9 @@ export namespace Prisma {
     updatedAt: Date
     password: string | null
     role: string | null
+    phone: string | null
+    bio: string | null
+    location: string | null
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
@@ -6157,9 +7376,13 @@ export namespace Prisma {
     updatedAt?: boolean
     password?: boolean
     role?: boolean
+    phone?: boolean
+    bio?: boolean
+    location?: boolean
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
     favorites?: boolean | User$favoritesArgs<ExtArgs>
+    tripRequests?: boolean | User$tripRequestsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -6175,13 +7398,17 @@ export namespace Prisma {
     updatedAt?: boolean
     password?: boolean
     role?: boolean
+    phone?: boolean
+    bio?: boolean
+    location?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "createdAt" | "updatedAt" | "password" | "role", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "createdAt" | "updatedAt" | "password" | "role" | "phone" | "bio" | "location", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
     favorites?: boolean | User$favoritesArgs<ExtArgs>
+    tripRequests?: boolean | User$tripRequestsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -6191,6 +7418,7 @@ export namespace Prisma {
       sessions: Prisma.$SessionPayload<ExtArgs>[]
       accounts: Prisma.$AccountPayload<ExtArgs>[]
       favorites: Prisma.$FavoritePayload<ExtArgs>[]
+      tripRequests: Prisma.$TripRequestPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -6202,6 +7430,9 @@ export namespace Prisma {
       updatedAt: Date
       password: string | null
       role: string | null
+      phone: string | null
+      bio: string | null
+      location: string | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -6568,6 +7799,7 @@ export namespace Prisma {
     sessions<T extends User$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     accounts<T extends User$accountsArgs<ExtArgs> = {}>(args?: Subset<T, User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     favorites<T extends User$favoritesArgs<ExtArgs> = {}>(args?: Subset<T, User$favoritesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FavoritePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    tripRequests<T extends User$tripRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$tripRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TripRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6606,6 +7838,9 @@ export namespace Prisma {
     readonly updatedAt: FieldRef<"User", 'DateTime'>
     readonly password: FieldRef<"User", 'String'>
     readonly role: FieldRef<"User", 'String'>
+    readonly phone: FieldRef<"User", 'String'>
+    readonly bio: FieldRef<"User", 'String'>
+    readonly location: FieldRef<"User", 'String'>
   }
     
 
@@ -7045,6 +8280,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: FavoriteScalarFieldEnum | FavoriteScalarFieldEnum[]
+  }
+
+  /**
+   * User.tripRequests
+   */
+  export type User$tripRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TripRequest
+     */
+    select?: TripRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TripRequest
+     */
+    omit?: TripRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TripRequestInclude<ExtArgs> | null
+    where?: TripRequestWhereInput
+    orderBy?: TripRequestOrderByWithRelationInput | TripRequestOrderByWithRelationInput[]
+    cursor?: TripRequestWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TripRequestScalarFieldEnum | TripRequestScalarFieldEnum[]
   }
 
   /**
@@ -11133,10 +12392,27 @@ export namespace Prisma {
     status: 'status',
     adminNotes: 'adminNotes',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    userId: 'userId',
+    preferredPaymentMethod: 'preferredPaymentMethod'
   };
 
   export type TripRequestScalarFieldEnum = (typeof TripRequestScalarFieldEnum)[keyof typeof TripRequestScalarFieldEnum]
+
+
+  export const SiteSettingsScalarFieldEnum: {
+    id: 'id',
+    paymentMethodsEnabled: 'paymentMethodsEnabled',
+    paymentMethodOptions: 'paymentMethodOptions',
+    budgetType: 'budgetType',
+    budgetDropdownOptions: 'budgetDropdownOptions',
+    budgetMin: 'budgetMin',
+    budgetMax: 'budgetMax',
+    budgetStep: 'budgetStep',
+    updatedAt: 'updatedAt'
+  };
+
+  export type SiteSettingsScalarFieldEnum = (typeof SiteSettingsScalarFieldEnum)[keyof typeof SiteSettingsScalarFieldEnum]
 
 
   export const ContactMessageScalarFieldEnum: {
@@ -11163,7 +12439,10 @@ export namespace Prisma {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     password: 'password',
-    role: 'role'
+    role: 'role',
+    phone: 'phone',
+    bio: 'bio',
+    location: 'location'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -11567,6 +12846,9 @@ export namespace Prisma {
     adminNotes?: StringNullableFilter<"TripRequest"> | string | null
     createdAt?: DateTimeFilter<"TripRequest"> | Date | string
     updatedAt?: DateTimeFilter<"TripRequest"> | Date | string
+    userId?: StringNullableFilter<"TripRequest"> | string | null
+    preferredPaymentMethod?: StringNullableFilter<"TripRequest"> | string | null
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
 
   export type TripRequestOrderByWithRelationInput = {
@@ -11593,6 +12875,9 @@ export namespace Prisma {
     adminNotes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    userId?: SortOrder
+    preferredPaymentMethod?: SortOrder
+    user?: UserOrderByWithRelationInput
   }
 
   export type TripRequestWhereUniqueInput = Prisma.AtLeast<{
@@ -11622,6 +12907,9 @@ export namespace Prisma {
     adminNotes?: StringNullableFilter<"TripRequest"> | string | null
     createdAt?: DateTimeFilter<"TripRequest"> | Date | string
     updatedAt?: DateTimeFilter<"TripRequest"> | Date | string
+    userId?: StringNullableFilter<"TripRequest"> | string | null
+    preferredPaymentMethod?: StringNullableFilter<"TripRequest"> | string | null
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }, "id">
 
   export type TripRequestOrderByWithAggregationInput = {
@@ -11648,6 +12936,8 @@ export namespace Prisma {
     adminNotes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    userId?: SortOrder
+    preferredPaymentMethod?: SortOrder
     _count?: TripRequestCountOrderByAggregateInput
     _avg?: TripRequestAvgOrderByAggregateInput
     _max?: TripRequestMaxOrderByAggregateInput
@@ -11682,6 +12972,82 @@ export namespace Prisma {
     adminNotes?: StringNullableWithAggregatesFilter<"TripRequest"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"TripRequest"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"TripRequest"> | Date | string
+    userId?: StringNullableWithAggregatesFilter<"TripRequest"> | string | null
+    preferredPaymentMethod?: StringNullableWithAggregatesFilter<"TripRequest"> | string | null
+  }
+
+  export type SiteSettingsWhereInput = {
+    AND?: SiteSettingsWhereInput | SiteSettingsWhereInput[]
+    OR?: SiteSettingsWhereInput[]
+    NOT?: SiteSettingsWhereInput | SiteSettingsWhereInput[]
+    id?: StringFilter<"SiteSettings"> | string
+    paymentMethodsEnabled?: BoolFilter<"SiteSettings"> | boolean
+    paymentMethodOptions?: StringNullableListFilter<"SiteSettings">
+    budgetType?: StringFilter<"SiteSettings"> | string
+    budgetDropdownOptions?: StringNullableListFilter<"SiteSettings">
+    budgetMin?: IntFilter<"SiteSettings"> | number
+    budgetMax?: IntFilter<"SiteSettings"> | number
+    budgetStep?: IntFilter<"SiteSettings"> | number
+    updatedAt?: DateTimeFilter<"SiteSettings"> | Date | string
+  }
+
+  export type SiteSettingsOrderByWithRelationInput = {
+    id?: SortOrder
+    paymentMethodsEnabled?: SortOrder
+    paymentMethodOptions?: SortOrder
+    budgetType?: SortOrder
+    budgetDropdownOptions?: SortOrder
+    budgetMin?: SortOrder
+    budgetMax?: SortOrder
+    budgetStep?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SiteSettingsWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: SiteSettingsWhereInput | SiteSettingsWhereInput[]
+    OR?: SiteSettingsWhereInput[]
+    NOT?: SiteSettingsWhereInput | SiteSettingsWhereInput[]
+    paymentMethodsEnabled?: BoolFilter<"SiteSettings"> | boolean
+    paymentMethodOptions?: StringNullableListFilter<"SiteSettings">
+    budgetType?: StringFilter<"SiteSettings"> | string
+    budgetDropdownOptions?: StringNullableListFilter<"SiteSettings">
+    budgetMin?: IntFilter<"SiteSettings"> | number
+    budgetMax?: IntFilter<"SiteSettings"> | number
+    budgetStep?: IntFilter<"SiteSettings"> | number
+    updatedAt?: DateTimeFilter<"SiteSettings"> | Date | string
+  }, "id">
+
+  export type SiteSettingsOrderByWithAggregationInput = {
+    id?: SortOrder
+    paymentMethodsEnabled?: SortOrder
+    paymentMethodOptions?: SortOrder
+    budgetType?: SortOrder
+    budgetDropdownOptions?: SortOrder
+    budgetMin?: SortOrder
+    budgetMax?: SortOrder
+    budgetStep?: SortOrder
+    updatedAt?: SortOrder
+    _count?: SiteSettingsCountOrderByAggregateInput
+    _avg?: SiteSettingsAvgOrderByAggregateInput
+    _max?: SiteSettingsMaxOrderByAggregateInput
+    _min?: SiteSettingsMinOrderByAggregateInput
+    _sum?: SiteSettingsSumOrderByAggregateInput
+  }
+
+  export type SiteSettingsScalarWhereWithAggregatesInput = {
+    AND?: SiteSettingsScalarWhereWithAggregatesInput | SiteSettingsScalarWhereWithAggregatesInput[]
+    OR?: SiteSettingsScalarWhereWithAggregatesInput[]
+    NOT?: SiteSettingsScalarWhereWithAggregatesInput | SiteSettingsScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SiteSettings"> | string
+    paymentMethodsEnabled?: BoolWithAggregatesFilter<"SiteSettings"> | boolean
+    paymentMethodOptions?: StringNullableListFilter<"SiteSettings">
+    budgetType?: StringWithAggregatesFilter<"SiteSettings"> | string
+    budgetDropdownOptions?: StringNullableListFilter<"SiteSettings">
+    budgetMin?: IntWithAggregatesFilter<"SiteSettings"> | number
+    budgetMax?: IntWithAggregatesFilter<"SiteSettings"> | number
+    budgetStep?: IntWithAggregatesFilter<"SiteSettings"> | number
+    updatedAt?: DateTimeWithAggregatesFilter<"SiteSettings"> | Date | string
   }
 
   export type ContactMessageWhereInput = {
@@ -11769,9 +13135,13 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     password?: StringNullableFilter<"User"> | string | null
     role?: StringNullableFilter<"User"> | string | null
+    phone?: StringNullableFilter<"User"> | string | null
+    bio?: StringNullableFilter<"User"> | string | null
+    location?: StringNullableFilter<"User"> | string | null
     sessions?: SessionListRelationFilter
     accounts?: AccountListRelationFilter
     favorites?: FavoriteListRelationFilter
+    tripRequests?: TripRequestListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -11784,9 +13154,13 @@ export namespace Prisma {
     updatedAt?: SortOrder
     password?: SortOrder
     role?: SortOrder
+    phone?: SortOrder
+    bio?: SortOrder
+    location?: SortOrder
     sessions?: SessionOrderByRelationAggregateInput
     accounts?: AccountOrderByRelationAggregateInput
     favorites?: FavoriteOrderByRelationAggregateInput
+    tripRequests?: TripRequestOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -11802,9 +13176,13 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     password?: StringNullableFilter<"User"> | string | null
     role?: StringNullableFilter<"User"> | string | null
+    phone?: StringNullableFilter<"User"> | string | null
+    bio?: StringNullableFilter<"User"> | string | null
+    location?: StringNullableFilter<"User"> | string | null
     sessions?: SessionListRelationFilter
     accounts?: AccountListRelationFilter
     favorites?: FavoriteListRelationFilter
+    tripRequests?: TripRequestListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -11817,6 +13195,9 @@ export namespace Prisma {
     updatedAt?: SortOrder
     password?: SortOrder
     role?: SortOrder
+    phone?: SortOrder
+    bio?: SortOrder
+    location?: SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
@@ -11835,6 +13216,9 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     password?: StringNullableWithAggregatesFilter<"User"> | string | null
     role?: StringNullableWithAggregatesFilter<"User"> | string | null
+    phone?: StringNullableWithAggregatesFilter<"User"> | string | null
+    bio?: StringNullableWithAggregatesFilter<"User"> | string | null
+    location?: StringNullableWithAggregatesFilter<"User"> | string | null
   }
 
   export type FavoriteWhereInput = {
@@ -12413,6 +13797,8 @@ export namespace Prisma {
     adminNotes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    preferredPaymentMethod?: string | null
+    user?: UserCreateNestedOneWithoutTripRequestsInput
   }
 
   export type TripRequestUncheckedCreateInput = {
@@ -12439,6 +13825,8 @@ export namespace Prisma {
     adminNotes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    userId?: string | null
+    preferredPaymentMethod?: string | null
   }
 
   export type TripRequestUpdateInput = {
@@ -12464,6 +13852,8 @@ export namespace Prisma {
     adminNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    preferredPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    user?: UserUpdateOneWithoutTripRequestsNestedInput
   }
 
   export type TripRequestUncheckedUpdateInput = {
@@ -12489,6 +13879,8 @@ export namespace Prisma {
     adminNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    preferredPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TripRequestCreateManyInput = {
@@ -12515,6 +13907,8 @@ export namespace Prisma {
     adminNotes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    userId?: string | null
+    preferredPaymentMethod?: string | null
   }
 
   export type TripRequestUpdateManyMutationInput = {
@@ -12540,6 +13934,7 @@ export namespace Prisma {
     adminNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    preferredPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TripRequestUncheckedUpdateManyInput = {
@@ -12564,6 +13959,88 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     adminNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    preferredPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type SiteSettingsCreateInput = {
+    id?: string
+    paymentMethodsEnabled?: boolean
+    paymentMethodOptions?: SiteSettingsCreatepaymentMethodOptionsInput | string[]
+    budgetType?: string
+    budgetDropdownOptions?: SiteSettingsCreatebudgetDropdownOptionsInput | string[]
+    budgetMin?: number
+    budgetMax?: number
+    budgetStep?: number
+    updatedAt?: Date | string
+  }
+
+  export type SiteSettingsUncheckedCreateInput = {
+    id?: string
+    paymentMethodsEnabled?: boolean
+    paymentMethodOptions?: SiteSettingsCreatepaymentMethodOptionsInput | string[]
+    budgetType?: string
+    budgetDropdownOptions?: SiteSettingsCreatebudgetDropdownOptionsInput | string[]
+    budgetMin?: number
+    budgetMax?: number
+    budgetStep?: number
+    updatedAt?: Date | string
+  }
+
+  export type SiteSettingsUpdateInput = {
+    paymentMethodsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethodOptions?: SiteSettingsUpdatepaymentMethodOptionsInput | string[]
+    budgetType?: StringFieldUpdateOperationsInput | string
+    budgetDropdownOptions?: SiteSettingsUpdatebudgetDropdownOptionsInput | string[]
+    budgetMin?: IntFieldUpdateOperationsInput | number
+    budgetMax?: IntFieldUpdateOperationsInput | number
+    budgetStep?: IntFieldUpdateOperationsInput | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SiteSettingsUncheckedUpdateInput = {
+    paymentMethodsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethodOptions?: SiteSettingsUpdatepaymentMethodOptionsInput | string[]
+    budgetType?: StringFieldUpdateOperationsInput | string
+    budgetDropdownOptions?: SiteSettingsUpdatebudgetDropdownOptionsInput | string[]
+    budgetMin?: IntFieldUpdateOperationsInput | number
+    budgetMax?: IntFieldUpdateOperationsInput | number
+    budgetStep?: IntFieldUpdateOperationsInput | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SiteSettingsCreateManyInput = {
+    id?: string
+    paymentMethodsEnabled?: boolean
+    paymentMethodOptions?: SiteSettingsCreatepaymentMethodOptionsInput | string[]
+    budgetType?: string
+    budgetDropdownOptions?: SiteSettingsCreatebudgetDropdownOptionsInput | string[]
+    budgetMin?: number
+    budgetMax?: number
+    budgetStep?: number
+    updatedAt?: Date | string
+  }
+
+  export type SiteSettingsUpdateManyMutationInput = {
+    paymentMethodsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethodOptions?: SiteSettingsUpdatepaymentMethodOptionsInput | string[]
+    budgetType?: StringFieldUpdateOperationsInput | string
+    budgetDropdownOptions?: SiteSettingsUpdatebudgetDropdownOptionsInput | string[]
+    budgetMin?: IntFieldUpdateOperationsInput | number
+    budgetMax?: IntFieldUpdateOperationsInput | number
+    budgetStep?: IntFieldUpdateOperationsInput | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SiteSettingsUncheckedUpdateManyInput = {
+    paymentMethodsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    paymentMethodOptions?: SiteSettingsUpdatepaymentMethodOptionsInput | string[]
+    budgetType?: StringFieldUpdateOperationsInput | string
+    budgetDropdownOptions?: SiteSettingsUpdatebudgetDropdownOptionsInput | string[]
+    budgetMin?: IntFieldUpdateOperationsInput | number
+    budgetMax?: IntFieldUpdateOperationsInput | number
+    budgetStep?: IntFieldUpdateOperationsInput | number
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -12657,9 +14134,13 @@ export namespace Prisma {
     updatedAt: Date | string
     password?: string | null
     role?: string | null
+    phone?: string | null
+    bio?: string | null
+    location?: string | null
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     favorites?: FavoriteCreateNestedManyWithoutUserInput
+    tripRequests?: TripRequestCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -12672,9 +14153,13 @@ export namespace Prisma {
     updatedAt: Date | string
     password?: string | null
     role?: string | null
+    phone?: string | null
+    bio?: string | null
+    location?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     favorites?: FavoriteUncheckedCreateNestedManyWithoutUserInput
+    tripRequests?: TripRequestUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -12686,9 +14171,13 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     favorites?: FavoriteUpdateManyWithoutUserNestedInput
+    tripRequests?: TripRequestUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -12700,9 +14189,13 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     favorites?: FavoriteUncheckedUpdateManyWithoutUserNestedInput
+    tripRequests?: TripRequestUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -12715,6 +14208,9 @@ export namespace Prisma {
     updatedAt: Date | string
     password?: string | null
     role?: string | null
+    phone?: string | null
+    bio?: string | null
+    location?: string | null
   }
 
   export type UserUpdateManyMutationInput = {
@@ -12726,6 +14222,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -12737,6 +14236,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type FavoriteCreateInput = {
@@ -13345,6 +14847,11 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
+  }
+
   export type TripRequestCountOrderByAggregateInput = {
     id?: SortOrder
     travelStyle?: SortOrder
@@ -13369,6 +14876,8 @@ export namespace Prisma {
     adminNotes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    userId?: SortOrder
+    preferredPaymentMethod?: SortOrder
   }
 
   export type TripRequestAvgOrderByAggregateInput = {
@@ -13396,6 +14905,8 @@ export namespace Prisma {
     adminNotes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    userId?: SortOrder
+    preferredPaymentMethod?: SortOrder
   }
 
   export type TripRequestMinOrderByAggregateInput = {
@@ -13419,10 +14930,56 @@ export namespace Prisma {
     adminNotes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    userId?: SortOrder
+    preferredPaymentMethod?: SortOrder
   }
 
   export type TripRequestSumOrderByAggregateInput = {
     numberOfTravelers?: SortOrder
+  }
+
+  export type SiteSettingsCountOrderByAggregateInput = {
+    id?: SortOrder
+    paymentMethodsEnabled?: SortOrder
+    paymentMethodOptions?: SortOrder
+    budgetType?: SortOrder
+    budgetDropdownOptions?: SortOrder
+    budgetMin?: SortOrder
+    budgetMax?: SortOrder
+    budgetStep?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SiteSettingsAvgOrderByAggregateInput = {
+    budgetMin?: SortOrder
+    budgetMax?: SortOrder
+    budgetStep?: SortOrder
+  }
+
+  export type SiteSettingsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    paymentMethodsEnabled?: SortOrder
+    budgetType?: SortOrder
+    budgetMin?: SortOrder
+    budgetMax?: SortOrder
+    budgetStep?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SiteSettingsMinOrderByAggregateInput = {
+    id?: SortOrder
+    paymentMethodsEnabled?: SortOrder
+    budgetType?: SortOrder
+    budgetMin?: SortOrder
+    budgetMax?: SortOrder
+    budgetStep?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SiteSettingsSumOrderByAggregateInput = {
+    budgetMin?: SortOrder
+    budgetMax?: SortOrder
+    budgetStep?: SortOrder
   }
 
   export type ContactMessageCountOrderByAggregateInput = {
@@ -13473,11 +15030,21 @@ export namespace Prisma {
     none?: AccountWhereInput
   }
 
+  export type TripRequestListRelationFilter = {
+    every?: TripRequestWhereInput
+    some?: TripRequestWhereInput
+    none?: TripRequestWhereInput
+  }
+
   export type SessionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type AccountOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type TripRequestOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -13491,6 +15058,9 @@ export namespace Prisma {
     updatedAt?: SortOrder
     password?: SortOrder
     role?: SortOrder
+    phone?: SortOrder
+    bio?: SortOrder
+    location?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -13503,6 +15073,9 @@ export namespace Prisma {
     updatedAt?: SortOrder
     password?: SortOrder
     role?: SortOrder
+    phone?: SortOrder
+    bio?: SortOrder
+    location?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -13515,6 +15088,9 @@ export namespace Prisma {
     updatedAt?: SortOrder
     password?: SortOrder
     role?: SortOrder
+    phone?: SortOrder
+    bio?: SortOrder
+    location?: SortOrder
   }
 
   export type UserScalarRelationFilter = {
@@ -13847,6 +15423,12 @@ export namespace Prisma {
     set: string[]
   }
 
+  export type UserCreateNestedOneWithoutTripRequestsInput = {
+    create?: XOR<UserCreateWithoutTripRequestsInput, UserUncheckedCreateWithoutTripRequestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTripRequestsInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type TripRequestUpdateadventureActivitiesInput = {
     set?: string[]
     push?: string | string[]
@@ -13858,6 +15440,34 @@ export namespace Prisma {
   }
 
   export type TripRequestUpdateimportantFactorsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type UserUpdateOneWithoutTripRequestsNestedInput = {
+    create?: XOR<UserCreateWithoutTripRequestsInput, UserUncheckedCreateWithoutTripRequestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTripRequestsInput
+    upsert?: UserUpsertWithoutTripRequestsInput
+    disconnect?: boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTripRequestsInput, UserUpdateWithoutTripRequestsInput>, UserUncheckedUpdateWithoutTripRequestsInput>
+  }
+
+  export type SiteSettingsCreatepaymentMethodOptionsInput = {
+    set: string[]
+  }
+
+  export type SiteSettingsCreatebudgetDropdownOptionsInput = {
+    set: string[]
+  }
+
+  export type SiteSettingsUpdatepaymentMethodOptionsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type SiteSettingsUpdatebudgetDropdownOptionsInput = {
     set?: string[]
     push?: string | string[]
   }
@@ -13883,6 +15493,13 @@ export namespace Prisma {
     connect?: FavoriteWhereUniqueInput | FavoriteWhereUniqueInput[]
   }
 
+  export type TripRequestCreateNestedManyWithoutUserInput = {
+    create?: XOR<TripRequestCreateWithoutUserInput, TripRequestUncheckedCreateWithoutUserInput> | TripRequestCreateWithoutUserInput[] | TripRequestUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TripRequestCreateOrConnectWithoutUserInput | TripRequestCreateOrConnectWithoutUserInput[]
+    createMany?: TripRequestCreateManyUserInputEnvelope
+    connect?: TripRequestWhereUniqueInput | TripRequestWhereUniqueInput[]
+  }
+
   export type SessionUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
@@ -13902,6 +15519,13 @@ export namespace Prisma {
     connectOrCreate?: FavoriteCreateOrConnectWithoutUserInput | FavoriteCreateOrConnectWithoutUserInput[]
     createMany?: FavoriteCreateManyUserInputEnvelope
     connect?: FavoriteWhereUniqueInput | FavoriteWhereUniqueInput[]
+  }
+
+  export type TripRequestUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<TripRequestCreateWithoutUserInput, TripRequestUncheckedCreateWithoutUserInput> | TripRequestCreateWithoutUserInput[] | TripRequestUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TripRequestCreateOrConnectWithoutUserInput | TripRequestCreateOrConnectWithoutUserInput[]
+    createMany?: TripRequestCreateManyUserInputEnvelope
+    connect?: TripRequestWhereUniqueInput | TripRequestWhereUniqueInput[]
   }
 
   export type SessionUpdateManyWithoutUserNestedInput = {
@@ -13946,6 +15570,20 @@ export namespace Prisma {
     deleteMany?: FavoriteScalarWhereInput | FavoriteScalarWhereInput[]
   }
 
+  export type TripRequestUpdateManyWithoutUserNestedInput = {
+    create?: XOR<TripRequestCreateWithoutUserInput, TripRequestUncheckedCreateWithoutUserInput> | TripRequestCreateWithoutUserInput[] | TripRequestUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TripRequestCreateOrConnectWithoutUserInput | TripRequestCreateOrConnectWithoutUserInput[]
+    upsert?: TripRequestUpsertWithWhereUniqueWithoutUserInput | TripRequestUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: TripRequestCreateManyUserInputEnvelope
+    set?: TripRequestWhereUniqueInput | TripRequestWhereUniqueInput[]
+    disconnect?: TripRequestWhereUniqueInput | TripRequestWhereUniqueInput[]
+    delete?: TripRequestWhereUniqueInput | TripRequestWhereUniqueInput[]
+    connect?: TripRequestWhereUniqueInput | TripRequestWhereUniqueInput[]
+    update?: TripRequestUpdateWithWhereUniqueWithoutUserInput | TripRequestUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: TripRequestUpdateManyWithWhereWithoutUserInput | TripRequestUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: TripRequestScalarWhereInput | TripRequestScalarWhereInput[]
+  }
+
   export type SessionUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
@@ -13986,6 +15624,20 @@ export namespace Prisma {
     update?: FavoriteUpdateWithWhereUniqueWithoutUserInput | FavoriteUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: FavoriteUpdateManyWithWhereWithoutUserInput | FavoriteUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: FavoriteScalarWhereInput | FavoriteScalarWhereInput[]
+  }
+
+  export type TripRequestUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<TripRequestCreateWithoutUserInput, TripRequestUncheckedCreateWithoutUserInput> | TripRequestCreateWithoutUserInput[] | TripRequestUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TripRequestCreateOrConnectWithoutUserInput | TripRequestCreateOrConnectWithoutUserInput[]
+    upsert?: TripRequestUpsertWithWhereUniqueWithoutUserInput | TripRequestUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: TripRequestCreateManyUserInputEnvelope
+    set?: TripRequestWhereUniqueInput | TripRequestWhereUniqueInput[]
+    disconnect?: TripRequestWhereUniqueInput | TripRequestWhereUniqueInput[]
+    delete?: TripRequestWhereUniqueInput | TripRequestWhereUniqueInput[]
+    connect?: TripRequestWhereUniqueInput | TripRequestWhereUniqueInput[]
+    update?: TripRequestUpdateWithWhereUniqueWithoutUserInput | TripRequestUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: TripRequestUpdateManyWithWhereWithoutUserInput | TripRequestUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: TripRequestScalarWhereInput | TripRequestScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutFavoritesInput = {
@@ -14320,6 +15972,92 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Favorite"> | Date | string
   }
 
+  export type UserCreateWithoutTripRequestsInput = {
+    id: string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+    password?: string | null
+    role?: string | null
+    phone?: string | null
+    bio?: string | null
+    location?: string | null
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    favorites?: FavoriteCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutTripRequestsInput = {
+    id: string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+    password?: string | null
+    role?: string | null
+    phone?: string | null
+    bio?: string | null
+    location?: string | null
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    favorites?: FavoriteUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutTripRequestsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutTripRequestsInput, UserUncheckedCreateWithoutTripRequestsInput>
+  }
+
+  export type UserUpsertWithoutTripRequestsInput = {
+    update: XOR<UserUpdateWithoutTripRequestsInput, UserUncheckedUpdateWithoutTripRequestsInput>
+    create: XOR<UserCreateWithoutTripRequestsInput, UserUncheckedCreateWithoutTripRequestsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutTripRequestsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutTripRequestsInput, UserUncheckedUpdateWithoutTripRequestsInput>
+  }
+
+  export type UserUpdateWithoutTripRequestsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    favorites?: FavoriteUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutTripRequestsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    favorites?: FavoriteUncheckedUpdateManyWithoutUserNestedInput
+  }
+
   export type SessionCreateWithoutUserInput = {
     id: string
     expiresAt: Date | string
@@ -14409,6 +16147,69 @@ export namespace Prisma {
     data: FavoriteCreateManyUserInput | FavoriteCreateManyUserInput[]
   }
 
+  export type TripRequestCreateWithoutUserInput = {
+    id?: string
+    travelStyle: string
+    travelDates: string
+    arrivalCity: string
+    departureCity: string
+    accommodation: string
+    budget: string
+    adventureActivities?: TripRequestCreateadventureActivitiesInput | string[]
+    experiences?: TripRequestCreateexperiencesInput | string[]
+    importantFactors?: TripRequestCreateimportantFactorsInput | string[]
+    desiredExperiences: string
+    transportation?: string | null
+    importantCriteria?: string | null
+    numberOfTravelers: number
+    travelerAges?: string | null
+    extraDetails?: string | null
+    fullName: string
+    email: string
+    phone: string
+    status?: string
+    adminNotes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    preferredPaymentMethod?: string | null
+  }
+
+  export type TripRequestUncheckedCreateWithoutUserInput = {
+    id?: string
+    travelStyle: string
+    travelDates: string
+    arrivalCity: string
+    departureCity: string
+    accommodation: string
+    budget: string
+    adventureActivities?: TripRequestCreateadventureActivitiesInput | string[]
+    experiences?: TripRequestCreateexperiencesInput | string[]
+    importantFactors?: TripRequestCreateimportantFactorsInput | string[]
+    desiredExperiences: string
+    transportation?: string | null
+    importantCriteria?: string | null
+    numberOfTravelers: number
+    travelerAges?: string | null
+    extraDetails?: string | null
+    fullName: string
+    email: string
+    phone: string
+    status?: string
+    adminNotes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    preferredPaymentMethod?: string | null
+  }
+
+  export type TripRequestCreateOrConnectWithoutUserInput = {
+    where: TripRequestWhereUniqueInput
+    create: XOR<TripRequestCreateWithoutUserInput, TripRequestUncheckedCreateWithoutUserInput>
+  }
+
+  export type TripRequestCreateManyUserInputEnvelope = {
+    data: TripRequestCreateManyUserInput | TripRequestCreateManyUserInput[]
+  }
+
   export type SessionUpsertWithWhereUniqueWithoutUserInput = {
     where: SessionWhereUniqueInput
     update: XOR<SessionUpdateWithoutUserInput, SessionUncheckedUpdateWithoutUserInput>
@@ -14490,6 +16291,53 @@ export namespace Prisma {
     data: XOR<FavoriteUpdateManyMutationInput, FavoriteUncheckedUpdateManyWithoutUserInput>
   }
 
+  export type TripRequestUpsertWithWhereUniqueWithoutUserInput = {
+    where: TripRequestWhereUniqueInput
+    update: XOR<TripRequestUpdateWithoutUserInput, TripRequestUncheckedUpdateWithoutUserInput>
+    create: XOR<TripRequestCreateWithoutUserInput, TripRequestUncheckedCreateWithoutUserInput>
+  }
+
+  export type TripRequestUpdateWithWhereUniqueWithoutUserInput = {
+    where: TripRequestWhereUniqueInput
+    data: XOR<TripRequestUpdateWithoutUserInput, TripRequestUncheckedUpdateWithoutUserInput>
+  }
+
+  export type TripRequestUpdateManyWithWhereWithoutUserInput = {
+    where: TripRequestScalarWhereInput
+    data: XOR<TripRequestUpdateManyMutationInput, TripRequestUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type TripRequestScalarWhereInput = {
+    AND?: TripRequestScalarWhereInput | TripRequestScalarWhereInput[]
+    OR?: TripRequestScalarWhereInput[]
+    NOT?: TripRequestScalarWhereInput | TripRequestScalarWhereInput[]
+    id?: StringFilter<"TripRequest"> | string
+    travelStyle?: StringFilter<"TripRequest"> | string
+    travelDates?: StringFilter<"TripRequest"> | string
+    arrivalCity?: StringFilter<"TripRequest"> | string
+    departureCity?: StringFilter<"TripRequest"> | string
+    accommodation?: StringFilter<"TripRequest"> | string
+    budget?: StringFilter<"TripRequest"> | string
+    adventureActivities?: StringNullableListFilter<"TripRequest">
+    experiences?: StringNullableListFilter<"TripRequest">
+    importantFactors?: StringNullableListFilter<"TripRequest">
+    desiredExperiences?: StringFilter<"TripRequest"> | string
+    transportation?: StringNullableFilter<"TripRequest"> | string | null
+    importantCriteria?: StringNullableFilter<"TripRequest"> | string | null
+    numberOfTravelers?: IntFilter<"TripRequest"> | number
+    travelerAges?: StringNullableFilter<"TripRequest"> | string | null
+    extraDetails?: StringNullableFilter<"TripRequest"> | string | null
+    fullName?: StringFilter<"TripRequest"> | string
+    email?: StringFilter<"TripRequest"> | string
+    phone?: StringFilter<"TripRequest"> | string
+    status?: StringFilter<"TripRequest"> | string
+    adminNotes?: StringNullableFilter<"TripRequest"> | string | null
+    createdAt?: DateTimeFilter<"TripRequest"> | Date | string
+    updatedAt?: DateTimeFilter<"TripRequest"> | Date | string
+    userId?: StringNullableFilter<"TripRequest"> | string | null
+    preferredPaymentMethod?: StringNullableFilter<"TripRequest"> | string | null
+  }
+
   export type UserCreateWithoutFavoritesInput = {
     id: string
     name: string
@@ -14500,8 +16348,12 @@ export namespace Prisma {
     updatedAt: Date | string
     password?: string | null
     role?: string | null
+    phone?: string | null
+    bio?: string | null
+    location?: string | null
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
+    tripRequests?: TripRequestCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFavoritesInput = {
@@ -14514,8 +16366,12 @@ export namespace Prisma {
     updatedAt: Date | string
     password?: string | null
     role?: string | null
+    phone?: string | null
+    bio?: string | null
+    location?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    tripRequests?: TripRequestUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFavoritesInput = {
@@ -14600,8 +16456,12 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
+    tripRequests?: TripRequestUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFavoritesInput = {
@@ -14613,8 +16473,12 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    tripRequests?: TripRequestUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CircuitUpsertWithoutFavoritesInput = {
@@ -14688,8 +16552,12 @@ export namespace Prisma {
     updatedAt: Date | string
     password?: string | null
     role?: string | null
+    phone?: string | null
+    bio?: string | null
+    location?: string | null
     accounts?: AccountCreateNestedManyWithoutUserInput
     favorites?: FavoriteCreateNestedManyWithoutUserInput
+    tripRequests?: TripRequestCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -14702,8 +16570,12 @@ export namespace Prisma {
     updatedAt: Date | string
     password?: string | null
     role?: string | null
+    phone?: string | null
+    bio?: string | null
+    location?: string | null
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     favorites?: FavoriteUncheckedCreateNestedManyWithoutUserInput
+    tripRequests?: TripRequestUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -14731,8 +16603,12 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     accounts?: AccountUpdateManyWithoutUserNestedInput
     favorites?: FavoriteUpdateManyWithoutUserNestedInput
+    tripRequests?: TripRequestUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -14744,8 +16620,12 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     favorites?: FavoriteUncheckedUpdateManyWithoutUserNestedInput
+    tripRequests?: TripRequestUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAccountsInput = {
@@ -14758,8 +16638,12 @@ export namespace Prisma {
     updatedAt: Date | string
     password?: string | null
     role?: string | null
+    phone?: string | null
+    bio?: string | null
+    location?: string | null
     sessions?: SessionCreateNestedManyWithoutUserInput
     favorites?: FavoriteCreateNestedManyWithoutUserInput
+    tripRequests?: TripRequestCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -14772,8 +16656,12 @@ export namespace Prisma {
     updatedAt: Date | string
     password?: string | null
     role?: string | null
+    phone?: string | null
+    bio?: string | null
+    location?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     favorites?: FavoriteUncheckedCreateNestedManyWithoutUserInput
+    tripRequests?: TripRequestUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -14801,8 +16689,12 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUpdateManyWithoutUserNestedInput
     favorites?: FavoriteUpdateManyWithoutUserNestedInput
+    tripRequests?: TripRequestUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -14814,8 +16706,12 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     favorites?: FavoriteUncheckedUpdateManyWithoutUserNestedInput
+    tripRequests?: TripRequestUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type FavoriteCreateManyCircuitInput = {
@@ -14868,6 +16764,33 @@ export namespace Prisma {
     id?: string
     circuitId: string
     createdAt?: Date | string
+  }
+
+  export type TripRequestCreateManyUserInput = {
+    id?: string
+    travelStyle: string
+    travelDates: string
+    arrivalCity: string
+    departureCity: string
+    accommodation: string
+    budget: string
+    adventureActivities?: TripRequestCreateadventureActivitiesInput | string[]
+    experiences?: TripRequestCreateexperiencesInput | string[]
+    importantFactors?: TripRequestCreateimportantFactorsInput | string[]
+    desiredExperiences: string
+    transportation?: string | null
+    importantCriteria?: string | null
+    numberOfTravelers: number
+    travelerAges?: string | null
+    extraDetails?: string | null
+    fullName: string
+    email: string
+    phone: string
+    status?: string
+    adminNotes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    preferredPaymentMethod?: string | null
   }
 
   export type SessionUpdateWithoutUserInput = {
@@ -14952,6 +16875,84 @@ export namespace Prisma {
   export type FavoriteUncheckedUpdateManyWithoutUserInput = {
     circuitId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TripRequestUpdateWithoutUserInput = {
+    travelStyle?: StringFieldUpdateOperationsInput | string
+    travelDates?: StringFieldUpdateOperationsInput | string
+    arrivalCity?: StringFieldUpdateOperationsInput | string
+    departureCity?: StringFieldUpdateOperationsInput | string
+    accommodation?: StringFieldUpdateOperationsInput | string
+    budget?: StringFieldUpdateOperationsInput | string
+    adventureActivities?: TripRequestUpdateadventureActivitiesInput | string[]
+    experiences?: TripRequestUpdateexperiencesInput | string[]
+    importantFactors?: TripRequestUpdateimportantFactorsInput | string[]
+    desiredExperiences?: StringFieldUpdateOperationsInput | string
+    transportation?: NullableStringFieldUpdateOperationsInput | string | null
+    importantCriteria?: NullableStringFieldUpdateOperationsInput | string | null
+    numberOfTravelers?: IntFieldUpdateOperationsInput | number
+    travelerAges?: NullableStringFieldUpdateOperationsInput | string | null
+    extraDetails?: NullableStringFieldUpdateOperationsInput | string | null
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    adminNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    preferredPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type TripRequestUncheckedUpdateWithoutUserInput = {
+    travelStyle?: StringFieldUpdateOperationsInput | string
+    travelDates?: StringFieldUpdateOperationsInput | string
+    arrivalCity?: StringFieldUpdateOperationsInput | string
+    departureCity?: StringFieldUpdateOperationsInput | string
+    accommodation?: StringFieldUpdateOperationsInput | string
+    budget?: StringFieldUpdateOperationsInput | string
+    adventureActivities?: TripRequestUpdateadventureActivitiesInput | string[]
+    experiences?: TripRequestUpdateexperiencesInput | string[]
+    importantFactors?: TripRequestUpdateimportantFactorsInput | string[]
+    desiredExperiences?: StringFieldUpdateOperationsInput | string
+    transportation?: NullableStringFieldUpdateOperationsInput | string | null
+    importantCriteria?: NullableStringFieldUpdateOperationsInput | string | null
+    numberOfTravelers?: IntFieldUpdateOperationsInput | number
+    travelerAges?: NullableStringFieldUpdateOperationsInput | string | null
+    extraDetails?: NullableStringFieldUpdateOperationsInput | string | null
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    adminNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    preferredPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type TripRequestUncheckedUpdateManyWithoutUserInput = {
+    travelStyle?: StringFieldUpdateOperationsInput | string
+    travelDates?: StringFieldUpdateOperationsInput | string
+    arrivalCity?: StringFieldUpdateOperationsInput | string
+    departureCity?: StringFieldUpdateOperationsInput | string
+    accommodation?: StringFieldUpdateOperationsInput | string
+    budget?: StringFieldUpdateOperationsInput | string
+    adventureActivities?: TripRequestUpdateadventureActivitiesInput | string[]
+    experiences?: TripRequestUpdateexperiencesInput | string[]
+    importantFactors?: TripRequestUpdateimportantFactorsInput | string[]
+    desiredExperiences?: StringFieldUpdateOperationsInput | string
+    transportation?: NullableStringFieldUpdateOperationsInput | string | null
+    importantCriteria?: NullableStringFieldUpdateOperationsInput | string | null
+    numberOfTravelers?: IntFieldUpdateOperationsInput | number
+    travelerAges?: NullableStringFieldUpdateOperationsInput | string | null
+    extraDetails?: NullableStringFieldUpdateOperationsInput | string | null
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    adminNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    preferredPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
 

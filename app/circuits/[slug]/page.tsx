@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -14,6 +14,8 @@ import { Label } from "@/components/ui/label"
 import { CountryCodeSelect } from "@/components/ui/country-code-select"
 import { Textarea } from "@/components/ui/textarea"
 import { PriceBadge } from "@/components/ui/price-badge"
+import { AuthGate } from "@/components/auth-gate"
+import { useAuth } from "@/hooks/use-auth"
 
 interface Circuit {
     id: string
@@ -39,6 +41,7 @@ interface Circuit {
 
 export default function CircuitDetailPage() {
     const params = useParams()
+    const { user } = useAuth()
     const [circuit, setCircuit] = useState<Circuit | null>(null)
     const [loading, setLoading] = useState(true)
     const [travelers, setTravelers] = useState({
@@ -57,15 +60,260 @@ export default function CircuitDetailPage() {
         phone: "",
         countryCode: "+212",
         extraDetails: "",
+        accommodation: "Standard", // NEW: accommodation preference
+        preferredPaymentMethod: "",
     })
     const [submitting, setSubmitting] = useState(false)
     const [submitted, setSubmitted] = useState(false)
+    const [startDateError, setStartDateError] = useState("")
+    const [endDateError, setEndDateError] = useState("")
+    const [bookingError, setBookingError] = useState<{ message: string; isServerError: boolean } | null>(null)
+
+    // Payment settings state
+    const [paymentSettings, setPaymentSettings] = useState<{
+        enabled: boolean
+        options: string[]
+    }>({ enabled: false, options: [] })
+
+    // Inline auth state for guest users
+    const [showAuthModal, setShowAuthModal] = useState(false)
+    const [authMode, setAuthMode] = useState<"login" | "register">("login")
+    const [authForm, setAuthForm] = useState({
+        fullName: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        phone: "",
+        countryCode: "+212"
+    })
+    const [authErrors, setAuthErrors] = useState<Record<string, string>>({})
+    const [authLoading, setAuthLoading] = useState(false)
+
+    // Max lengths matching backend
+    const MAX_LENGTHS = {
+        fullName: 50,
+        email: 100,
+        phone: 20,
+        extraDetails: 3000,
+    }
+
+    // Validate booking dates - returns true if valid
+    const validateDates = (): boolean => {
+        const dates = booking.travelDates.split(" to ")
+        const startDateStr = dates[0] || ""
+        const endDateStr = dates[1] || ""
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+
+        let startErr = ""
+        let endErr = ""
+        let isValid = true
+
+        if (!startDateStr) {
+            startErr = "Start date is required"
+            isValid = false
+        } else {
+            const startDate = new Date(startDateStr)
+            if (startDate < today) {
+                startErr = "Start date cannot be in the past"
+                isValid = false
+            }
+        }
+
+        if (!endDateStr) {
+            endErr = "End date is required"
+            isValid = false
+        } else {
+            const endDate = new Date(endDateStr)
+            if (endDate < today) {
+                endErr = "End date cannot be in the past"
+                isValid = false
+            } else if (startDateStr && endDateStr) {
+                const startDate = new Date(startDateStr)
+                if (startDateStr === endDateStr) {
+                    endErr = "End date must be different from start date"
+                    isValid = false
+                } else if (endDate <= startDate) {
+                    endErr = "End date must be after start date"
+                    isValid = false
+                }
+            }
+        }
+
+        setStartDateError(startErr)
+        setEndDateError(endErr)
+        return isValid
+    }
+
+    // Validate inline auth form
+    const validateAuthForm = (): boolean => {
+        const newErrors: Record<string, string> = {}
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+        if (!authForm.email.trim()) {
+            newErrors.email = "Email is required"
+        } else if (!emailRegex.test(authForm.email.trim())) {
+            newErrors.email = "Please enter a valid email"
+        }
+
+        if (!authForm.password) {
+            newErrors.password = "Password is required"
+        } else if (authForm.password.length < 8) {
+            newErrors.password = "Password must be at least 8 characters"
+        }
+
+        if (authMode === "register") {
+            if (!authForm.fullName.trim()) {
+                newErrors.fullName = "Full name is required"
+            } else if (authForm.fullName.trim().length < 2) {
+                newErrors.fullName = "Name must be at least 2 characters"
+            }
+
+            if (!authForm.phone.trim()) {
+                newErrors.phone = "Phone number is required"
+            } else if (authForm.phone.trim().length < 6) {
+                newErrors.phone = "Please enter a valid phone number"
+            }
+
+            if (!authForm.confirmPassword) {
+                newErrors.confirmPassword = "Please confirm your password"
+            } else if (authForm.password !== authForm.confirmPassword) {
+                newErrors.confirmPassword = "Passwords do not match"
+            }
+        }
+
+        setAuthErrors(newErrors)
+        return Object.keys(newErrors).length === 0
+    }
+
+    // Handle inline login
+    const handleInlineLogin = async () => {
+        if (!validateAuthForm()) return
+
+        setAuthLoading(true)
+        setAuthErrors({})
+
+        try {
+            await (await import("@/lib/auth-client")).authClient.signIn.email({
+                email: authForm.email.trim(),
+                password: authForm.password,
+            }, {
+                onSuccess: () => {
+                    setShowAuthModal(false)
+                    setAuthForm({ fullName: "", email: "", password: "", confirmPassword: "", phone: "", countryCode: "+212" })
+                },
+                onError: (ctx) => {
+                    const errorMessage = ctx.error.message || "Login failed"
+                    const lowerError = errorMessage.toLowerCase()
+
+                    if (lowerError.includes("invalid password") || lowerError.includes("password")) {
+                        setAuthErrors({ form: "Invalid email or password" })
+                    } else if (lowerError.includes("not found") || lowerError.includes("user not found")) {
+                        setAuthErrors({ form: "No account found with this email" })
+                    } else if (lowerError.includes("verify") || lowerError.includes("verified")) {
+                        setAuthErrors({ form: "Please verify your email before signing in. Check your inbox for the verification link.", isEmailError: "true" })
+                    } else {
+                        setAuthErrors({ form: errorMessage })
+                    }
+                }
+            })
+        } catch {
+            setAuthErrors({ form: "Unable to connect to the server. Please try again later.", isServerError: "true" })
+        } finally {
+            setAuthLoading(false)
+        }
+    }
+
+    // Handle inline register
+    const handleInlineRegister = async () => {
+        if (!validateAuthForm()) return
+
+        setAuthLoading(true)
+        setAuthErrors({})
+
+        try {
+            const fullPhone = `${authForm.countryCode} ${authForm.phone.trim()}`
+            await (await import("@/lib/auth-client")).authClient.signUp.email({
+                email: authForm.email.trim(),
+                password: authForm.password,
+                name: authForm.fullName.trim(),
+                role: "user",
+                phone: fullPhone,
+            } as any, {
+                onSuccess: () => {
+                    setAuthErrors({ form: "Account created! Please check your email for the verification link before booking." })
+                    setAuthMode("login")
+                },
+                onError: (ctx) => {
+                    const errorMessage = ctx.error.message || "Registration failed"
+                    const lowerError = errorMessage.toLowerCase()
+
+                    if (lowerError.includes("already exists") || lowerError.includes("already registered") || lowerError.includes("user already exists")) {
+                        setAuthErrors({ form: "An account with this email already exists. Please sign in instead." })
+                    } else if (lowerError.includes("failed to create user") || lowerError.includes("name can only contain")) {
+                        setAuthErrors({ form: "Please check your information: Name should only contain letters (no numbers or special characters), and password must be at least 8 characters." })
+                    } else if (lowerError.includes("password") || lowerError.includes("at least")) {
+                        setAuthErrors({ form: "Password must be at least 8 characters" })
+                    } else if (lowerError.includes("email") && (lowerError.includes("send") || lowerError.includes("delivery"))) {
+                        setAuthErrors({ form: "Account created but we couldn't send the verification email. Please try resending or contact support.", isEmailError: "true" })
+                    } else if (lowerError.includes("email") && lowerError.includes("valid")) {
+                        setAuthErrors({ form: "Please enter a valid email address" })
+                    } else {
+                        setAuthErrors({ form: errorMessage })
+                    }
+                }
+            })
+        } catch {
+            setAuthErrors({ form: "Unable to connect to the server. Please try again later.", isServerError: "true" })
+        } finally {
+            setAuthLoading(false)
+        }
+    }
+
+    // Pre-fill user data when authenticated (only once when user data becomes available)
+    const userEmail = user?.email
+    const userName = user?.name
+    const userVerified = user?.emailVerified
+    useEffect(() => {
+        if (userEmail && userVerified) {
+            setBooking((prev) => {
+                // Only update if the fields are empty to avoid overwriting user input
+                if (!prev.email && !prev.fullName) {
+                    return {
+                        ...prev,
+                        fullName: userName || "",
+                        email: userEmail,
+                    }
+                }
+                return prev
+            })
+        }
+    }, [userEmail, userName, userVerified])
 
     useEffect(() => {
         if (params.slug) {
             fetchCircuit(params.slug as string)
         }
     }, [params.slug])
+
+    // Fetch payment settings
+    useEffect(() => {
+        const fetchPaymentSettings = async () => {
+            try {
+                const res = await fetch("/api/settings")
+                if (res.ok) {
+                    const data = await res.json()
+                    setPaymentSettings({
+                        enabled: data.paymentMethodsEnabled,
+                        options: data.paymentMethodOptions
+                    })
+                }
+            } catch (error) {
+                console.error("Error fetching payment settings:", error)
+            }
+        }
+        fetchPaymentSettings()
+    }, [])
 
     const handleTravelerChange = (type: "adults" | "children" | "infants", delta: number) => {
         setTravelers((prev) => {
@@ -110,34 +358,58 @@ export default function CircuitDetailPage() {
 
     const handleBookingSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+
+        // Validate dates first
+        if (!validateDates()) return
+
+        // If user is not logged in + verified, show auth modal
+        if (!user || !userVerified) {
+            setShowAuthModal(true)
+            return
+        }
+
         setSubmitting(true)
+        setBookingError(null)
 
         try {
+            // Use session data for authenticated users
+            const submitData = {
+                ...booking,
+                fullName: user.name || booking.fullName,
+                email: user.email || booking.email,
+                phone: (user as any).phone || `${booking.countryCode} ${booking.phone}`,
+                travelStyle: "Custom Circuit",
+                arrivalCity: "N/A",
+                departureCity: "N/A",
+                accommodation: booking.accommodation,
+                budget: "N/A",
+                adventureActivities: [],
+                desiredExperiences: `Booking for circuit: ${circuit?.name} (${circuit?.slug})`,
+                preferredPaymentMethod: booking.preferredPaymentMethod,
+            }
+
             const response = await fetch("/api/trip-requests", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    ...booking,
-                    travelStyle: "Custom Circuit",
-                    arrivalCity: "N/A",
-                    departureCity: "N/A",
-                    accommodation: "Standard",
-                    budget: "N/A",
-                    adventureActivities: [],
-                    desiredExperiences: `Booking for circuit: ${circuit?.name} (${circuit?.slug})`,
-                    phone: `${booking.countryCode} ${booking.phone}`,
-                }),
+                body: JSON.stringify(submitData),
             })
 
             if (response.ok) {
                 setSubmitted(true)
+                setBookingError(null)
             } else {
                 const data = await response.json()
-                alert(data.error || "Failed to send booking request. Please try again.")
+                const errorMsg = data.error?.toLowerCase() || ""
+                // Check for email-related errors
+                if (errorMsg.includes("email") && (errorMsg.includes("send") || errorMsg.includes("failed"))) {
+                    setBookingError({ message: "Your booking was saved but we couldn't send the confirmation email. Our team will contact you soon.", isServerError: true })
+                } else {
+                    setBookingError({ message: data.error || "Failed to send booking request. Please try again.", isServerError: response.status >= 500 })
+                }
             }
         } catch (error) {
             console.error("Booking error:", error)
-            alert("Failed to submit booking.")
+            setBookingError({ message: "Unable to connect to the server. Please check your connection and try again.", isServerError: true })
         } finally {
             setSubmitting(false)
         }
@@ -412,7 +684,7 @@ export default function CircuitDetailPage() {
                                         </div>
                                     </div>
 
-                                    {/* Booking Form Direct */}
+                                    {/* Booking Form - Auth handled on submit */}
                                     {submitted ? (
                                         <div className="text-center py-8">
                                             <div className="w-16 h-16 bg-secondary/10 text-secondary rounded-full flex items-center justify-center mx-auto mb-4">
@@ -436,10 +708,12 @@ export default function CircuitDetailPage() {
                                                     onChange={(e) => {
                                                         const end = booking.travelDates.split(" to ")[1] || ""
                                                         setBooking({ ...booking, travelDates: `${e.target.value}${end ? ` to ${end}` : ""}` })
+                                                        setStartDateError("")
                                                     }}
                                                     required
-                                                    className="bg-gray-50 border-gray-100 rounded-md focus:ring-orange-200 h-11"
+                                                    className={`bg-gray-50 border-gray-100 rounded-md focus:ring-orange-200 h-11 ${startDateError ? "border-destructive" : ""}`}
                                                 />
+                                                {startDateError && <p className="text-sm text-destructive">{startDateError}</p>}
                                             </div>
                                             <div className="space-y-2">
                                                 <Label htmlFor="travelDates2" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Latest End Date</Label>
@@ -450,10 +724,12 @@ export default function CircuitDetailPage() {
                                                     onChange={(e) => {
                                                         const start = booking.travelDates.split(" to ")[0] || ""
                                                         setBooking({ ...booking, travelDates: `${start ? `${start} to ` : ""}${e.target.value}` })
+                                                        setEndDateError("")
                                                     }}
                                                     required
-                                                    className="bg-gray-50 border-gray-100 rounded-md focus:ring-orange-200 h-11"
+                                                    className={`bg-gray-50 border-gray-100 rounded-md focus:ring-orange-200 h-11 ${endDateError ? "border-destructive" : ""}`}
                                                 />
+                                                {endDateError && <p className="text-sm text-destructive">{endDateError}</p>}
                                             </div>
 
                                             <div className="space-y-2">
@@ -538,50 +814,73 @@ export default function CircuitDetailPage() {
                                                     </div>
                                                 </div>
                                             </div>
-
+                                            {/* Accommodation Dropdown */}
                                             <div className="space-y-2">
-                                                <Label htmlFor="fullname" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Name</Label>
-                                                <Input
-                                                    id="fullname"
-                                                    placeholder=""
-                                                    value={booking.fullName}
-                                                    onChange={(e) => setBooking({ ...booking, fullName: e.target.value })}
-                                                    required
-                                                    className="bg-gray-50 border-gray-100 rounded-md focus:ring-orange-200 h-11"
-                                                />
+                                                <Label htmlFor="accommodation" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Accommodation</Label>
+                                                <select
+                                                    id="accommodation"
+                                                    value={booking.accommodation}
+                                                    onChange={(e) => setBooking({ ...booking, accommodation: e.target.value })}
+                                                    className="w-full bg-gray-50 border border-gray-100 rounded-md focus:ring-orange-200 h-11 px-3 text-sm"
+                                                >
+                                                    <option value="Standard">Standard</option>
+                                                    <option value="Premium">Premium</option>
+                                                    <option value="Luxury">Luxury</option>
+                                                </select>
                                             </div>
 
-                                            <div className="space-y-2">
-                                                <Label htmlFor="phone" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Phone</Label>
-                                                <div className="flex gap-2">
-                                                    <CountryCodeSelect
-                                                        value={booking.countryCode}
-                                                        onChange={(val) => setBooking({ ...booking, countryCode: val })}
-                                                    />
-                                                    <Input
-                                                        id="phone"
-                                                        type="tel"
-                                                        placeholder=""
-                                                        value={booking.phone}
-                                                        onChange={(e) => setBooking({ ...booking, phone: e.target.value })}
-                                                        required
-                                                        className="flex-1 bg-gray-50 border-gray-100 rounded-md focus:ring-orange-200 h-11"
-                                                    />
+                                            {/* Payment Method Dropdown */}
+                                            {paymentSettings.enabled && paymentSettings.options.length > 0 && (
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="paymentMethod" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Preferred Payment</Label>
+                                                    <select
+                                                        id="paymentMethod"
+                                                        value={booking.preferredPaymentMethod}
+                                                        onChange={(e) => setBooking({ ...booking, preferredPaymentMethod: e.target.value })}
+                                                        className="w-full bg-gray-50 border border-gray-100 rounded-md focus:ring-orange-200 h-11 px-3 text-sm"
+                                                    >
+                                                        <option value="">Select (optional)</option>
+                                                        {paymentSettings.options.map((option) => (
+                                                            <option key={option} value={option}>{option}</option>
+                                                        ))}
+                                                    </select>
                                                 </div>
-                                            </div>
+                                            )}
 
-                                            <div className="space-y-2">
-                                                <Label htmlFor="email" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Email</Label>
-                                                <Input
-                                                    id="email"
-                                                    type="email"
-                                                    placeholder=""
-                                                    value={booking.email}
-                                                    onChange={(e) => setBooking({ ...booking, email: e.target.value })}
-                                                    required
-                                                    className="bg-gray-50 border-gray-100 rounded-md focus:ring-orange-200 h-11"
-                                                />
-                                            </div>
+                                            {/* User Badge or Contact Fields */}
+                                            {user && userVerified ? (
+                                                <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                                                            {user.name?.[0]?.toUpperCase() || "U"}
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="font-semibold text-foreground truncate">{user.name}</p>
+                                                            <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+                                                        </div>
+                                                        <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="text-sm text-muted-foreground text-center py-2">
+                                                    You'll need to sign in to complete your booking
+                                                </div>
+                                            )}
+
+                                            {/* Booking error message */}
+                                            {bookingError && (
+                                                <div className={`px-4 py-3 rounded text-sm mb-4 ${bookingError.isServerError ? "bg-amber-500/10 text-amber-800 border border-amber-500/20" : "bg-destructive/10 text-destructive border border-destructive/20"}`}>
+                                                    <p>{bookingError.message}</p>
+                                                    {bookingError.isServerError && (
+                                                        <Link
+                                                            href="/contact"
+                                                            className="inline-flex items-center gap-1 mt-2 text-sm font-medium underline underline-offset-2 hover:no-underline"
+                                                        >
+                                                            Contact Support
+                                                        </Link>
+                                                    )}
+                                                </div>
+                                            )}
 
                                             <Button
                                                 type="submit"
@@ -591,6 +890,155 @@ export default function CircuitDetailPage() {
                                                 {submitting ? "Sending Request..." : "Request This Trip"}
                                             </Button>
                                         </form>
+                                    )}
+
+                                    {/* Auth Modal for guests */}
+                                    {showAuthModal && (
+                                        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                                            <div className="bg-card border border-border rounded-xl shadow-lg max-w-md w-full p-6 overflow-auto max-h-[90vh]">
+                                                <div className="flex items-center justify-between mb-6">
+                                                    <h2 className="text-xl font-bold">Sign in to Book</h2>
+                                                    <button onClick={() => { setShowAuthModal(false); setAuthErrors({}) }} className="text-muted-foreground hover:text-foreground">
+                                                        <X className="w-5 h-5" />
+                                                    </button>
+                                                </div>
+
+                                                {/* Auth mode toggle */}
+                                                <div className="flex mb-6 bg-muted/50 rounded-lg p-1">
+                                                    <button
+                                                        type="button"
+                                                        className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${authMode === "login" ? "bg-background shadow-sm" : "text-muted-foreground"}`}
+                                                        onClick={() => { setAuthMode("login"); setAuthErrors({}) }}
+                                                    >
+                                                        Sign In
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${authMode === "register" ? "bg-background shadow-sm" : "text-muted-foreground"}`}
+                                                        onClick={() => { setAuthMode("register"); setAuthErrors({}) }}
+                                                    >
+                                                        Create Account
+                                                    </button>
+                                                </div>
+
+                                                {/* Registration form fields */}
+                                                {authMode === "register" && (
+                                                    <div className="space-y-4 mb-4">
+                                                        <div>
+                                                            <label className="block text-sm font-medium mb-2">Full Name</label>
+                                                            <Input
+                                                                value={authForm.fullName}
+                                                                onChange={(e) => setAuthForm(prev => ({ ...prev, fullName: e.target.value }))}
+                                                                placeholder="John Doe"
+                                                                maxLength={30}
+                                                                className={authErrors.fullName ? "border-destructive" : ""}
+                                                            />
+                                                            {authErrors.fullName && <p className="text-sm text-destructive mt-1">{authErrors.fullName}</p>}
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* Email field (both modes) */}
+                                                <div className="mb-4">
+                                                    <label className="block text-sm font-medium mb-2">Email</label>
+                                                    <Input
+                                                        type="email"
+                                                        value={authForm.email}
+                                                        onChange={(e) => setAuthForm(prev => ({ ...prev, email: e.target.value }))}
+                                                        placeholder="you@example.com"
+                                                        maxLength={40}
+                                                        className={authErrors.email ? "border-destructive" : ""}
+                                                    />
+                                                    {authErrors.email && <p className="text-sm text-destructive mt-1">{authErrors.email}</p>}
+                                                </div>
+
+                                                {/* Phone field (register only) */}
+                                                {authMode === "register" && (
+                                                    <div className="mb-4">
+                                                        <label className="block text-sm font-medium mb-2">Phone Number</label>
+                                                        <div className="flex gap-2">
+                                                            <CountryCodeSelect
+                                                                value={authForm.countryCode}
+                                                                onChange={(val) => setAuthForm(prev => ({ ...prev, countryCode: val }))}
+                                                            />
+                                                            <Input
+                                                                type="tel"
+                                                                value={authForm.phone}
+                                                                onChange={(e) => setAuthForm(prev => ({ ...prev, phone: e.target.value }))}
+                                                                placeholder="123 456 7890"
+                                                                maxLength={12}
+                                                                className={`flex-1 ${authErrors.phone ? "border-destructive" : ""}`}
+                                                            />
+                                                        </div>
+                                                        {authErrors.phone && <p className="text-sm text-destructive mt-1">{authErrors.phone}</p>}
+                                                    </div>
+                                                )}
+
+                                                {/* Password field */}
+                                                <div className="mb-4">
+                                                    <label className="block text-sm font-medium mb-2">Password</label>
+                                                    <Input
+                                                        type="password"
+                                                        value={authForm.password}
+                                                        onChange={(e) => setAuthForm(prev => ({ ...prev, password: e.target.value }))}
+                                                        placeholder="••••••••"
+                                                        className={authErrors.password ? "border-destructive" : ""}
+                                                    />
+                                                    {authErrors.password && <p className="text-sm text-destructive mt-1">{authErrors.password}</p>}
+                                                </div>
+
+                                                {/* Confirm password (register only) */}
+                                                {authMode === "register" && (
+                                                    <div className="mb-4">
+                                                        <label className="block text-sm font-medium mb-2">Confirm Password</label>
+                                                        <Input
+                                                            type="password"
+                                                            value={authForm.confirmPassword}
+                                                            onChange={(e) => setAuthForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                                                            placeholder="••••••••"
+                                                            className={authErrors.confirmPassword ? "border-destructive" : ""}
+                                                        />
+                                                        {authErrors.confirmPassword && <p className="text-sm text-destructive mt-1">{authErrors.confirmPassword}</p>}
+                                                    </div>
+                                                )}
+
+                                                {/* Form error message */}
+                                                {authErrors.form && (
+                                                    <div className={`px-4 py-3 rounded text-sm mb-4 ${authErrors.form.includes("verify") || authErrors.form.includes("check") || authErrors.form.includes("created") ? "bg-primary/10 text-primary border border-primary/20" : "bg-destructive/10 text-destructive border border-destructive/20"}`}>
+                                                        <p>{authErrors.form}</p>
+                                                        {(authErrors.isServerError || authErrors.isEmailError) && (
+                                                            <Link
+                                                                href="/contact"
+                                                                className="inline-flex items-center gap-1 mt-2 text-sm font-medium underline underline-offset-2 hover:no-underline"
+                                                            >
+                                                                Contact Support
+                                                            </Link>
+                                                        )}
+                                                    </div>
+                                                )}
+
+                                                {/* Submit button */}
+                                                <Button
+                                                    type="button"
+                                                    onClick={authMode === "login" ? handleInlineLogin : handleInlineRegister}
+                                                    disabled={authLoading}
+                                                    className="w-full"
+                                                >
+                                                    {authLoading
+                                                        ? (authMode === "login" ? "Signing in..." : "Creating account...")
+                                                        : (authMode === "login" ? "Sign In & Book" : "Create Account & Book")
+                                                    }
+                                                </Button>
+
+                                                {authMode === "login" && (
+                                                    <p className="text-center text-sm text-muted-foreground mt-4">
+                                                        <Link href="/forgot-password" className="text-primary hover:underline">
+                                                            Forgot your password?
+                                                        </Link>
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
                                     )}
                                 </div>
                             </div>

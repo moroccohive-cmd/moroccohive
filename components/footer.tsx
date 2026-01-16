@@ -61,8 +61,13 @@ export function Footer() {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/#about" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                                <Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                                     About Us
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                                    Contact Us
                                 </Link>
                             </li>
                         </ul>
@@ -110,10 +115,18 @@ export function Footer() {
 
                 {/* Bottom Bar */}
                 <div className="mt-8 pt-8 border-t border-border">
-                    <div className="flex justify-center items-center space-y-4 md:space-y-0">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                         <p className="text-sm text-muted-foreground">
                             © {currentYear} MoroccoHive. All rights reserved.
                         </p>
+                        <div className="flex items-center gap-6">
+                            <Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                                Privacy Policy
+                            </Link>
+                            <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                                Terms of Service
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>

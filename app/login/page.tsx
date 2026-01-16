@@ -58,7 +58,7 @@ export default function LoginPage() {
                 password: formData.password,
             }, {
                 onSuccess: () => {
-                    router.push("/dashboard")
+                    router.push("/")
                 },
                 onError: (ctx) => {
                     setError(ctx.error.message || "Login failed")
@@ -112,6 +112,12 @@ export default function LoginPage() {
                     <Button type="submit" disabled={loading} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
                         {loading ? "Signing in..." : "Sign In"}
                     </Button>
+
+                    <div className="text-center">
+                        <Link href="/forgot-password" className="text-sm text-muted-foreground hover:text-primary">
+                            Forgot your password?
+                        </Link>
+                    </div>
                 </form>
 
                 <p className="text-center text-muted-foreground text-sm mt-6">

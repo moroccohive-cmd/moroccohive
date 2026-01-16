@@ -56,29 +56,39 @@ model BlogPost {
 }
 
 model TripRequest {
-  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
-  travelStyle         String // solo, couple, family, group
-  travelDates         String // Date range or flexible dates
-  arrivalCity         String
-  departureCity       String
-  accommodation       String // budget, standard, luxury, mixed
-  budget              String // Budget range
-  adventureActivities String[] // Selected activities
-  experiences         String[] // Selected experiences
-  importantFactors    String[] // Selected important factors
-  desiredExperiences  String // Text description
-  transportation      String? // How to explore (private car, public transport, mix)
-  importantCriteria   String? // What matters most
-  numberOfTravelers   Int
-  travelerAges        String? // Age ranges or specific ages
-  extraDetails        String? // Additional information
-  fullName            String
-  email               String
-  phone               String
-  status              String   @default("new") // new, contacted, in-progress, quoted, confirmed, cancelled
-  adminNotes          String? // Internal notes
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  id                     String   @id @default(auto()) @map("_id") @db.ObjectId
+  travelStyle            String // solo, couple, family, group
+  travelDates            String // Date range or flexible dates
+  arrivalCity            String
+  departureCity          String
+  accommodation          String // budget, standard, luxury, mixed
+  budget                 String // Budget range
+  adventureActivities    String[] // Selected activities
+  experiences            String[] // Selected experiences
+  importantFactors       String[] // Selected important factors
+  desiredExperiences     String // Text description
+  transportation         String? // How to explore (private car, public transport, mix)
+  importantCriteria      String? // What matters most
+  numberOfTravelers      Int
+  travelerAges           String? // Age ranges or specific ages
+  extraDetails           String? // Additional information
+  fullName               String
+  email                  String
+  phone                  String
+  status                 String   @default("new") // new, contacted, in-progress, quoted, confirmed, cancelled
+  adminNotes             String? // Internal notes
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  userId                 String?
+  user                   User?    @relation(fields: [userId], references: [id])
+  preferredPaymentMethod String?
+}
+
+model SiteSettings {
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  paymentMethodsEnabled Boolean  @default(true)
+  paymentMethodOptions  String[] @default(["Cash on arrival", "Bank transfer", "Credit card", "PayPal"])
+  updatedAt             DateTime @updatedAt
 }
 
 model ContactMessage {
@@ -94,9 +104,9 @@ model ContactMessage {
 }
 
 model User {
-  id            String     @id @map("_id")
+  id            String        @id @map("_id")
   name          String
-  email         String     @unique
+  email         String        @unique
   emailVerified Boolean
   image         String?
   createdAt     DateTime
@@ -104,9 +114,13 @@ model User {
   sessions      Session[]
   accounts      Account[]
   favorites     Favorite[]
+  tripRequests  TripRequest[]
 
   password String?
   role     String? @default("user")
+  phone    String?
+  bio      String?
+  location String?
 
   @@map("user")
 }

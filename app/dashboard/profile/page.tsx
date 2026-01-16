@@ -43,15 +43,22 @@ export default function ProfilePage() {
             })
 
             if (error) {
-                setMessage({ type: "error", text: error.message || "Failed to update password" })
+                const lowerError = (error.message || "").toLowerCase()
+                if (lowerError.includes("incorrect") || lowerError.includes("wrong") || lowerError.includes("invalid")) {
+                    setMessage({ type: "error", text: "Current password is incorrect" })
+                } else if (lowerError.includes("same") || lowerError.includes("different")) {
+                    setMessage({ type: "error", text: "New password must be different from current password" })
+                } else {
+                    setMessage({ type: "error", text: error.message || "Failed to update password" })
+                }
             } else {
                 setMessage({ type: "success", text: "Password updated successfully" })
                 setCurrentPassword("")
                 setNewPassword("")
                 setConfirmPassword("")
             }
-        } catch (err) {
-            setMessage({ type: "error", text: "An unexpected error occurred" })
+        } catch {
+            setMessage({ type: "error", text: "An unexpected error occurred. Please try again." })
         } finally {
             setLoading(false)
         }

@@ -4,6 +4,7 @@ import { Quicksand } from "next/font/google"
 import "./globals.css"
 
 import { WhatsAppButton } from "@/components/whatsapp-button"
+import { Toaster } from "@/components/ui/sonner"
 
 const quicksand = Quicksand({ subsets: ["latin"] })
 
@@ -11,21 +12,7 @@ export const metadata: Metadata = {
   title: "Morocco Hive",
   description: "A Better Way to Experience Morocco",
   icons: {
-    icon: [
-      {
-        url: "/icon-light-32x32.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/icon-dark-32x32.png",
-        media: "(prefers-color-scheme: dark)",
-      },
-      {
-        url: "/icon.svg",
-        type: "image/svg+xml",
-      },
-    ],
-    apple: "/apple-icon.png",
+    icon: "/favicon.ico",
   },
 }
 
@@ -39,6 +26,7 @@ export default function RootLayout({
       <body className={`${quicksand.className} font-sans antialiased`}>
         {children}
         <WhatsAppButton />
+        <Toaster />
       </body>
     </html>
   )
