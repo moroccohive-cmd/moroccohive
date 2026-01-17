@@ -285,6 +285,8 @@ export default function HomePage() {
               fill
               className="object-cover"
               priority
+              sizes="100vw"
+              fetchPriority="high"
             />
             <div className="absolute inset-0 bg-black/50" />
           </div>

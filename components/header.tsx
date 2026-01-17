@@ -35,7 +35,7 @@ export function Header() {
     ]
 
     return (
-        <header className="relative w-full border-b border-border/40 bg-background/95">
+        <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur-sm">
             {/* Top Bar */}
             <div className="hidden lg:block bg-primary/10 border-b border-primary/20">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

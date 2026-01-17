@@ -6,7 +6,10 @@ import "./globals.css"
 import { WhatsAppButton } from "@/components/whatsapp-button"
 import { Toaster } from "@/components/ui/sonner"
 
-const quicksand = Quicksand({ subsets: ["latin"] })
+const quicksand = Quicksand({
+  subsets: ["latin"],
+  display: "swap",
+})
 
 export const metadata: Metadata = {
   title: "Morocco Hive",
