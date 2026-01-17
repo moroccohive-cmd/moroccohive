@@ -99,7 +99,7 @@ export default async function BlogDetailPage({
                     {post.coverImage ? (
                         <Image
                             src={post.coverImage}
-                            alt={post.title}
+                            alt={`Cover image for ${post.title}`}
                             fill
                             className="object-cover"
                             priority
@@ -113,8 +113,8 @@ export default async function BlogDetailPage({
                 </div>
 
                 <div className="container mx-auto px-6 relative z-10">
-                    <Link href="/blog" className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-6 transition-colors font-medium">
-                        <ArrowLeft className="h-4 w-4" />
+                    <Link href="/blog" className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-6 transition-colors font-medium" aria-label="Back to blog listing">
+                        <ArrowLeft className="h-4 w-4" aria-hidden="true" />
                         Back to Blog
                     </Link>
 
@@ -130,12 +130,14 @@ export default async function BlogDetailPage({
 
                         <div className="flex items-center gap-6 text-sm text-white/80">
                             <div className="flex items-center gap-2">
-                                <Calendar className="h-4 w-4" />
-                                {new Date(post.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                                <Calendar className="h-4 w-4" aria-hidden="true" />
+                                <time dateTime={new Date(post.createdAt).toISOString()}>
+                                    {new Date(post.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                                </time>
                             </div>
                             <div className="flex items-center gap-2">
-                                <User className="h-4 w-4" />
-                                {post.author || "Morocco Hive Admin"}
+                                <User className="h-4 w-4" aria-hidden="true" />
+                                <span>{post.author || "Morocco Hive Admin"}</span>
                             </div>
                         </div>
                     </div>

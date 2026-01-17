@@ -91,6 +91,8 @@ export function FavoriteButton({ circuitId, className }: FavoriteButtonProps) {
         <button
             onClick={toggleFavorite}
             disabled={actionLoading}
+            aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
+            aria-pressed={isFavorited}
             className={cn(
                 "inline-flex items-center justify-center p-2 rounded-full transition-all duration-300 shadow-sm",
                 isFavorited
@@ -100,7 +102,7 @@ export function FavoriteButton({ circuitId, className }: FavoriteButtonProps) {
             )}
             title={isFavorited ? "Remove from favorites" : "Add to favorites"}
         >
-            <Heart className={cn("w-5 h-5", isFavorited && "fill-current")} />
+            <Heart className={cn("w-5 h-5", isFavorited && "fill-current")} aria-hidden="true" />
         </button>
     )
 }

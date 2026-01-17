@@ -83,6 +83,7 @@ const TESTIMONIALS = [
 
 const FAQItem = ({ question, answer }: { question: string; answer: string }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const answerId = `faq-answer-${question.replace(/\s+/g, '-').toLowerCase().slice(0, 20)}`;
 
   return (
     <div
@@ -92,10 +93,12 @@ const FAQItem = ({ question, answer }: { question: string; answer: string }) => 
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full text-left p-6 md:p-8 flex items-start justify-between gap-4 group"
+        aria-expanded={isOpen}
+        aria-controls={answerId}
       >
         <div className="flex items-start gap-4">
           <span className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm transition-colors ${isOpen ? 'bg-primary text-white' : 'bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white'
-            }`}>
+            }`} aria-hidden="true">
             ?
           </span>
           <h3 className="text-lg font-bold text-foreground pt-1">{question}</h3>
@@ -103,11 +106,16 @@ const FAQItem = ({ question, answer }: { question: string; answer: string }) => 
         <ChevronDown
           className={`w-5 h-5 text-muted-foreground transition-transform duration-300 flex-shrink-0 mt-1 ${isOpen ? 'rotate-180 text-primary' : ''
             }`}
+          aria-hidden="true"
         />
       </button>
       <div
+        id={answerId}
         className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
           }`}
+        role="region"
+        aria-labelledby={answerId}
+        hidden={!isOpen}
       >
         <div className="p-6 md:p-8 pt-0 md:pt-0 ml-12 text-muted-foreground font-light leading-relaxed">
           {answer}
@@ -332,8 +340,8 @@ export default function HomePage() {
                 <h2 className="text-3xl font-bold text-foreground tracking-tight">Morocco Tours & Itineraries</h2>
                 <p className="text-muted-foreground mt-2 font-light">Get inspired by trips other travelers have loved</p>
               </div>
-              <Link href="/circuits" className="flex items-center text-accent hover:text-accent/90 font-medium group text-sm">
-                View All Trips <ArrowRight className="ml-2 h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
+              <Link href="/circuits" className="flex items-center text-accent hover:text-accent/90 font-medium group text-sm" aria-label="View all tours and trips">
+                View All Trips <ArrowRight className="ml-2 h-4 w-4 transform group-hover:translate-x-1 transition-transform" aria-hidden="true" />
               </Link>
             </div>
 
@@ -346,14 +354,15 @@ export default function HomePage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {circuits.map((circuit) => (
-                  <Link key={circuit.id} href={`/circuits/${circuit.slug}`} className="group block h-full">
+                  <Link key={circuit.id} href={`/circuits/${circuit.slug}`} className="group block h-full" aria-label={`View tour: ${circuit.name}`}>
                     <div className="bg-card rounded-md overflow-hidden shadow-[0_2px_20px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-500 h-full flex flex-col transform hover:-translate-y-1">
                       <div className="relative aspect-[4/3] overflow-hidden bg-background">
                         {circuit.images[0] ? (
                           <Image
                             src={circuit.images[0]}
-                            alt={circuit.name}
+                            alt={`${circuit.name} tour image`}
                             fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             className="object-cover transform group-hover:scale-110 transition-transform duration-700"
                           />
                         ) : (
@@ -382,7 +391,7 @@ export default function HomePage() {
                           {circuit.description}
                         </p>
                         <div className="mt-auto flex items-center text-foreground font-medium text-sm group-hover:translate-x-2 transition-transform duration-300">
-                          Explore <ArrowRight className="ml-2 h-4 w-4 text-primary" />
+                          Explore <ArrowRight className="ml-2 h-4 w-4 text-primary" aria-hidden="true" />
                         </div>
                       </div>
                     </div>
@@ -651,8 +660,8 @@ export default function HomePage() {
                 <h2 className="text-3xl font-bold text-foreground tracking-tight">Travel Insights</h2>
                 <p className="text-muted-foreground mt-2 font-light">Stories, tips, and inspiration from Morocco</p>
               </div>
-              <Link href="/blog" className="text-accent hover:text-accent/90 font-medium text-sm flex items-center group">
-                Read All Posts <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <Link href="/blog" className="text-accent hover:text-accent/90 font-medium text-sm flex items-center group" aria-label="View all blog posts">
+                Read All Posts <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
               </Link>
             </div>
 
@@ -669,25 +678,28 @@ export default function HomePage() {
                       {post.coverImage ? (
                         <Image
                           src={post.coverImage}
-                          alt={post.title}
+                          alt={`Cover image for ${post.title}`}
                           fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           className="object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
-                          <Plane className="w-12 h-12 opacity-20" />
+                          <Plane className="w-12 h-12 opacity-20" aria-hidden="true" />
                         </div>
                       )}
                     </div>
                     <div className="p-6 flex flex-col flex-1">
                       <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">
                         <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {new Date(post.createdAt).toLocaleDateString("en-US", {
-                            month: "long",
-                            day: "numeric",
-                            year: "numeric"
-                          })}
+                          <Clock className="w-3 h-3" aria-hidden="true" />
+                          <time dateTime={new Date(post.createdAt).toISOString()}>
+                            {new Date(post.createdAt).toLocaleDateString("en-US", {
+                              month: "long",
+                              day: "numeric",
+                              year: "numeric"
+                            })}
+                          </time>
                         </span>
                       </div>
                       <h3 className="text-lg font-bold text-foreground mb-3 group-hover:text-primary transition-colors line-clamp-2">
@@ -696,8 +708,8 @@ export default function HomePage() {
                       <p className="text-muted-foreground text-sm line-clamp-2 font-light mb-4 flex-1">
                         {post.excerpt || (post as any).content?.substring(0, 100).replace(/<[^>]*>/g, '') + "..."}
                       </p>
-                      <Link href={`/blog/${post.slug}`} className="text-primary font-medium text-sm flex items-center group/link mt-auto">
-                        Read More <ArrowRight className="ml-1 w-3 h-3 group-hover/link:translate-x-1 transition-transform" />
+                      <Link href={`/blog/${post.slug}`} className="text-primary font-medium text-sm flex items-center group/link mt-auto" aria-label={`Read article: ${post.title}`}>
+                        Read More <ArrowRight className="ml-1 w-3 h-3 group-hover/link:translate-x-1 transition-transform" aria-hidden="true" />
                       </Link>
                     </div>
                   </div>

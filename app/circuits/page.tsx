@@ -1,50 +1,61 @@
-"use client"
-
-import { useEffect, useState } from "react"
+import { Metadata } from "next"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import Link from "next/link"
 import Image from "next/image"
-import { Clock, ArrowRight, Heart } from "lucide-react"
-import { PriceBadge } from "@/components/ui/price-badge"
+import { ArrowRight } from "lucide-react"
 import { FavoriteButton } from "@/components/favorite-button"
+import prisma from "@/lib/prisma"
+
+export const metadata: Metadata = {
+    title: "Tours & Itineraries | Morocco Hive",
+    description: "Handpicked itineraries designed to immerse you in the magic of the kingdom.",
+}
 
 interface Circuit {
     id: string
     slug: string
     name: string
-    tagline?: string
+    tagline: string | null
     description: string
     duration: number
     price: number
-    originalPrice?: number
-    isFrom?: boolean
+    originalPrice: number | null
+    isFrom: boolean | null
     images: string[]
     highlights: string[]
     category: string
 }
 
-export default function CircuitsPage() {
-    const [circuits, setCircuits] = useState<Circuit[]>([])
-    const [loading, setLoading] = useState(true)
-
-    useEffect(() => {
-        fetchCircuits()
-    }, [])
-
-    const fetchCircuits = async () => {
-        try {
-            const response = await fetch("/api/circuits")
-            if (response.ok) {
-                const data = await response.json()
-                setCircuits(data)
+async function getCircuits(): Promise<Circuit[]> {
+    try {
+        const circuits = await prisma.circuit.findMany({
+            where: { active: true },
+            orderBy: { createdAt: "desc" },
+            select: {
+                id: true,
+                slug: true,
+                name: true,
+                tagline: true,
+                description: true,
+                duration: true,
+                price: true,
+                originalPrice: true,
+                isFrom: true,
+                images: true,
+                highlights: true,
+                category: true,
             }
-        } catch (error) {
-            console.error("Failed to fetch circuits:", error)
-        } finally {
-            setLoading(false)
-        }
+        })
+        return circuits
+    } catch (error) {
+        console.error("Error fetching circuits:", error)
+        return []
     }
+}
+
+export default async function CircuitsPage() {
+    const circuits = await getCircuits()
 
     return (
         <div className="min-h-screen bg-gray-50/50 flex flex-col font-sans">
@@ -64,27 +75,27 @@ export default function CircuitsPage() {
 
                 {/* Circuits Grid */}
                 <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    {loading ? (
-                        <div className="flex justify-center items-center py-20">
-                            <div className="w-2 h-2 bg-orange-400 rounded-full animate-bounce mr-1"></div>
-                            <div className="w-2 h-2 bg-orange-400 rounded-full animate-bounce mr-1 delay-75"></div>
-                            <div className="w-2 h-2 bg-orange-400 rounded-full animate-bounce delay-150"></div>
-                        </div>
-                    ) : circuits.length === 0 ? (
+                    {circuits.length === 0 ? (
                         <div className="text-center py-20 bg-white rounded-md shadow-sm border border-gray-100">
                             <p className="text-gray-400">No journeys available at the moment.</p>
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                             {circuits.map((circuit) => (
-                                <Link key={circuit.id} href={`/circuits/${circuit.slug}`} className="group block">
-                                    <div className="bg-white rounded-md overflow-hidden shadow-[0_2px_20px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-500 h-full flex flex-col transform hover:-translate-y-1">
+                                <Link
+                                    key={circuit.id}
+                                    href={`/circuits/${circuit.slug}`}
+                                    className="group block"
+                                    aria-label={`View tour: ${circuit.name} - ${circuit.duration} days from $${circuit.price}`}
+                                >
+                                    <article className="bg-white rounded-md overflow-hidden shadow-[0_2px_20px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-500 h-full flex flex-col transform hover:-translate-y-1">
                                         <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
                                             {circuit.images[0] ? (
                                                 <Image
                                                     src={circuit.images[0]}
-                                                    alt={circuit.name}
+                                                    alt={`${circuit.name} tour image`}
                                                     fill
+                                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                                     className="object-cover transform group-hover:scale-110 transition-transform duration-700"
                                                 />
                                             ) : (
@@ -115,9 +126,9 @@ export default function CircuitsPage() {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <h3 className="text-2xl font-bold text-gray-800 group-hover:text-orange-500 transition-colors leading-tight">
+                                                <h2 className="text-2xl font-bold text-gray-800 group-hover:text-orange-500 transition-colors leading-tight">
                                                     {circuit.name}
-                                                </h3>
+                                                </h2>
                                             </div>
 
                                             <p className="text-gray-500 text-sm leading-relaxed mb-6 line-clamp-2 flex-1 font-light">
@@ -125,10 +136,10 @@ export default function CircuitsPage() {
                                             </p>
 
                                             <div className="flex items-center text-gray-900 font-medium text-sm group-hover:translate-x-2 transition-transform duration-300">
-                                                View Itinerary <ArrowRight className="ml-2 h-4 w-4 text-orange-400" />
+                                                View Itinerary <ArrowRight className="ml-2 h-4 w-4 text-orange-400" aria-hidden="true" />
                                             </div>
                                         </div>
-                                    </div>
+                                    </article>
                                 </Link>
                             ))}
                         </div>

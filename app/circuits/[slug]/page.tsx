@@ -476,10 +476,12 @@ export default function CircuitDetailPage() {
                     {circuit.images[0] ? (
                         <Image
                             src={circuit.images[0]}
-                            alt={circuit.name}
+                            alt={`${circuit.name} tour hero image`}
                             fill
                             className="object-cover"
                             priority
+                            sizes="100vw"
+                            fetchPriority="high"
                         />
                     ) : (
                         <div className="w-full h-full bg-background flex items-center justify-center">
@@ -494,8 +496,9 @@ export default function CircuitDetailPage() {
                             <Link
                                 href="/circuits"
                                 className="inline-flex items-center text-white/95 hover:text-white mb-6 transition-colors text-sm font-medium bg-white/10 px-4 py-2 rounded-md border border-white/20 hover:bg-white/20"
+                                aria-label="Back to all trips"
                             >
-                                <ArrowLeft className="h-4 w-4 mr-2" /> All Trips
+                                <ArrowLeft className="h-4 w-4 mr-2" aria-hidden="true" /> All Trips
                             </Link>
                             <div className="space-y-3 animate-fade-in-up">
                                 <span className="inline-block px-4 py-1.5 rounded-md bg-accent/90 backdrop-blur-sm text-accent-foreground text-xs font-semibold uppercase tracking-wider">
@@ -747,16 +750,18 @@ export default function CircuitDetailPage() {
                                                                 onClick={() => handleTravelerChange("adults", -1)}
                                                                 disabled={travelers.adults <= 1}
                                                                 className="w-10 h-10 rounded-full border-2 border-border hover:border-primary disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-all hover:bg-primary/10"
+                                                                aria-label="Decrease number of adults"
                                                             >
-                                                                <span className="text-xl font-semibold">−</span>
+                                                                <span className="text-xl font-semibold" aria-hidden="true">−</span>
                                                             </button>
-                                                            <span className="text-lg font-semibold w-8 text-center">{travelers.adults}</span>
+                                                            <span className="text-lg font-semibold w-8 text-center" aria-live="polite">{travelers.adults}</span>
                                                             <button
                                                                 type="button"
                                                                 onClick={() => handleTravelerChange("adults", 1)}
                                                                 className="w-10 h-10 rounded-full border-2 border-border hover:border-primary flex items-center justify-center transition-all hover:bg-primary/10"
+                                                                aria-label="Increase number of adults"
                                                             >
-                                                                <span className="text-xl font-semibold">+</span>
+                                                                <span className="text-xl font-semibold" aria-hidden="true">+</span>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -773,16 +778,18 @@ export default function CircuitDetailPage() {
                                                                 onClick={() => handleTravelerChange("children", -1)}
                                                                 disabled={travelers.children <= 0}
                                                                 className="w-10 h-10 rounded-full border-2 border-border hover:border-primary disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-all hover:bg-primary/10"
+                                                                aria-label="Decrease number of children"
                                                             >
-                                                                <span className="text-xl font-semibold">−</span>
+                                                                <span className="text-xl font-semibold" aria-hidden="true">−</span>
                                                             </button>
-                                                            <span className="text-lg font-semibold w-8 text-center">{travelers.children}</span>
+                                                            <span className="text-lg font-semibold w-8 text-center" aria-live="polite">{travelers.children}</span>
                                                             <button
                                                                 type="button"
                                                                 onClick={() => handleTravelerChange("children", 1)}
                                                                 className="w-10 h-10 rounded-full border-2 border-border hover:border-primary flex items-center justify-center transition-all hover:bg-primary/10"
+                                                                aria-label="Increase number of children"
                                                             >
-                                                                <span className="text-xl font-semibold">+</span>
+                                                                <span className="text-xl font-semibold" aria-hidden="true">+</span>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -799,16 +806,18 @@ export default function CircuitDetailPage() {
                                                                 onClick={() => handleTravelerChange("infants", -1)}
                                                                 disabled={travelers.infants <= 0}
                                                                 className="w-10 h-10 rounded-full border-2 border-border hover:border-primary disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-all hover:bg-primary/10"
+                                                                aria-label="Decrease number of infants"
                                                             >
-                                                                <span className="text-xl font-semibold">−</span>
+                                                                <span className="text-xl font-semibold" aria-hidden="true">−</span>
                                                             </button>
-                                                            <span className="text-lg font-semibold w-8 text-center">{travelers.infants}</span>
+                                                            <span className="text-lg font-semibold w-8 text-center" aria-live="polite">{travelers.infants}</span>
                                                             <button
                                                                 type="button"
                                                                 onClick={() => handleTravelerChange("infants", 1)}
                                                                 className="w-10 h-10 rounded-full border-2 border-border hover:border-primary flex items-center justify-center transition-all hover:bg-primary/10"
+                                                                aria-label="Increase number of infants"
                                                             >
-                                                                <span className="text-xl font-semibold">+</span>
+                                                                <span className="text-xl font-semibold" aria-hidden="true">+</span>
                                                             </button>
                                                         </div>
                                                     </div>
