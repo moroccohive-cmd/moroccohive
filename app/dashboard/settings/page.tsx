@@ -10,7 +10,6 @@ import { Slider } from "@/components/ui/slider"
 interface SiteSettings {
     id: string
     paymentMethodsEnabled: boolean
-    paymentMethodOptions: string[]
     budgetType: "dropdown" | "slider"
     budgetDropdownOptions: string[]
     budgetMin: number
@@ -22,7 +21,6 @@ export default function SettingsPage() {
     const [settings, setSettings] = useState<SiteSettings | null>(null)
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
-    const [newOption, setNewOption] = useState("")
 
     useEffect(() => {
         fetchSettings()
@@ -53,7 +51,6 @@ export default function SettingsPage() {
                 credentials: "include",
                 body: JSON.stringify({
                     paymentMethodsEnabled: settings.paymentMethodsEnabled,
-                    paymentMethodOptions: settings.paymentMethodOptions,
                     budgetType: settings.budgetType,
                     budgetDropdownOptions: settings.budgetDropdownOptions,
                     budgetMin: settings.budgetMin,
@@ -74,30 +71,21 @@ export default function SettingsPage() {
         }
     }
 
-    const toggleEnabled = () => {
+
+    const togglePaymentMethods = () => {
         if (settings) {
             setSettings({ ...settings, paymentMethodsEnabled: !settings.paymentMethodsEnabled })
         }
     }
 
-    const addOption = () => {
-        if (!newOption.trim() || !settings) return
-        if (settings.paymentMethodOptions.includes(newOption.trim())) {
-            toast.error("This option already exists")
-            return
-        }
-        setSettings({
-            ...settings,
-            paymentMethodOptions: [...settings.paymentMethodOptions, newOption.trim()]
-        })
-        setNewOption("")
-    }
-
-    const removeOption = (index: number) => {
-        if (!settings) return
-        const updated = settings.paymentMethodOptions.filter((_, i) => i !== index)
-        setSettings({ ...settings, paymentMethodOptions: updated })
-    }
+    // Hardcoded payment method options (read-only display)
+    const PAYMENT_METHODS = [
+        { value: "Deposit Payment", label: "Deposit Payment" },
+        { value: "Bank Transfer / SWIFT", label: "Bank Transfer / SWIFT" },
+        { value: "Credit Cards", label: "Credit Cards (Visa, Mastercard, Amex)" },
+        { value: "PayPal", label: "PayPal" },
+        { value: "Payoneer", label: "Payoneer" },
+    ]
 
     if (loading) {
         return (
@@ -132,7 +120,7 @@ export default function SettingsPage() {
                         <p className="text-sm text-muted-foreground">Show payment method dropdown in booking forms</p>
                     </div>
                     <button
-                        onClick={toggleEnabled}
+                        onClick={togglePaymentMethods}
                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${settings?.paymentMethodsEnabled ? "bg-primary" : "bg-input"
                             }`}
                     >
@@ -143,43 +131,24 @@ export default function SettingsPage() {
                     </button>
                 </div>
 
-                {/* Options List */}
+                {/* Hardcoded Payment Options Display (Read-Only) */}
                 <div className="space-y-4">
                     <p className="text-sm font-medium flex items-center gap-2">
-                        Available Payment Options
+                        Available Payment Methods
                         <span className="text-xs font-normal text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-                            {settings?.paymentMethodOptions.length}
+                            {PAYMENT_METHODS.length} (Hardcoded)
                         </span>
                     </p>
-
                     <div className="grid gap-2">
-                        {settings?.paymentMethodOptions.map((option, index) => (
-                            <div key={index} className="flex items-center justify-between p-3 bg-muted/20 hover:bg-muted/40 rounded-lg border border-border/50 transition-colors group">
-                                <span className="text-sm font-medium">{option}</span>
-                                <button
-                                    onClick={() => removeOption(index)}
-                                    className="opacity-0 group-hover:opacity-100 p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md transition-all"
-                                    title="Remove option"
-                                >
-                                    <X className="w-4 h-4" />
-                                </button>
+                        {PAYMENT_METHODS.map((method, index) => (
+                            <div key={index} className="flex items-center gap-3 p-3 bg-muted/20 rounded-lg border border-border/50">
+                                <span className="text-sm font-medium">{method.label}</span>
                             </div>
                         ))}
                     </div>
-
-                    {/* Add New Option */}
-                    <div className="flex gap-2">
-                        <Input
-                            value={newOption}
-                            onChange={(e) => setNewOption(e.target.value)}
-                            placeholder="Add new payment option..."
-                            onKeyDown={(e) => e.key === "Enter" && addOption()}
-                            className="flex-1"
-                        />
-                        <Button onClick={addOption} size="icon" disabled={!newOption.trim()}>
-                            <Plus className="w-4 h-4" />
-                        </Button>
-                    </div>
+                    <p className="text-xs text-muted-foreground italic">
+                        These payment methods are hardcoded and cannot be modified from the dashboard.
+                    </p>
                 </div>
             </div>
 

@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label"
 import { CountryCodeSelect } from "@/components/ui/country-code-select"
 import { Textarea } from "@/components/ui/textarea"
 import { PriceBadge } from "@/components/ui/price-badge"
+import { MobileBottomCTA } from "@/components/mobile-bottom-cta"
 import { AuthGate } from "@/components/auth-gate"
 import { useAuth } from "@/hooks/use-auth"
 
@@ -69,11 +70,15 @@ export default function CircuitDetailPage() {
     const [endDateError, setEndDateError] = useState("")
     const [bookingError, setBookingError] = useState<{ message: string; isServerError: boolean } | null>(null)
 
-    // Payment settings state
-    const [paymentSettings, setPaymentSettings] = useState<{
-        enabled: boolean
-        options: string[]
-    }>({ enabled: false, options: [] })
+    // Hardcoded payment method options with icons
+    const PAYMENT_METHODS = [
+        { value: "Deposit Payment", label: "Deposit Payment", icon: "/deposit-payment-icon.png" },
+        { value: "Bank Transfer / SWIFT", label: "Bank Transfer / SWIFT", icon: "/bank-transfer-icon.svg" },
+        { value: "Credit Cards", label: "Credit Cards (Visa, Mastercard, Amex)", icon: "/credit-card-icon.svg" },
+        { value: "PayPal", label: "PayPal", icon: "/paypal-icon.svg" },
+        { value: "Payoneer", label: "Payoneer", icon: "/payoneer-icon.svg" },
+    ]
+    const [paymentMethodsEnabled, setPaymentMethodsEnabled] = useState(true)
 
     // Inline auth state for guest users
     const [showAuthModal, setShowAuthModal] = useState(false)
@@ -296,17 +301,14 @@ export default function CircuitDetailPage() {
         }
     }, [params.slug])
 
-    // Fetch payment settings
+    // Fetch payment method enabled status
     useEffect(() => {
         const fetchPaymentSettings = async () => {
             try {
                 const res = await fetch("/api/settings")
                 if (res.ok) {
                     const data = await res.json()
-                    setPaymentSettings({
-                        enabled: data.paymentMethodsEnabled,
-                        options: data.paymentMethodOptions
-                    })
+                    setPaymentMethodsEnabled(data.paymentMethodsEnabled ?? true)
                 }
             } catch (error) {
                 console.error("Error fetching payment settings:", error)
@@ -314,6 +316,7 @@ export default function CircuitDetailPage() {
         }
         fetchPaymentSettings()
     }, [])
+
 
     const handleTravelerChange = (type: "adults" | "children" | "infants", delta: number) => {
         setTravelers((prev) => {
@@ -418,6 +421,11 @@ export default function CircuitDetailPage() {
     const renderRichText = (text: string) => {
         if (!text) return ""
         return text
+            .replace(/\[CTA\]\s*title:\s*([\s\S]*?)\s*description:\s*([\s\S]*?)\s*button_text:\s*([\s\S]*?)\s*button_link:\s*([\s\S]*?)\s*\[\/CTA\]/g,
+                (match, title, desc, btnText, btnLink) => {
+                    return `<div class='not-prose bg-muted/30 border border-border rounded-lg p-8 my-8'><h3 class='text-2xl font-bold mb-3 text-foreground'>${title.trim()}</h3><p class='text-muted-foreground mb-6 text-lg'>${desc.trim()}</p><a href='${btnLink.trim()}' class='inline-block bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-8 py-4 rounded-md transition-colors text-lg no-underline'>${btnText.trim()}</a></div>`
+                }
+            )
             .replace(/^### (.*?)$/gm, "<h3 class='text-lg font-bold mt-6 mb-4'>$1</h3>")
             .replace(/^## (.*?)$/gm, "<h2 class='text-xl font-bold mt-8 mb-4'>$1</h2>")
             .replace(/^# (.*?)$/gm, "<h1 class='text-2xl font-bold mt-10 mb-6'>$1</h1>")
@@ -462,7 +470,7 @@ export default function CircuitDetailPage() {
                     </div>
                 </main>
                 <Footer />
-            </div>
+            </div >
         )
     }
 
@@ -661,7 +669,7 @@ export default function CircuitDetailPage() {
                         </div>
 
                         {/* Sidebar - Floating Soft Card */}
-                        <div className="lg:col-span-4">
+                        <div className="lg:col-span-4" id="booking-form-section">
                             <div className="space-y-6">
                                 {/* Price Card */}
                                 <div className="bg-card rounded-lg p-8 shadow-[0_20px_40px_rgb(0,0,0,0.06)] relative overflow-hidden">
@@ -839,7 +847,7 @@ export default function CircuitDetailPage() {
                                             </div>
 
                                             {/* Payment Method Dropdown */}
-                                            {paymentSettings.enabled && paymentSettings.options.length > 0 && (
+                                            {paymentMethodsEnabled && (
                                                 <div className="space-y-2">
                                                     <Label htmlFor="paymentMethod" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Preferred Payment</Label>
                                                     <select
@@ -848,11 +856,22 @@ export default function CircuitDetailPage() {
                                                         onChange={(e) => setBooking({ ...booking, preferredPaymentMethod: e.target.value })}
                                                         className="w-full bg-gray-50 border border-gray-100 rounded-md focus:ring-orange-200 h-11 px-3 text-sm"
                                                     >
-                                                        <option value="">Select (optional)</option>
-                                                        {paymentSettings.options.map((option) => (
-                                                            <option key={option} value={option}>{option}</option>
+                                                        <option value="">Select payment method (optional)</option>
+                                                        {PAYMENT_METHODS.map((method) => (
+                                                            <option key={method.value} value={method.value}>{method.label}</option>
                                                         ))}
                                                     </select>
+
+                                                    {/* Deposit Payment Info */}
+                                                    {booking.preferredPaymentMethod === "Deposit Payment" && (
+                                                        <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 text-sm space-y-1">
+                                                            <p className="font-semibold text-foreground">Deposit Payment Information:</p>
+                                                            <ul className="list-disc list-inside text-muted-foreground space-y-1">
+                                                                <li>To confirm your booking, a 20% deposit is required.</li>
+                                                                <li>The remaining balance will be paid in cash upon arrival in Morocco.</li>
+                                                            </ul>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )}
 
@@ -1055,6 +1074,14 @@ export default function CircuitDetailPage() {
                     </div>
                 </div>
             </main>
+
+            <MobileBottomCTA
+                buttonText="Book This Tour"
+                onButtonClick={() => document.getElementById('booking-form-section')?.scrollIntoView({ behavior: 'smooth' })}
+                price={circuit.price}
+                originalPrice={circuit.originalPrice}
+                isFrom={circuit.isFrom}
+            />
 
             <Footer />
         </div>

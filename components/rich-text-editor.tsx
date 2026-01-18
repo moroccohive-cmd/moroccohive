@@ -16,10 +16,12 @@ import {
     Eye,
     EyeOff,
     Image,
-    ImageIcon
+    ImageIcon,
+    MessageSquarePlus
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ImageUpload } from "./image-upload"
+import { CTADialog } from "./cta-dialog"
 
 interface RichTextEditorProps {
     value: string
@@ -31,6 +33,7 @@ export function RichTextEditor({ value, onChange, placeholder = "Enter descripti
     const [isFocused, setIsFocused] = useState(false)
     const [showPreview, setShowPreview] = useState(true)
     const [openUploader, setOpenUploader] = useState(false)
+    const [showCTADialog, setShowCTADialog] = useState(false)
 
     const applyFormat = (format: string) => {
         const textarea = document.querySelector("textarea[data-rich-editor]") as HTMLTextAreaElement
@@ -97,6 +100,9 @@ export function RichTextEditor({ value, onChange, placeholder = "Enter descripti
             case "image":
                 setOpenUploader(true)
                 break
+            case "cta":
+                setShowCTADialog(true)
+                return
         }
 
         onChange(newText)
@@ -109,6 +115,11 @@ export function RichTextEditor({ value, onChange, placeholder = "Enter descripti
 
     const renderPreview = (text: string) => {
         return text
+            .replace(/\[CTA\]\s*title:\s*([\s\S]*?)\s*description:\s*([\s\S]*?)\s*button_text:\s*([\s\S]*?)\s*button_link:\s*([\s\S]*?)\s*\[\/CTA\]/g,
+                (match, title, desc, btnText, btnLink) => {
+                    return `<div class='not-prose bg-muted/30 border border-border rounded-lg p-6 my-6'><h3 class='text-xl font-bold mb-2 text-foreground'>${title.trim()}</h3><p class='text-muted-foreground mb-4'>${desc.trim()}</p><a href='${btnLink.trim()}' class='inline-block bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-6 py-3 rounded-md transition-colors no-underline'>${btnText.trim()}</a></div>`
+                }
+            )
             // Headings
             .replace(/^### (.*?)$/gm, "<h3 class='text-lg font-bold mt-4 mb-2'>$1</h3>")
             .replace(/^## (.*?)$/gm, "<h2 class='text-xl font-bold mt-4 mb-2'>$1</h2>")
@@ -152,6 +163,19 @@ export function RichTextEditor({ value, onChange, placeholder = "Enter descripti
         onChange(newText)
     }
 
+    const insertCTA = (title: string, description: string, buttonText: string, buttonLink: string) => {
+        const textarea = document.querySelector("textarea[data-rich-editor]") as HTMLTextAreaElement
+        if (!textarea) return
+
+        const start = textarea.selectionStart
+        const end = textarea.selectionEnd
+
+        const ctaMarkdown = `\n[CTA]\ntitle: ${title}\ndescription: ${description}\nbutton_text: ${buttonText}\nbutton_link: ${buttonLink}\n[/CTA]\n`
+        const newText = value.substring(0, start) + ctaMarkdown + value.substring(end)
+
+        onChange(newText)
+    }
+
     return (
         <div className="space-y-2">
             <div className="border rounded-lg overflow-hidden bg-card">
@@ -163,6 +187,12 @@ export function RichTextEditor({ value, onChange, placeholder = "Enter descripti
                             setOpenUploader(false)
                         }}
                         onRemoveImage={() => setOpenUploader(false)}
+                    />
+                )}
+                {showCTADialog && (
+                    <CTADialog
+                        onInsert={insertCTA}
+                        onClose={() => setShowCTADialog(false)}
                     />
                 )}
                 {/* Toolbar */}
@@ -306,10 +336,20 @@ export function RichTextEditor({ value, onChange, placeholder = "Enter descripti
                             size="sm"
                             variant="ghost"
                             onClick={() => setOpenUploader(true)}
-                            title="Insert Link"
+                            title="Insert Image"
                             className="h-8 w-8 p-0 hover:bg-primary/10"
                         >
                             <ImageIcon className="w-4 h-4" />
+                        </Button>
+                        <Button
+                            type="button"
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setShowCTADialog(true)}
+                            title="Insert CTA"
+                            className="h-8 w-8 p-0 hover:bg-primary/10"
+                        >
+                            <MessageSquarePlus className="w-4 h-4" />
                         </Button>
                     </div>
 
@@ -373,6 +413,7 @@ export function RichTextEditor({ value, onChange, placeholder = "Enter descripti
                     <div><code className="bg-muted px-1 rounded">`code`</code> - Inline code</div>
                     <div><code className="bg-muted px-1 rounded">[text](url)</code> - Link</div>
                     <div><code className="bg-muted px-1 rounded">&gt; quote</code> - Blockquote</div>
+                    <div className="col-span-2"><code className="bg-muted px-1 rounded">CTA button</code> - Click CTA button in toolbar</div>
                 </div>
             </div>
         </div>

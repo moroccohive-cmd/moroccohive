@@ -94,17 +94,15 @@ export default function PlanTripPage() {
     const [submitting, setSubmitting] = useState(false)
     const [submitted, setSubmitted] = useState(false)
 
-    interface PaymentSettings {
-        enabled: boolean
-        options: string[]
-        budgetType?: "dropdown" | "slider"
-        budgetDropdownOptions?: string[]
-        budgetMin?: number
-        budgetMax?: number
-        budgetStep?: number
-    }
-    // Payment method settings
-    const [paymentSettings, setPaymentSettings] = useState<PaymentSettings>({ enabled: false, options: [] })
+    // Hardcoded payment method options with icons
+    const PAYMENT_METHODS = [
+        { value: "Deposit Payment", label: "Deposit Payment", icon: "/deposit-payment-icon.png" },
+        { value: "Bank Transfer / SWIFT", label: "Bank Transfer / SWIFT", icon: "/bank-transfer-icon.svg" },
+        { value: "Credit Cards", label: "Credit Cards (Visa, Mastercard, Amex)", icon: "/credit-card-icon.svg" },
+        { value: "PayPal", label: "PayPal", icon: "/paypal-icon.svg" },
+        { value: "Payoneer", label: "Payoneer", icon: "/payoneer-icon.svg" },
+    ]
+    const [paymentMethodsEnabled, setPaymentMethodsEnabled] = useState(true)
 
     // Separate state for slider display to prevent full form re-renders
     const [sliderBudget, setSliderBudget] = useState<number>(500)
@@ -142,28 +140,19 @@ export default function PlanTripPage() {
         }
     }, [userEmail, userName, userVerified])
 
-    // Fetch payment settings
+
+
+    // Fetch payment method enabled status
     useEffect(() => {
         const fetchPaymentSettings = async () => {
             try {
                 const res = await fetch("/api/settings")
                 if (res.ok) {
                     const data = await res.json()
-                    setPaymentSettings({
-                        enabled: data.paymentMethodsEnabled,
-                        options: data.paymentMethodOptions,
-                        budgetType: data.budgetType,
-                        budgetDropdownOptions: data.budgetDropdownOptions,
-                        budgetMin: data.budgetMin,
-                        budgetMax: data.budgetMax,
-                        budgetStep: data.budgetStep
-                    })
-                    // Initialize slider budget from settings
-                    if (data.budgetType === "slider") {
-                        setSliderBudget(data.budgetMin || 500)
-                    }
+                    setPaymentMethodsEnabled(data.paymentMethodsEnabled ?? true)
                 }
-            } catch {
+            } catch (error) {
+                console.error("Error fetching payment settings:", error)
             }
         }
         fetchPaymentSettings()
@@ -977,36 +966,18 @@ export default function PlanTripPage() {
                                         Budget Range (per person)
                                     </label>
 
-                                    {paymentSettings && paymentSettings.budgetType === "slider" ? (
-                                        <div className="pt-6 pb-2 px-1">
-                                            <Slider
-                                                value={[sliderBudget]}
-                                                min={paymentSettings.budgetMin || 100}
-                                                max={paymentSettings.budgetMax || 10000}
-                                                step={paymentSettings.budgetStep || 100}
-                                                onValueChange={(vals) => setSliderBudget(vals[0])}
-                                                onValueCommit={(vals) => setFormData(prev => ({ ...prev, budget: vals[0].toString() }))}
-                                                className="mb-4"
-                                            />
-                                            <div className="flex justify-between text-sm text-muted-foreground">
-                                                <span>Minimum: ${paymentSettings.budgetMin}</span>
-                                                <span className="font-semibold text-foreground text-lg">${sliderBudget}</span>
-                                                <span>Maximum: ${paymentSettings.budgetMax}</span>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <select
-                                            id="budget"
-                                            value={formData.budget}
-                                            onChange={(e) => setFormData((prev) => ({ ...prev, budget: e.target.value }))}
-                                            className="w-full px-4 py-3 cursor-pointer border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background"
-                                        >
-                                            <option value="">Select budget</option>
-                                            {(paymentSettings?.budgetDropdownOptions || ["$500-$1000", "$1000-$2000", "$2000-$3500", "$3500+"]).map(opt => (
-                                                <option key={opt} value={opt}>{opt}</option>
-                                            ))}
-                                        </select>
-                                    )}
+                                    <select
+                                        id="budget"
+                                        value={formData.budget}
+                                        onChange={(e) => setFormData((prev) => ({ ...prev, budget: e.target.value }))}
+                                        className="w-full px-4 py-3 cursor-pointer border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background"
+                                    >
+                                        <option value="">Select budget</option>
+                                        <option value="$500-$1000">$500-$1000</option>
+                                        <option value="$1000-$2000">$1000-$2000</option>
+                                        <option value="$2000-$3500">$2000-$3500</option>
+                                        <option value="$3500+">$3500+</option>
+                                    </select>
                                     {errors.budget && <p className="text-sm text-destructive mt-2">{errors.budget}</p>}
                                 </div>
 
@@ -1197,8 +1168,8 @@ export default function PlanTripPage() {
                                         </p>
 
                                         {/* Payment Method Dropdown */}
-                                        {paymentSettings.enabled && paymentSettings.options.length > 0 && (
-                                            <div className="mb-4">
+                                        {paymentMethodsEnabled && (
+                                            <div className="mb-4 space-y-2">
                                                 <label className="block text-sm font-medium mb-2">Preferred Payment Method</label>
                                                 <select
                                                     value={formData.preferredPaymentMethod}
@@ -1206,10 +1177,21 @@ export default function PlanTripPage() {
                                                     className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background"
                                                 >
                                                     <option value="">Select payment method (optional)</option>
-                                                    {paymentSettings.options.map((option) => (
-                                                        <option key={option} value={option}>{option}</option>
+                                                    {PAYMENT_METHODS.map((method) => (
+                                                        <option key={method.value} value={method.value}>{method.label}</option>
                                                     ))}
                                                 </select>
+
+                                                {/* Deposit Payment Info */}
+                                                {formData.preferredPaymentMethod === "Deposit Payment" && (
+                                                    <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 text-sm space-y-1">
+                                                        <p className="font-semibold text-foreground">Deposit Payment Information:</p>
+                                                        <ul className="list-disc list-inside text-muted-foreground space-y-1">
+                                                            <li>To confirm your booking, a 20% deposit is required.</li>
+                                                            <li>The remaining balance will be paid in cash upon arrival in Morocco.</li>
+                                                        </ul>
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
                                         <Button
