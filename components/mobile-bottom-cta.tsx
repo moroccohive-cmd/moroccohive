@@ -40,11 +40,11 @@ export function MobileBottomCTA({
                             {isFrom && <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">From</span>}
                             <div className="flex items-baseline gap-2">
                                 <span className="text-xl font-bold text-primary">
-                                    €{price.toLocaleString()}
+                                    {price.toLocaleString()}$
                                 </span>
                                 {originalPrice && originalPrice > price && (
                                     <span className="text-xs text-muted-foreground line-through decoration-destructive/50">
-                                        €{originalPrice.toLocaleString()}
+                                        {originalPrice.toLocaleString()}$
                                     </span>
                                 )}
                             </div>

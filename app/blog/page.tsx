@@ -158,7 +158,8 @@ export default async function BlogListingPage({
                                         </p>
 
                                         <div className="flex items-center text-primary font-bold text-sm uppercase tracking-wider">
-                                            Read More
+                                            <span className="sr-only">Read article: {post.title}</span>
+                                            <span aria-hidden="true">Read More</span>
                                             <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
                                         </div>
                                     </div>

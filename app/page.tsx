@@ -709,7 +709,8 @@ export default function HomePage() {
                         {post.excerpt || (post as any).content?.substring(0, 100).replace(/<[^>]*>/g, '') + "..."}
                       </p>
                       <Link href={`/blog/${post.slug}`} className="text-primary font-medium text-sm flex items-center group/link mt-auto" aria-label={`Read article: ${post.title}`}>
-                        Read More <ArrowRight className="ml-1 w-3 h-3 group-hover/link:translate-x-1 transition-transform" aria-hidden="true" />
+                        <span className="sr-only">Read article: {post.title}</span>
+                        <span aria-hidden="true">Read More</span> <ArrowRight className="ml-1 w-3 h-3 group-hover/link:translate-x-1 transition-transform" aria-hidden="true" />
                       </Link>
                     </div>
                   </div>

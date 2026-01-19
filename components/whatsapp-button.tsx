@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation"
 
 export function WhatsAppButton() {
     const pathname = usePathname()
-    const whatsappNumber = "212634717423"
+    const whatsappNumber = "212681134299"
     const whatsappLink = `https://wa.me/${whatsappNumber}`
 
     // Hide on mobile for blog and circuits pages (where we have the bottom CTA)

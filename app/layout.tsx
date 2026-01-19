@@ -14,9 +14,6 @@ const quicksand = Quicksand({
 export const metadata: Metadata = {
   title: "Morocco Hive",
   description: "A Better Way to Experience Morocco",
-  icons: {
-    icon: "/favicon.ico",
-  },
 }
 
 export default function RootLayout({

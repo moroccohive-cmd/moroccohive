@@ -72,11 +72,11 @@ export default function CircuitDetailPage() {
 
     // Hardcoded payment method options with icons
     const PAYMENT_METHODS = [
-        { value: "Deposit Payment", label: "Deposit Payment", icon: "/deposit-payment-icon.png" },
-        { value: "Bank Transfer / SWIFT", label: "Bank Transfer / SWIFT", icon: "/bank-transfer-icon.svg" },
-        { value: "Credit Cards", label: "Credit Cards (Visa, Mastercard, Amex)", icon: "/credit-card-icon.svg" },
-        { value: "PayPal", label: "PayPal", icon: "/paypal-icon.svg" },
-        { value: "Payoneer", label: "Payoneer", icon: "/payoneer-icon.svg" },
+        { value: "Deposit Payment", label: "Deposit Payment" },
+        { value: "Bank Transfer / SWIFT", label: "Bank Transfer / SWIFT" },
+        { value: "Credit Cards", label: "Credit Cards (Visa, Mastercard, Amex)" },
+        { value: "PayPal", label: "PayPal" },
+        { value: "Payoneer", label: "Payoneer" },
     ]
     const [paymentMethodsEnabled, setPaymentMethodsEnabled] = useState(true)
 
@@ -841,7 +841,7 @@ export default function CircuitDetailPage() {
                                                     className="w-full bg-gray-50 border border-gray-100 rounded-md focus:ring-orange-200 h-11 px-3 text-sm"
                                                 >
                                                     <option value="Standard">Standard</option>
-                                                    <option value="Premium">Premium</option>
+                                                    <option value="Comfort">Comfort</option>
                                                     <option value="Luxury">Luxury</option>
                                                 </select>
                                             </div>
@@ -1076,7 +1076,7 @@ export default function CircuitDetailPage() {
             </main>
 
             <MobileBottomCTA
-                buttonText="Book This Tour"
+                buttonText="Request This Tour"
                 onButtonClick={() => document.getElementById('booking-form-section')?.scrollIntoView({ behavior: 'smooth' })}
                 price={circuit.price}
                 originalPrice={circuit.originalPrice}
