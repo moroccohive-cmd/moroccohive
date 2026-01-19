@@ -186,6 +186,7 @@ exports.Prisma.SiteSettingsScalarFieldEnum = {
   id: 'id',
   paymentMethodsEnabled: 'paymentMethodsEnabled',
   paymentMethodOptions: 'paymentMethodOptions',
+  enabledPaymentMethods: 'enabledPaymentMethods',
   budgetType: 'budgetType',
   budgetDropdownOptions: 'budgetDropdownOptions',
   budgetMin: 'budgetMin',

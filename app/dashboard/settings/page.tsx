@@ -10,6 +10,7 @@ import { Slider } from "@/components/ui/slider"
 interface SiteSettings {
     id: string
     paymentMethodsEnabled: boolean
+    enabledPaymentMethods: string[]
     budgetType: "dropdown" | "slider"
     budgetDropdownOptions: string[]
     budgetMin: number
@@ -51,6 +52,7 @@ export default function SettingsPage() {
                 credentials: "include",
                 body: JSON.stringify({
                     paymentMethodsEnabled: settings.paymentMethodsEnabled,
+                    enabledPaymentMethods: settings.enabledPaymentMethods,
                     budgetType: settings.budgetType,
                     budgetDropdownOptions: settings.budgetDropdownOptions,
                     budgetMin: settings.budgetMin,
@@ -78,7 +80,7 @@ export default function SettingsPage() {
         }
     }
 
-    // Hardcoded payment method options (read-only display)
+    // Payment method options
     const PAYMENT_METHODS = [
         { value: "Deposit Payment", label: "Deposit Payment" },
         { value: "Bank Transfer / SWIFT", label: "Bank Transfer / SWIFT" },
@@ -86,6 +88,15 @@ export default function SettingsPage() {
         { value: "PayPal", label: "PayPal" },
         { value: "Payoneer", label: "Payoneer" },
     ]
+
+    const togglePaymentMethod = (methodValue: string) => {
+        if (!settings) return
+        const isEnabled = settings.enabledPaymentMethods.includes(methodValue)
+        const newEnabledMethods = isEnabled
+            ? settings.enabledPaymentMethods.filter(m => m !== methodValue)
+            : [...settings.enabledPaymentMethods, methodValue]
+        setSettings({ ...settings, enabledPaymentMethods: newEnabledMethods })
+    }
 
     if (loading) {
         return (
@@ -131,23 +142,47 @@ export default function SettingsPage() {
                     </button>
                 </div>
 
-                {/* Hardcoded Payment Options Display (Read-Only) */}
+                {/* Individual Payment Method Toggles */}
                 <div className="space-y-4">
                     <p className="text-sm font-medium flex items-center gap-2">
-                        Available Payment Methods
+                        Payment Methods
                         <span className="text-xs font-normal text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-                            {PAYMENT_METHODS.length} (Hardcoded)
+                            {settings?.enabledPaymentMethods?.length || 0} enabled
                         </span>
                     </p>
                     <div className="grid gap-2">
-                        {PAYMENT_METHODS.map((method, index) => (
-                            <div key={index} className="flex items-center gap-3 p-3 bg-muted/20 rounded-lg border border-border/50">
-                                <span className="text-sm font-medium">{method.label}</span>
-                            </div>
-                        ))}
+                        {PAYMENT_METHODS.map((method) => {
+                            const isEnabled = settings?.enabledPaymentMethods?.includes(method.value) ?? false
+                            return (
+                                <div
+                                    key={method.value}
+                                    className={`flex items-center justify-between gap-3 p-3 rounded-lg border transition-colors cursor-pointer hover:bg-muted/40 ${isEnabled
+                                            ? "bg-primary/5 border-primary/20"
+                                            : "bg-muted/20 border-border/50"
+                                        }`}
+                                    onClick={() => togglePaymentMethod(method.value)}
+                                >
+                                    <span className={`text-sm font-medium ${isEnabled ? "text-foreground" : "text-muted-foreground"}`}>
+                                        {method.label}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.stopPropagation()
+                                            togglePaymentMethod(method.value)
+                                        }}
+                                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${isEnabled ? "bg-primary" : "bg-input"}`}
+                                    >
+                                        <span
+                                            className={`${isEnabled ? "translate-x-5" : "translate-x-1"} inline-block h-3 w-3 transform rounded-full bg-background transition-transform`}
+                                        />
+                                    </button>
+                                </div>
+                            )
+                        })}
                     </div>
-                    <p className="text-xs text-muted-foreground italic">
-                        These payment methods are hardcoded and cannot be modified from the dashboard.
+                    <p className="text-xs text-muted-foreground">
+                        Toggle each payment method to enable or disable it in booking forms.
                     </p>
                 </div>
             </div>

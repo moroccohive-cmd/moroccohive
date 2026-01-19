@@ -103,6 +103,7 @@ export default function PlanTripPage() {
         { value: "Payoneer", label: "Payoneer", icon: "/payoneer-icon.svg" },
     ]
     const [paymentMethodsEnabled, setPaymentMethodsEnabled] = useState(true)
+    const [enabledPaymentMethods, setEnabledPaymentMethods] = useState<string[]>(PAYMENT_METHODS.map(m => m.value))
 
     // Separate state for slider display to prevent full form re-renders
     const [sliderBudget, setSliderBudget] = useState<number>(500)
@@ -150,6 +151,7 @@ export default function PlanTripPage() {
                 if (res.ok) {
                     const data = await res.json()
                     setPaymentMethodsEnabled(data.paymentMethodsEnabled ?? true)
+                    setEnabledPaymentMethods(data.enabledPaymentMethods ?? PAYMENT_METHODS.map(m => m.value))
                 }
             } catch (error) {
                 console.error("Error fetching payment settings:", error)
@@ -1168,7 +1170,7 @@ export default function PlanTripPage() {
                                         </p>
 
                                         {/* Payment Method Dropdown */}
-                                        {paymentMethodsEnabled && (
+                                        {paymentMethodsEnabled && enabledPaymentMethods.length > 0 && (
                                             <div className="mb-4 space-y-2">
                                                 <label className="block text-sm font-medium mb-2">Preferred Payment Method</label>
                                                 <select
@@ -1177,7 +1179,7 @@ export default function PlanTripPage() {
                                                     className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background"
                                                 >
                                                     <option value="">Select payment method (optional)</option>
-                                                    {PAYMENT_METHODS.map((method) => (
+                                                    {PAYMENT_METHODS.filter(m => enabledPaymentMethods.includes(m.value)).map((method) => (
                                                         <option key={method.value} value={method.value}>{method.label}</option>
                                                     ))}
                                                 </select>

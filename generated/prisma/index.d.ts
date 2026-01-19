@@ -5221,6 +5221,7 @@ export namespace Prisma {
     id: number
     paymentMethodsEnabled: number
     paymentMethodOptions: number
+    enabledPaymentMethods: number
     budgetType: number
     budgetDropdownOptions: number
     budgetMin: number
@@ -5267,6 +5268,7 @@ export namespace Prisma {
     id?: true
     paymentMethodsEnabled?: true
     paymentMethodOptions?: true
+    enabledPaymentMethods?: true
     budgetType?: true
     budgetDropdownOptions?: true
     budgetMin?: true
@@ -5366,6 +5368,7 @@ export namespace Prisma {
     id: string
     paymentMethodsEnabled: boolean
     paymentMethodOptions: string[]
+    enabledPaymentMethods: string[]
     budgetType: string
     budgetDropdownOptions: string[]
     budgetMin: number
@@ -5397,6 +5400,7 @@ export namespace Prisma {
     id?: boolean
     paymentMethodsEnabled?: boolean
     paymentMethodOptions?: boolean
+    enabledPaymentMethods?: boolean
     budgetType?: boolean
     budgetDropdownOptions?: boolean
     budgetMin?: boolean
@@ -5411,6 +5415,7 @@ export namespace Prisma {
     id?: boolean
     paymentMethodsEnabled?: boolean
     paymentMethodOptions?: boolean
+    enabledPaymentMethods?: boolean
     budgetType?: boolean
     budgetDropdownOptions?: boolean
     budgetMin?: boolean
@@ -5419,7 +5424,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type SiteSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "paymentMethodsEnabled" | "paymentMethodOptions" | "budgetType" | "budgetDropdownOptions" | "budgetMin" | "budgetMax" | "budgetStep" | "updatedAt", ExtArgs["result"]["siteSettings"]>
+  export type SiteSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "paymentMethodsEnabled" | "paymentMethodOptions" | "enabledPaymentMethods" | "budgetType" | "budgetDropdownOptions" | "budgetMin" | "budgetMax" | "budgetStep" | "updatedAt", ExtArgs["result"]["siteSettings"]>
 
   export type $SiteSettingsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "SiteSettings"
@@ -5428,6 +5433,7 @@ export namespace Prisma {
       id: string
       paymentMethodsEnabled: boolean
       paymentMethodOptions: string[]
+      enabledPaymentMethods: string[]
       budgetType: string
       budgetDropdownOptions: string[]
       budgetMin: number
@@ -5829,6 +5835,7 @@ export namespace Prisma {
     readonly id: FieldRef<"SiteSettings", 'String'>
     readonly paymentMethodsEnabled: FieldRef<"SiteSettings", 'Boolean'>
     readonly paymentMethodOptions: FieldRef<"SiteSettings", 'String[]'>
+    readonly enabledPaymentMethods: FieldRef<"SiteSettings", 'String[]'>
     readonly budgetType: FieldRef<"SiteSettings", 'String'>
     readonly budgetDropdownOptions: FieldRef<"SiteSettings", 'String[]'>
     readonly budgetMin: FieldRef<"SiteSettings", 'Int'>
@@ -12404,6 +12411,7 @@ export namespace Prisma {
     id: 'id',
     paymentMethodsEnabled: 'paymentMethodsEnabled',
     paymentMethodOptions: 'paymentMethodOptions',
+    enabledPaymentMethods: 'enabledPaymentMethods',
     budgetType: 'budgetType',
     budgetDropdownOptions: 'budgetDropdownOptions',
     budgetMin: 'budgetMin',
@@ -12983,6 +12991,7 @@ export namespace Prisma {
     id?: StringFilter<"SiteSettings"> | string
     paymentMethodsEnabled?: BoolFilter<"SiteSettings"> | boolean
     paymentMethodOptions?: StringNullableListFilter<"SiteSettings">
+    enabledPaymentMethods?: StringNullableListFilter<"SiteSettings">
     budgetType?: StringFilter<"SiteSettings"> | string
     budgetDropdownOptions?: StringNullableListFilter<"SiteSettings">
     budgetMin?: IntFilter<"SiteSettings"> | number
@@ -12995,6 +13004,7 @@ export namespace Prisma {
     id?: SortOrder
     paymentMethodsEnabled?: SortOrder
     paymentMethodOptions?: SortOrder
+    enabledPaymentMethods?: SortOrder
     budgetType?: SortOrder
     budgetDropdownOptions?: SortOrder
     budgetMin?: SortOrder
@@ -13010,6 +13020,7 @@ export namespace Prisma {
     NOT?: SiteSettingsWhereInput | SiteSettingsWhereInput[]
     paymentMethodsEnabled?: BoolFilter<"SiteSettings"> | boolean
     paymentMethodOptions?: StringNullableListFilter<"SiteSettings">
+    enabledPaymentMethods?: StringNullableListFilter<"SiteSettings">
     budgetType?: StringFilter<"SiteSettings"> | string
     budgetDropdownOptions?: StringNullableListFilter<"SiteSettings">
     budgetMin?: IntFilter<"SiteSettings"> | number
@@ -13022,6 +13033,7 @@ export namespace Prisma {
     id?: SortOrder
     paymentMethodsEnabled?: SortOrder
     paymentMethodOptions?: SortOrder
+    enabledPaymentMethods?: SortOrder
     budgetType?: SortOrder
     budgetDropdownOptions?: SortOrder
     budgetMin?: SortOrder
@@ -13042,6 +13054,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"SiteSettings"> | string
     paymentMethodsEnabled?: BoolWithAggregatesFilter<"SiteSettings"> | boolean
     paymentMethodOptions?: StringNullableListFilter<"SiteSettings">
+    enabledPaymentMethods?: StringNullableListFilter<"SiteSettings">
     budgetType?: StringWithAggregatesFilter<"SiteSettings"> | string
     budgetDropdownOptions?: StringNullableListFilter<"SiteSettings">
     budgetMin?: IntWithAggregatesFilter<"SiteSettings"> | number
@@ -13968,6 +13981,7 @@ export namespace Prisma {
     id?: string
     paymentMethodsEnabled?: boolean
     paymentMethodOptions?: SiteSettingsCreatepaymentMethodOptionsInput | string[]
+    enabledPaymentMethods?: SiteSettingsCreateenabledPaymentMethodsInput | string[]
     budgetType?: string
     budgetDropdownOptions?: SiteSettingsCreatebudgetDropdownOptionsInput | string[]
     budgetMin?: number
@@ -13980,6 +13994,7 @@ export namespace Prisma {
     id?: string
     paymentMethodsEnabled?: boolean
     paymentMethodOptions?: SiteSettingsCreatepaymentMethodOptionsInput | string[]
+    enabledPaymentMethods?: SiteSettingsCreateenabledPaymentMethodsInput | string[]
     budgetType?: string
     budgetDropdownOptions?: SiteSettingsCreatebudgetDropdownOptionsInput | string[]
     budgetMin?: number
@@ -13991,6 +14006,7 @@ export namespace Prisma {
   export type SiteSettingsUpdateInput = {
     paymentMethodsEnabled?: BoolFieldUpdateOperationsInput | boolean
     paymentMethodOptions?: SiteSettingsUpdatepaymentMethodOptionsInput | string[]
+    enabledPaymentMethods?: SiteSettingsUpdateenabledPaymentMethodsInput | string[]
     budgetType?: StringFieldUpdateOperationsInput | string
     budgetDropdownOptions?: SiteSettingsUpdatebudgetDropdownOptionsInput | string[]
     budgetMin?: IntFieldUpdateOperationsInput | number
@@ -14002,6 +14018,7 @@ export namespace Prisma {
   export type SiteSettingsUncheckedUpdateInput = {
     paymentMethodsEnabled?: BoolFieldUpdateOperationsInput | boolean
     paymentMethodOptions?: SiteSettingsUpdatepaymentMethodOptionsInput | string[]
+    enabledPaymentMethods?: SiteSettingsUpdateenabledPaymentMethodsInput | string[]
     budgetType?: StringFieldUpdateOperationsInput | string
     budgetDropdownOptions?: SiteSettingsUpdatebudgetDropdownOptionsInput | string[]
     budgetMin?: IntFieldUpdateOperationsInput | number
@@ -14014,6 +14031,7 @@ export namespace Prisma {
     id?: string
     paymentMethodsEnabled?: boolean
     paymentMethodOptions?: SiteSettingsCreatepaymentMethodOptionsInput | string[]
+    enabledPaymentMethods?: SiteSettingsCreateenabledPaymentMethodsInput | string[]
     budgetType?: string
     budgetDropdownOptions?: SiteSettingsCreatebudgetDropdownOptionsInput | string[]
     budgetMin?: number
@@ -14025,6 +14043,7 @@ export namespace Prisma {
   export type SiteSettingsUpdateManyMutationInput = {
     paymentMethodsEnabled?: BoolFieldUpdateOperationsInput | boolean
     paymentMethodOptions?: SiteSettingsUpdatepaymentMethodOptionsInput | string[]
+    enabledPaymentMethods?: SiteSettingsUpdateenabledPaymentMethodsInput | string[]
     budgetType?: StringFieldUpdateOperationsInput | string
     budgetDropdownOptions?: SiteSettingsUpdatebudgetDropdownOptionsInput | string[]
     budgetMin?: IntFieldUpdateOperationsInput | number
@@ -14036,6 +14055,7 @@ export namespace Prisma {
   export type SiteSettingsUncheckedUpdateManyInput = {
     paymentMethodsEnabled?: BoolFieldUpdateOperationsInput | boolean
     paymentMethodOptions?: SiteSettingsUpdatepaymentMethodOptionsInput | string[]
+    enabledPaymentMethods?: SiteSettingsUpdateenabledPaymentMethodsInput | string[]
     budgetType?: StringFieldUpdateOperationsInput | string
     budgetDropdownOptions?: SiteSettingsUpdatebudgetDropdownOptionsInput | string[]
     budgetMin?: IntFieldUpdateOperationsInput | number
@@ -14942,6 +14962,7 @@ export namespace Prisma {
     id?: SortOrder
     paymentMethodsEnabled?: SortOrder
     paymentMethodOptions?: SortOrder
+    enabledPaymentMethods?: SortOrder
     budgetType?: SortOrder
     budgetDropdownOptions?: SortOrder
     budgetMin?: SortOrder
@@ -15458,11 +15479,20 @@ export namespace Prisma {
     set: string[]
   }
 
+  export type SiteSettingsCreateenabledPaymentMethodsInput = {
+    set: string[]
+  }
+
   export type SiteSettingsCreatebudgetDropdownOptionsInput = {
     set: string[]
   }
 
   export type SiteSettingsUpdatepaymentMethodOptionsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type SiteSettingsUpdateenabledPaymentMethodsInput = {
     set?: string[]
     push?: string | string[]
   }

@@ -79,6 +79,7 @@ export default function CircuitDetailPage() {
         { value: "Payoneer", label: "Payoneer" },
     ]
     const [paymentMethodsEnabled, setPaymentMethodsEnabled] = useState(true)
+    const [enabledPaymentMethods, setEnabledPaymentMethods] = useState<string[]>(PAYMENT_METHODS.map(m => m.value))
 
     // Inline auth state for guest users
     const [showAuthModal, setShowAuthModal] = useState(false)
@@ -309,6 +310,7 @@ export default function CircuitDetailPage() {
                 if (res.ok) {
                     const data = await res.json()
                     setPaymentMethodsEnabled(data.paymentMethodsEnabled ?? true)
+                    setEnabledPaymentMethods(data.enabledPaymentMethods ?? PAYMENT_METHODS.map(m => m.value))
                 }
             } catch (error) {
                 console.error("Error fetching payment settings:", error)
@@ -847,7 +849,7 @@ export default function CircuitDetailPage() {
                                             </div>
 
                                             {/* Payment Method Dropdown */}
-                                            {paymentMethodsEnabled && (
+                                            {paymentMethodsEnabled && enabledPaymentMethods.length > 0 && (
                                                 <div className="space-y-2">
                                                     <Label htmlFor="paymentMethod" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Preferred Payment</Label>
                                                     <select
@@ -857,7 +859,7 @@ export default function CircuitDetailPage() {
                                                         className="w-full bg-gray-50 border border-gray-100 rounded-md focus:ring-orange-200 h-11 px-3 text-sm"
                                                     >
                                                         <option value="">Select payment method (optional)</option>
-                                                        {PAYMENT_METHODS.map((method) => (
+                                                        {PAYMENT_METHODS.filter(m => enabledPaymentMethods.includes(m.value)).map((method) => (
                                                             <option key={method.value} value={method.value}>{method.label}</option>
                                                         ))}
                                                     </select>

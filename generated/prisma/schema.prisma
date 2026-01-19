@@ -88,7 +88,16 @@ model SiteSettings {
   id                    String   @id @default(auto()) @map("_id") @db.ObjectId
   paymentMethodsEnabled Boolean  @default(true)
   paymentMethodOptions  String[] @default(["Cash on arrival", "Bank transfer", "Credit card", "PayPal"])
-  updatedAt             DateTime @updatedAt
+  enabledPaymentMethods String[] @default(["Deposit Payment", "Bank Transfer / SWIFT", "Credit Cards", "PayPal", "Payoneer"])
+
+  // Budget Configuration
+  budgetType            String   @default("dropdown") // "dropdown" or "slider"
+  budgetDropdownOptions String[] @default(["$500-$1000", "$1000-$2000", "$2000-$3500", "$3500+"])
+  budgetMin             Int      @default(500)
+  budgetMax             Int      @default(5000)
+  budgetStep            Int      @default(100)
+
+  updatedAt DateTime @updatedAt
 }
 
 model ContactMessage {
