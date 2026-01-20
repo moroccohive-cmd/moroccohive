@@ -12,6 +12,10 @@ export const metadata: Metadata = {
     description: "Handpicked itineraries designed to immerse you in the magic of the kingdom.",
 }
 
+// Disable caching to ensure fresh data (updated slugs, etc.) is always served
+export const dynamic = "force-dynamic"
+export const revalidate = 0
+
 interface Circuit {
     id: string
     slug: string
