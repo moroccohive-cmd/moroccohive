@@ -306,7 +306,7 @@ export default function HomePage() {
             </h1>
 
             <p className="text-xl md:text-2xl text-white/90 font-light leading-relaxed max-w-2xl mx-auto mb-10">
-              A land where timeless beauty, vibrant culture, and unforgettable adventures.
+              A land of timeless beauty, vibrant culture and unforgettable adventures.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
