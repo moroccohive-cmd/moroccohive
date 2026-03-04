@@ -774,6 +774,23 @@ export default function HomePage() {
           </div>
         </section >
 
+        {/* Trustpilot Review Collector Widget */}
+        <section className="py-12 bg-background border-b border-border">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div
+              className="trustpilot-widget"
+              data-locale="en-US"
+              data-template-id="56278e9abfbbba0bdcd568bc"
+              data-businessunit-id="699dca7d276c188054148df5"
+              data-style-height="52px"
+              data-style-width="100%"
+              data-token="e687f79e-00d8-43eb-82fc-9da99cb7af9a"
+            >
+              <a href="https://www.trustpilot.com/review/moroccohive.com" target="_blank" rel="noopener noreferrer">Trustpilot</a>
+            </div>
+          </div>
+        </section>
+
         {/* Contact Section - Clean & Soft */}
         < section id="contact" className="py-24 bg-background/50" >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

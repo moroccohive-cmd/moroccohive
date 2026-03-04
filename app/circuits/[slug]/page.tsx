@@ -42,6 +42,7 @@ interface Circuit {
 
 export default function CircuitDetailPage() {
     const params = useParams()
+    const router = useRouter()
     const { user } = useAuth()
     const [circuit, setCircuit] = useState<Circuit | null>(null)
     const [loading, setLoading] = useState(true)
@@ -400,8 +401,8 @@ export default function CircuitDetailPage() {
             })
 
             if (response.ok) {
-                setSubmitted(true)
-                setBookingError(null)
+                router.push('/circuits/thank-you')
+                return
             } else {
                 const data = await response.json()
                 const errorMsg = data.error?.toLowerCase() || ""
@@ -698,229 +699,220 @@ export default function CircuitDetailPage() {
                                     </div>
 
                                     {/* Booking Form - Auth handled on submit */}
-                                    {submitted ? (
-                                        <div className="text-center py-8">
-                                            <div className="w-16 h-16 bg-secondary/10 text-secondary rounded-full flex items-center justify-center mx-auto mb-4">
-                                                <Check className="w-8 h-8" />
-                                            </div>
-                                            <h3 className="text-xl font-bold text-foreground mb-2">Request Sent!</h3>
-                                            <p className="text-muted-foreground text-sm">
-                                                Our team will get back to you shortly to confirm your booking for <strong>{circuit.name}</strong>.
-                                            </p>
+                                    <form onSubmit={handleBookingSubmit} className="space-y-6">
+                                        <h3 className="font-semibold text-gray-900 border-b border-gray-100 pb-2 mb-4">Book This Trip</h3>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="travelDates" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Earliest Start Date</Label>
+                                            <Input
+                                                id="travelDates"
+                                                type="date"
+                                                value={booking.travelDates.split(" to ")[0] || ""}
+                                                onChange={(e) => {
+                                                    const end = booking.travelDates.split(" to ")[1] || ""
+                                                    setBooking({ ...booking, travelDates: `${e.target.value}${end ? ` to ${end}` : ""}` })
+                                                    setStartDateError("")
+                                                }}
+                                                required
+                                                className={`bg-gray-50 border-gray-100 rounded-md focus:ring-orange-200 h-11 ${startDateError ? "border-destructive" : ""}`}
+                                            />
+                                            {startDateError && <p className="text-sm text-destructive">{startDateError}</p>}
                                         </div>
-                                    ) : (
-                                        <form onSubmit={handleBookingSubmit} className="space-y-6">
-                                            <h3 className="font-semibold text-gray-900 border-b border-gray-100 pb-2 mb-4">Book This Trip</h3>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="travelDates2" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Latest End Date</Label>
+                                            <Input
+                                                id="travelDates2"
+                                                type="date"
+                                                value={booking.travelDates.split(" to ")[1] || ""}
+                                                onChange={(e) => {
+                                                    const start = booking.travelDates.split(" to ")[0] || ""
+                                                    setBooking({ ...booking, travelDates: `${start ? `${start} to ` : ""}${e.target.value}` })
+                                                    setEndDateError("")
+                                                }}
+                                                required
+                                                className={`bg-gray-50 border-gray-100 rounded-md focus:ring-orange-200 h-11 ${endDateError ? "border-destructive" : ""}`}
+                                            />
+                                            {endDateError && <p className="text-sm text-destructive">{endDateError}</p>}
+                                        </div>
 
-                                            <div className="space-y-2">
-                                                <Label htmlFor="travelDates" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Earliest Start Date</Label>
-                                                <Input
-                                                    id="travelDates"
-                                                    type="date"
-                                                    value={booking.travelDates.split(" to ")[0] || ""}
-                                                    onChange={(e) => {
-                                                        const end = booking.travelDates.split(" to ")[1] || ""
-                                                        setBooking({ ...booking, travelDates: `${e.target.value}${end ? ` to ${end}` : ""}` })
-                                                        setStartDateError("")
-                                                    }}
-                                                    required
-                                                    className={`bg-gray-50 border-gray-100 rounded-md focus:ring-orange-200 h-11 ${startDateError ? "border-destructive" : ""}`}
-                                                />
-                                                {startDateError && <p className="text-sm text-destructive">{startDateError}</p>}
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="travelDates2" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Latest End Date</Label>
-                                                <Input
-                                                    id="travelDates2"
-                                                    type="date"
-                                                    value={booking.travelDates.split(" to ")[1] || ""}
-                                                    onChange={(e) => {
-                                                        const start = booking.travelDates.split(" to ")[0] || ""
-                                                        setBooking({ ...booking, travelDates: `${start ? `${start} to ` : ""}${e.target.value}` })
-                                                        setEndDateError("")
-                                                    }}
-                                                    required
-                                                    className={`bg-gray-50 border-gray-100 rounded-md focus:ring-orange-200 h-11 ${endDateError ? "border-destructive" : ""}`}
-                                                />
-                                                {endDateError && <p className="text-sm text-destructive">{endDateError}</p>}
-                                            </div>
-
-                                            <div className="space-y-2">
-                                                <label className="block text-sm font-semibold mb-3">Who will be traveling?</label>
-                                                <div className="space-y-4 bg-muted/30 p-6 rounded-lg border border-border">
-                                                    {/* Adults */}
-                                                    <div className="flex items-center justify-between">
-                                                        <div>
-                                                            <div className="font-semibold text-foreground">Adults</div>
-                                                            <div className="text-sm text-muted-foreground">Above 12</div>
-                                                        </div>
-                                                        <div className="flex items-center gap-4">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => handleTravelerChange("adults", -1)}
-                                                                disabled={travelers.adults <= 1}
-                                                                className="w-10 h-10 rounded-full border-2 border-border hover:border-primary disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-all hover:bg-primary/10"
-                                                                aria-label="Decrease number of adults"
-                                                            >
-                                                                <span className="text-xl font-semibold" aria-hidden="true">−</span>
-                                                            </button>
-                                                            <span className="text-lg font-semibold w-8 text-center" aria-live="polite">{travelers.adults}</span>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => handleTravelerChange("adults", 1)}
-                                                                className="w-10 h-10 rounded-full border-2 border-border hover:border-primary flex items-center justify-center transition-all hover:bg-primary/10"
-                                                                aria-label="Increase number of adults"
-                                                            >
-                                                                <span className="text-xl font-semibold" aria-hidden="true">+</span>
-                                                            </button>
-                                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="block text-sm font-semibold mb-3">Who will be traveling?</label>
+                                            <div className="space-y-4 bg-muted/30 p-6 rounded-lg border border-border">
+                                                {/* Adults */}
+                                                <div className="flex items-center justify-between">
+                                                    <div>
+                                                        <div className="font-semibold text-foreground">Adults</div>
+                                                        <div className="text-sm text-muted-foreground">Above 12</div>
                                                     </div>
-
-                                                    {/* Children */}
-                                                    <div className="flex items-center justify-between">
-                                                        <div>
-                                                            <div className="font-semibold text-foreground">Children</div>
-                                                            <div className="text-sm text-muted-foreground">Ages 2-12</div>
-                                                        </div>
-                                                        <div className="flex items-center gap-4">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => handleTravelerChange("children", -1)}
-                                                                disabled={travelers.children <= 0}
-                                                                className="w-10 h-10 rounded-full border-2 border-border hover:border-primary disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-all hover:bg-primary/10"
-                                                                aria-label="Decrease number of children"
-                                                            >
-                                                                <span className="text-xl font-semibold" aria-hidden="true">−</span>
-                                                            </button>
-                                                            <span className="text-lg font-semibold w-8 text-center" aria-live="polite">{travelers.children}</span>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => handleTravelerChange("children", 1)}
-                                                                className="w-10 h-10 rounded-full border-2 border-border hover:border-primary flex items-center justify-center transition-all hover:bg-primary/10"
-                                                                aria-label="Increase number of children"
-                                                            >
-                                                                <span className="text-xl font-semibold" aria-hidden="true">+</span>
-                                                            </button>
-                                                        </div>
+                                                    <div className="flex items-center gap-4">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleTravelerChange("adults", -1)}
+                                                            disabled={travelers.adults <= 1}
+                                                            className="w-10 h-10 rounded-full border-2 border-border hover:border-primary disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-all hover:bg-primary/10"
+                                                            aria-label="Decrease number of adults"
+                                                        >
+                                                            <span className="text-xl font-semibold" aria-hidden="true">−</span>
+                                                        </button>
+                                                        <span className="text-lg font-semibold w-8 text-center" aria-live="polite">{travelers.adults}</span>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleTravelerChange("adults", 1)}
+                                                            className="w-10 h-10 rounded-full border-2 border-border hover:border-primary flex items-center justify-center transition-all hover:bg-primary/10"
+                                                            aria-label="Increase number of adults"
+                                                        >
+                                                            <span className="text-xl font-semibold" aria-hidden="true">+</span>
+                                                        </button>
                                                     </div>
+                                                </div>
 
-                                                    {/* Infants */}
-                                                    <div className="flex items-center justify-between">
-                                                        <div>
-                                                            <div className="font-semibold text-foreground">Infants</div>
-                                                            <div className="text-sm text-muted-foreground">Under 2</div>
-                                                        </div>
-                                                        <div className="flex items-center gap-4">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => handleTravelerChange("infants", -1)}
-                                                                disabled={travelers.infants <= 0}
-                                                                className="w-10 h-10 rounded-full border-2 border-border hover:border-primary disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-all hover:bg-primary/10"
-                                                                aria-label="Decrease number of infants"
-                                                            >
-                                                                <span className="text-xl font-semibold" aria-hidden="true">−</span>
-                                                            </button>
-                                                            <span className="text-lg font-semibold w-8 text-center" aria-live="polite">{travelers.infants}</span>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => handleTravelerChange("infants", 1)}
-                                                                className="w-10 h-10 rounded-full border-2 border-border hover:border-primary flex items-center justify-center transition-all hover:bg-primary/10"
-                                                                aria-label="Increase number of infants"
-                                                            >
-                                                                <span className="text-xl font-semibold" aria-hidden="true">+</span>
-                                                            </button>
-                                                        </div>
+                                                {/* Children */}
+                                                <div className="flex items-center justify-between">
+                                                    <div>
+                                                        <div className="font-semibold text-foreground">Children</div>
+                                                        <div className="text-sm text-muted-foreground">Ages 2-12</div>
+                                                    </div>
+                                                    <div className="flex items-center gap-4">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleTravelerChange("children", -1)}
+                                                            disabled={travelers.children <= 0}
+                                                            className="w-10 h-10 rounded-full border-2 border-border hover:border-primary disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-all hover:bg-primary/10"
+                                                            aria-label="Decrease number of children"
+                                                        >
+                                                            <span className="text-xl font-semibold" aria-hidden="true">−</span>
+                                                        </button>
+                                                        <span className="text-lg font-semibold w-8 text-center" aria-live="polite">{travelers.children}</span>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleTravelerChange("children", 1)}
+                                                            className="w-10 h-10 rounded-full border-2 border-border hover:border-primary flex items-center justify-center transition-all hover:bg-primary/10"
+                                                            aria-label="Increase number of children"
+                                                        >
+                                                            <span className="text-xl font-semibold" aria-hidden="true">+</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                {/* Infants */}
+                                                <div className="flex items-center justify-between">
+                                                    <div>
+                                                        <div className="font-semibold text-foreground">Infants</div>
+                                                        <div className="text-sm text-muted-foreground">Under 2</div>
+                                                    </div>
+                                                    <div className="flex items-center gap-4">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleTravelerChange("infants", -1)}
+                                                            disabled={travelers.infants <= 0}
+                                                            className="w-10 h-10 rounded-full border-2 border-border hover:border-primary disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-all hover:bg-primary/10"
+                                                            aria-label="Decrease number of infants"
+                                                        >
+                                                            <span className="text-xl font-semibold" aria-hidden="true">−</span>
+                                                        </button>
+                                                        <span className="text-lg font-semibold w-8 text-center" aria-live="polite">{travelers.infants}</span>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleTravelerChange("infants", 1)}
+                                                            className="w-10 h-10 rounded-full border-2 border-border hover:border-primary flex items-center justify-center transition-all hover:bg-primary/10"
+                                                            aria-label="Increase number of infants"
+                                                        >
+                                                            <span className="text-xl font-semibold" aria-hidden="true">+</span>
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
-                                            {/* Accommodation Dropdown */}
+                                        </div>
+                                        {/* Accommodation Dropdown */}
+                                        <div className="space-y-2">
+                                            <Label htmlFor="accommodation" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Accommodation</Label>
+                                            <select
+                                                id="accommodation"
+                                                value={booking.accommodation}
+                                                onChange={(e) => setBooking({ ...booking, accommodation: e.target.value })}
+                                                className="w-full bg-gray-50 border border-gray-100 rounded-md focus:ring-orange-200 h-11 px-3 text-sm"
+                                            >
+                                                <option value="Standard">Standard</option>
+                                                <option value="Comfort">Comfort</option>
+                                                <option value="Luxury">Luxury</option>
+                                            </select>
+                                        </div>
+
+                                        {/* Payment Method Dropdown */}
+                                        {paymentMethodsEnabled && enabledPaymentMethods.length > 0 && (
                                             <div className="space-y-2">
-                                                <Label htmlFor="accommodation" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Accommodation</Label>
+                                                <Label htmlFor="paymentMethod" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Preferred Payment</Label>
                                                 <select
-                                                    id="accommodation"
-                                                    value={booking.accommodation}
-                                                    onChange={(e) => setBooking({ ...booking, accommodation: e.target.value })}
+                                                    id="paymentMethod"
+                                                    value={booking.preferredPaymentMethod}
+                                                    onChange={(e) => setBooking({ ...booking, preferredPaymentMethod: e.target.value })}
                                                     className="w-full bg-gray-50 border border-gray-100 rounded-md focus:ring-orange-200 h-11 px-3 text-sm"
                                                 >
-                                                    <option value="Standard">Standard</option>
-                                                    <option value="Comfort">Comfort</option>
-                                                    <option value="Luxury">Luxury</option>
+                                                    <option value="">Select payment method (optional)</option>
+                                                    {PAYMENT_METHODS.filter(m => enabledPaymentMethods.includes(m.value)).map((method) => (
+                                                        <option key={method.value} value={method.value}>{method.label}</option>
+                                                    ))}
                                                 </select>
-                                            </div>
 
-                                            {/* Payment Method Dropdown */}
-                                            {paymentMethodsEnabled && enabledPaymentMethods.length > 0 && (
-                                                <div className="space-y-2">
-                                                    <Label htmlFor="paymentMethod" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Preferred Payment</Label>
-                                                    <select
-                                                        id="paymentMethod"
-                                                        value={booking.preferredPaymentMethod}
-                                                        onChange={(e) => setBooking({ ...booking, preferredPaymentMethod: e.target.value })}
-                                                        className="w-full bg-gray-50 border border-gray-100 rounded-md focus:ring-orange-200 h-11 px-3 text-sm"
-                                                    >
-                                                        <option value="">Select payment method (optional)</option>
-                                                        {PAYMENT_METHODS.filter(m => enabledPaymentMethods.includes(m.value)).map((method) => (
-                                                            <option key={method.value} value={method.value}>{method.label}</option>
-                                                        ))}
-                                                    </select>
-
-                                                    {/* Deposit Payment Info */}
-                                                    {booking.preferredPaymentMethod === "Deposit Payment" && (
-                                                        <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 text-sm space-y-1">
-                                                            <p className="font-semibold text-foreground">Deposit Payment Information:</p>
-                                                            <ul className="list-disc list-inside text-muted-foreground space-y-1">
-                                                                <li>To confirm your booking, a 20% deposit is required.</li>
-                                                                <li>The remaining balance will be paid in cash upon arrival in Morocco.</li>
-                                                            </ul>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            )}
-
-                                            {/* User Badge or Contact Fields */}
-                                            {user && userVerified ? (
-                                                <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                                                            {user.name?.[0]?.toUpperCase() || "U"}
-                                                        </div>
-                                                        <div className="flex-1 min-w-0">
-                                                            <p className="font-semibold text-foreground truncate">{user.name}</p>
-                                                            <p className="text-sm text-muted-foreground truncate">{user.email}</p>
-                                                        </div>
-                                                        <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
+                                                {/* Deposit Payment Info */}
+                                                {booking.preferredPaymentMethod === "Deposit Payment" && (
+                                                    <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 text-sm space-y-1">
+                                                        <p className="font-semibold text-foreground">Deposit Payment Information:</p>
+                                                        <ul className="list-disc list-inside text-muted-foreground space-y-1">
+                                                            <li>To confirm your booking, a 20% deposit is required.</li>
+                                                            <li>The remaining balance will be paid in cash upon arrival in Morocco.</li>
+                                                        </ul>
                                                     </div>
-                                                </div>
-                                            ) : (
-                                                <div className="text-sm text-muted-foreground text-center py-2">
-                                                    You'll need to sign in to complete your booking
-                                                </div>
-                                            )}
+                                                )}
+                                            </div>
+                                        )}
 
-                                            {/* Booking error message */}
-                                            {bookingError && (
-                                                <div className={`px-4 py-3 rounded text-sm mb-4 ${bookingError.isServerError ? "bg-amber-500/10 text-amber-800 border border-amber-500/20" : "bg-destructive/10 text-destructive border border-destructive/20"}`}>
-                                                    <p>{bookingError.message}</p>
-                                                    {bookingError.isServerError && (
-                                                        <Link
-                                                            href="/contact"
-                                                            className="inline-flex items-center gap-1 mt-2 text-sm font-medium underline underline-offset-2 hover:no-underline"
-                                                        >
-                                                            Contact Support
-                                                        </Link>
-                                                    )}
+                                        {/* User Badge or Contact Fields */}
+                                        {user && userVerified ? (
+                                            <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                                                        {user.name?.[0]?.toUpperCase() || "U"}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="font-semibold text-foreground truncate">{user.name}</p>
+                                                        <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+                                                    </div>
+                                                    <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
                                                 </div>
-                                            )}
+                                            </div>
+                                        ) : (
+                                            <div className="text-sm text-muted-foreground text-center py-2">
+                                                You'll need to sign in to complete your booking
+                                            </div>
+                                        )}
 
-                                            <Button
-                                                type="submit"
-                                                disabled={submitting}
-                                                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-md h-11 text-base font-medium shadow-lg shadow-gray-900/10 mt-4"
-                                            >
-                                                {submitting ? "Sending Request..." : "Request This Trip"}
-                                            </Button>
-                                        </form>
-                                    )}
+                                        {/* Booking error message */}
+                                        {bookingError && (
+                                            <div className={`px-4 py-3 rounded text-sm mb-4 ${bookingError.isServerError ? "bg-amber-500/10 text-amber-800 border border-amber-500/20" : "bg-destructive/10 text-destructive border border-destructive/20"}`}>
+                                                <p>{bookingError.message}</p>
+                                                {bookingError.isServerError && (
+                                                    <Link
+                                                        href="/contact"
+                                                        className="inline-flex items-center gap-1 mt-2 text-sm font-medium underline underline-offset-2 hover:no-underline"
+                                                    >
+                                                        Contact Support
+                                                    </Link>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        <Button
+                                            type="submit"
+                                            disabled={submitting}
+                                            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-md h-11 text-base font-medium shadow-lg shadow-gray-900/10 mt-4"
+                                        >
+                                            {submitting ? "Sending Request..." : "Request This Trip"}
+                                        </Button>
+                                        <p className="text-xs text-muted-foreground text-center mt-3 leading-relaxed">
+                                            Request your bespoke Morocco itinerary and receive a professionally crafted, no-obligation proposal within 48 hours.
+                                        </p>
+                                    </form>
 
                                     {/* Auth Modal for guests */}
                                     {showAuthModal && (

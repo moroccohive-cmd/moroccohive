@@ -24,10 +24,10 @@ export function Footer() {
                             Discover the magic of Morocco with expertly curated tours and unforgettable experiences.
                         </p>
                         <div className="flex space-x-4 align-center">
-                            <Link href="https://www.tripadvisor.fr/Profile/moroccohive" target="_blank" className="text-muted-foreground ">
+                            {/* <Link href="https://www.tripadvisor.fr/Profile/moroccohive" target="_blank" className="text-muted-foreground ">
                                 <span className="sr-only">TripAdvisor</span>
                                 <Image src="/link1.svg" alt="TripAdvisor" width={24} height={24} />
-                            </Link>
+                            </Link> */}
                             <Link href="https://www.instagram.com/moroccohive/" target="_blank" className="text-muted-foreground ">
                                 <span className="sr-only">Instagram</span>
                                 <Instagram className="h-5 w-5" />
