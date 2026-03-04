@@ -700,7 +700,7 @@ export default function CircuitDetailPage() {
 
                                     {/* Booking Form - Auth handled on submit */}
                                     <form onSubmit={handleBookingSubmit} className="space-y-6">
-                                        <h3 className="font-semibold text-gray-900 border-b border-gray-100 pb-2 mb-4">Book This Trip</h3>
+                                        <h3 className="font-semibold text-gray-900 border-b border-gray-100 pb-2 mb-4">From ${circuit.price} / person</h3>
 
                                         <div className="space-y-2">
                                             <Label htmlFor="travelDates" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Earliest Start Date</Label>
