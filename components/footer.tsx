@@ -23,20 +23,20 @@ export function Footer() {
                         <p className="text-sm text-muted-foreground">
                             Discover the magic of Morocco with expertly curated tours and unforgettable experiences.
                         </p>
-                        <div className="flex space-x-4 align-center">
-                            {/* <Link href="https://www.tripadvisor.fr/Profile/moroccohive" target="_blank" className="text-muted-foreground ">
+                        {/* <div className="flex space-x-4 align-center"> */}
+                        {/* <Link href="https://www.tripadvisor.fr/Profile/moroccohive" target="_blank" className="text-muted-foreground ">
                                 <span className="sr-only">TripAdvisor</span>
                                 <Image src="/link1.svg" alt="TripAdvisor" width={24} height={24} />
                             </Link> */}
-                            <Link href="https://www.instagram.com/moroccohive/" target="_blank" className="text-muted-foreground ">
+                        {/* <Link href="https://www.instagram.com/moroccohive/" target="_blank" className="text-muted-foreground ">
                                 <span className="sr-only">Instagram</span>
                                 <Instagram className="h-5 w-5" />
-                            </Link>
-                            <Link href="https://wa.me/212634717423" target="_blank" className="text-muted-foreground ">
+                            </Link> */}
+                        {/* <Link href="https://wa.me/212634717423" target="_blank" className="text-muted-foreground ">
                                 <span className="sr-only">Whatsapp</span>
                                 <MessageCircle className="h-5 w-5" />
-                            </Link>
-                        </div>
+                            </Link> */}
+                        {/* </div> */}
                     </div>
 
                     {/* Quick Links */}
@@ -107,6 +107,12 @@ export function Footer() {
                                 <Mail className="w-4 h-4 mr-2 flex-shrink-0 text-primary" />
                                 <a href="mailto:info@moroccohive.com" className="hover:text-primary transition-colors">
                                     info@moroccohive.com
+                                </a>
+                            </li>
+                            <li className="flex items-center text-sm text-muted-foreground">
+                                <MessageCircle className="w-4 h-4 mr-2 flex-shrink-0 text-primary" />
+                                <a href="https://wa.me/212634717423" className="hover:text-primary transition-colors">
+                                    +212 634717423
                                 </a>
                             </li>
                         </ul>
