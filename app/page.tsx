@@ -41,7 +41,7 @@ const TESTIMONIALS = [
     name: "Martin Schreiber",
     location: "Canada",
     date: "Dec 08, 2024",
-    image: "/r1.jpeg",
+    image: "/r7.jpeg",
     text: "Our driver, Abdellatif Iggui, was absolutely outstanding in every way. He was first of all an excellent, safe driver, who knew every inch of the country and of every city. He was always on time, and always knew just how long any of our journeys would take. He made sure we were comfortable throughout, he was happy to stop for pictures or a rest as needed, he was able to share a lot of information about his country, and overall made the journeys very pleasant.",
     stars: 5
   },
@@ -65,7 +65,7 @@ const TESTIMONIALS = [
     name: "Natalie Foster",
     location: "USA",
     date: "Sep 3, 2025",
-    image: "/r5.jpeg",
+    image: "/r1.jpeg",
     text: "Morocco We'll Be Back! I want to thank Travel Local and the staff that made my Moroccan vacation a beautiful experience for both me and my sister. It was our first time traveling to Morocco. Our driver and guide Abdellatif was very kind and welcoming. He made every day fun and interesting. He even went so far as to teach us some Arabic words (shukran). The Sahara Desert camp site in Merzouga was one of the best highlights of our tour. Watching the sunrise the next morning in the desert was awesome.",
     stars: 5
   },
@@ -306,7 +306,7 @@ export default function HomePage() {
           </div>
 
           <div className="relative z-10 max-w-4xl mx-auto px-6 text-center animate-fade-in-up">
-            <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tight leading-[1.1] mb-6">
+            <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight leading-[1.1] mb-6">
               Experience Morocco Like Never Before with Expert-Led Private Tours
             </h1>
 
@@ -625,7 +625,7 @@ export default function HomePage() {
         </section>
 
         {/* Testimonials */}
-        <section className="py-24 bg-primary text-white">
+        <section id="testimonials" className="py-24 bg-primary text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
               <span className="text-secondary font-medium tracking-widest text-xs uppercase">Guest Stories</span>

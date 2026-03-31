@@ -30,6 +30,7 @@ export function Header() {
         { name: "Trip Ideas", href: "/circuits" },
         { name: "Plan Your Trip", href: "/plan-trip" },
         { name: "Blog", href: "/blog" },
+        { name: "Testimonials", href: "/#testimonials" },
         { name: "About", href: "/about" },
         { name: "Contact", href: "/contact" },
     ]
