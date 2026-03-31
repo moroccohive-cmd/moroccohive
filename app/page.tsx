@@ -41,6 +41,7 @@ const TESTIMONIALS = [
     name: "Martin Schreiber",
     location: "Canada",
     date: "Dec 08, 2024",
+    image: "/r1.jpeg",
     text: "Our driver, Abdellatif Iggui, was absolutely outstanding in every way. He was first of all an excellent, safe driver, who knew every inch of the country and of every city. He was always on time, and always knew just how long any of our journeys would take. He made sure we were comfortable throughout, he was happy to stop for pictures or a rest as needed, he was able to share a lot of information about his country, and overall made the journeys very pleasant.",
     stars: 5
   },
@@ -48,6 +49,7 @@ const TESTIMONIALS = [
     name: "Brid and Brett",
     location: "USA",
     date: "Nov 2024",
+    image: "/r3.jpeg",
     text: "Hamza We are back in the USA after having a wonderful full trip in Africa. Thank you for all of your work for our Morroco portion of our trip. We had a great time in your country and thouroughly enjoyed all of our time there. Each of our tours was so well done and informative. We particularly loved Chefchouen, the desert and camels and Marrakech. Abdelatif was a great driver and very informative giving us wonderful nsights into the country and people. Thank you again for giving us such wonderful memories.",
     stars: 5
   },
@@ -55,6 +57,7 @@ const TESTIMONIALS = [
     name: "Pamelia Bain",
     location: "USA",
     date: "Oct 22, 2024",
+    image: "/r4.jpeg",
     text: "\"From the moment I got off the plane in Casablanca where I first met Abdellatif, I felt completely assured that I was in good hands, especially knowing he would be with me the entire trip. He is truly a professional in his skill and knowledge and he demonstrated that every step of the way. Abdellatif was always on time and kept me informed as we navigated the many kilometers we traveled daily. His enthusiasm, knowledge and love of his country shone through each day. He had a big responsibility for those 13 days with so many long hours. But he readily shared so much about the rich history and the lives of the people. I do not think I could have had a more immersive experience with anyone else.\"",
     stars: 5
   },
@@ -62,6 +65,7 @@ const TESTIMONIALS = [
     name: "Natalie Foster",
     location: "USA",
     date: "Sep 3, 2025",
+    image: "/r5.jpeg",
     text: "Morocco We'll Be Back! I want to thank Travel Local and the staff that made my Moroccan vacation a beautiful experience for both me and my sister. It was our first time traveling to Morocco. Our driver and guide Abdellatif was very kind and welcoming. He made every day fun and interesting. He even went so far as to teach us some Arabic words (shukran). The Sahara Desert camp site in Merzouga was one of the best highlights of our tour. Watching the sunrise the next morning in the desert was awesome.",
     stars: 5
   },
@@ -69,6 +73,7 @@ const TESTIMONIALS = [
     name: "Ines Fonzalida",
     location: "Netherlands",
     date: "Sep 23",
+    image: "/r2.jpeg",
     text: "I recently returned from leading a Mambo group tour through Morocco with your company. Throughout the tour, Abdellatif was far more than just a driver, he was an incredible support, a source of knowledge, and a true ambassador for Morocco. His warm personality, cultural insights, and exceptional people skills had a huge impact on the group's overall experience. It felt as though we had a dedicated local guide alongside us the entire time.",
     stars: 5
   },
@@ -76,6 +81,7 @@ const TESTIMONIALS = [
     name: "Claramarie C.",
     location: "San Jose, CA",
     date: "Aug 14, 2025",
+    image: "/r6.jpeg",
     text: "Our trip was spectacular! Hakim was responsive in the planning process and adjusted the items I wanted changed quickly and accurately. The Riads we stayed in were gorgeous across the board. The real star of our vacation was our diver/guide/ honorary family member Abdellatif Iggui. From the moment he met us at the airport until he dropped us at the port eight days later he was a delight. Abdellatif was knowledgeable, friendly, accommodating and fun.",
     stars: 5
   }
@@ -301,17 +307,17 @@ export default function HomePage() {
 
           <div className="relative z-10 max-w-4xl mx-auto px-6 text-center animate-fade-in-up">
             <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tight leading-[1.1] mb-6">
-              Discover the Kingdom <br />
-              of Morocco:
+              Experience Morocco Like Never Before with Expert-Led Private Tours
             </h1>
 
             <p className="text-xl md:text-2xl text-white/90 font-light leading-relaxed max-w-2xl mx-auto mb-10">
-              A land of timeless beauty, vibrant culture and unforgettable adventures.
+              Authentic journeys designed by local experts. Your private driver, your custom
+              itinerary, your perfect Morocco escape.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg" className="bg-secondary hover:bg-secondary/90 text-white/90 px-8 h-12 text-base rounded-md font-medium transition-all">
-                <Link href="/plan-trip">Start Planning</Link>
+                <Link href="/plan-trip">Get Your Free Itinerary</Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="bg-transparent hover:bg-white/10 text-white/90 border-white/20 px-8 h-12 text-base rounded-md font-medium transition-all">
                 <Link href="/circuits">Explore Trips</Link>
@@ -321,7 +327,7 @@ export default function HomePage() {
         </section>
 
         {/* Philosophy / Intro - Clean & Minimal */}
-        <section className="py-24 bg-card border-b border-border">
+        {/* <section className="py-24 bg-card border-b border-border">
           <div className="max-w-3xl mx-auto px-4 text-center space-y-6">
             <span className="text-accent font-medium tracking-widest text-xs uppercase">Our Philosophy</span>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">Authentic & Unforgettable</h2>
@@ -329,6 +335,68 @@ export default function HomePage() {
               We believe travel is about connection. Our carefully crafted itineraries don&apos;t just show you sights,
               they immerse you in the vibrant culture, rich history, and warm hospitality that makes Morocco unique.
             </p>
+          </div>
+        </section> */}
+
+        {/* How it Works - Interactive Steps */}
+        <section className="py-24 bg-card border-y border-border">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
+              <span className="text-accent font-medium tracking-widest text-xs uppercase">Your Journey</span>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">How it Works</h2>
+              <p className="text-muted-foreground font-light">From first inspiration to unforgettable memories</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
+              {/* Connector line for desktop */}
+              <div className="hidden md:block absolute top-1/2 left-0 w-full h-px border-t border-dashed border-border -translate-y-1/2 z-0" />
+
+              {[
+                {
+                  step: "01",
+                  title: "Choose Your Style",
+                  desc: "Select from our curated itineraries or tell us your travel preferences.",
+                  icon: MousePointerClick
+                },
+                {
+                  step: "02",
+                  title: "Customize & Refine",
+                  desc: "Work with our local experts to tailor every detail to your liking.",
+                  icon: Settings2
+                },
+                {
+                  step: "03",
+                  title: "Secure Booking",
+                  desc: "Finalize your journey with flexible payments and full support.",
+                  icon: CalendarCheck
+                },
+                {
+                  step: "04",
+                  title: "Explore Morocco",
+                  desc: "Embark on an authentic journey guided by local insiders.",
+                  icon: Map
+                }
+              ].map((item, idx) => (
+                <div key={idx} className="relative z-10 bg-background border border-border/50 p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow group overflow-hidden">
+                  <div className="absolute top-0 right-0 p-4">
+                    <span className="text-4xl font-bold text-primary/20 transition-colors">{item.step}</span>
+                  </div>
+                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform">
+                    <item.icon className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-lg font-bold text-foreground mb-3">{item.title}</h3>
+                  <p className="text-muted-foreground text-sm font-light leading-relaxed">
+                    {item.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="text-center mt-12">
+              <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-white/90 px-8 h-12 text-base rounded-md font-medium transition-all">
+                <Link href="/plan-trip">Start Planning</Link>
+              </Button>
+            </div>
           </div>
         </section>
 
@@ -399,68 +467,6 @@ export default function HomePage() {
                 ))}
               </div>
             )}
-          </div>
-        </section>
-
-        {/* How it Works - Interactive Steps */}
-        <section className="py-24 bg-card border-y border-border">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
-              <span className="text-accent font-medium tracking-widest text-xs uppercase">Your Journey</span>
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">How it Works</h2>
-              <p className="text-muted-foreground font-light">From first inspiration to unforgettable memories</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
-              {/* Connector line for desktop */}
-              <div className="hidden md:block absolute top-1/2 left-0 w-full h-px border-t border-dashed border-border -translate-y-1/2 z-0" />
-
-              {[
-                {
-                  step: "01",
-                  title: "Choose Your Style",
-                  desc: "Select from our curated itineraries or tell us your travel preferences.",
-                  icon: MousePointerClick
-                },
-                {
-                  step: "02",
-                  title: "Customize & Refine",
-                  desc: "Work with our local experts to tailor every detail to your liking.",
-                  icon: Settings2
-                },
-                {
-                  step: "03",
-                  title: "Secure Booking",
-                  desc: "Finalize your journey with flexible payments and full support.",
-                  icon: CalendarCheck
-                },
-                {
-                  step: "04",
-                  title: "Explore Morocco",
-                  desc: "Embark on an authentic journey guided by local insiders.",
-                  icon: Map
-                }
-              ].map((item, idx) => (
-                <div key={idx} className="relative z-10 bg-background border border-border/50 p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow group overflow-hidden">
-                  <div className="absolute top-0 right-0 p-4">
-                    <span className="text-4xl font-bold text-primary/20 transition-colors">{item.step}</span>
-                  </div>
-                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform">
-                    <item.icon className="w-6 h-6" />
-                  </div>
-                  <h3 className="text-lg font-bold text-foreground mb-3">{item.title}</h3>
-                  <p className="text-muted-foreground text-sm font-light leading-relaxed">
-                    {item.desc}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            <div className="text-center mt-12">
-              <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-white/90 px-8 h-12 text-base rounded-md font-medium transition-all">
-                <Link href="/plan-trip">Start Planning</Link>
-              </Button>
-            </div>
           </div>
         </section>
 
@@ -618,6 +624,85 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* Testimonials */}
+        <section className="py-24 bg-primary text-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
+              <span className="text-secondary font-medium tracking-widest text-xs uppercase">Guest Stories</span>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">What Our Travelers Say</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {TESTIMONIALS.map((testimonial, idx) => (
+                <div key={idx} className="bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-xl flex flex-col items-center text-center group">
+                  <div className="flex gap-1 mb-6">
+                    {[...Array(testimonial.stars)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-secondary text-secondary" />
+                    ))}
+                  </div>
+                  <div className="grow flex flex-col">
+                    <p className="text-lg font-light leading-relaxed mb-6 italic text-white/90 line-clamp-4">
+                      "{testimonial.text}"
+                    </p>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <button className="text-secondary text-sm font-medium hover:underline mb-8 self-center">Read More</button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[600px]">
+                        <DialogHeader>
+                          <div className="flex items-center gap-4 mb-4">
+                            <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-primary/10 flex-shrink-0">
+                              <Image src={testimonial.image} alt={testimonial.name} fill className="object-cover" />
+                            </div>
+                            <div>
+                              <div className="flex gap-1 mb-1">
+                                {[...Array(testimonial.stars)].map((_, i) => (
+                                  <Star key={i} className="w-4 h-4 fill-secondary text-secondary" />
+                                ))}
+                              </div>
+                              <DialogTitle className="text-2xl">{testimonial.name}</DialogTitle>
+                              <DialogDescription>Reviewed on {testimonial.date} • {testimonial.location}</DialogDescription>
+                            </div>
+                          </div>
+                        </DialogHeader>
+                        <div className="mt-4 text-muted-foreground leading-relaxed whitespace-pre-wrap italic">
+                          "{testimonial.text}"
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-secondary/30 flex-shrink-0">
+                      <Image src={testimonial.image} alt={testimonial.name} fill className="object-cover" />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-bold text-secondary uppercase tracking-wider text-sm">{testimonial.name}</p>
+                      <p className="text-white/50 text-xs mt-1">{testimonial.location}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section >
+
+        {/* Trustpilot Review Collector Widget */}
+        <section className="py-12 bg-background border-b border-border">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div
+              className="trustpilot-widget"
+              data-locale="en-US"
+              data-template-id="56278e9abfbbba0bdcd568bc"
+              data-businessunit-id="699dca7d276c188054148df5"
+              data-style-height="52px"
+              data-style-width="100%"
+              data-token="e687f79e-00d8-43eb-82fc-9da99cb7af9a"
+            >
+              <a href="https://www.trustpilot.com/review/moroccohive.com" target="_blank" rel="noopener noreferrer">Trustpilot</a>
+            </div>
+          </div>
+        </section>
+
         {/* FAQ Section */}
         <section className="py-24 bg-card border-y border-border">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -723,73 +808,6 @@ export default function HomePage() {
             </div>
           </div>
         </section >
-
-        {/* Testimonials */}
-        <section className="py-24 bg-primary text-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
-              <span className="text-secondary font-medium tracking-widest text-xs uppercase">Guest Stories</span>
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">What Our Travelers Say</h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {TESTIMONIALS.map((testimonial, idx) => (
-                <div key={idx} className="bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-xl flex flex-col items-center text-center group">
-                  <div className="flex gap-1 mb-6">
-                    {[...Array(testimonial.stars)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-secondary text-secondary" />
-                    ))}
-                  </div>
-                  <div className="grow flex flex-col">
-                    <p className="text-lg font-light leading-relaxed mb-6 italic text-white/90 line-clamp-4">
-                      "{testimonial.text}"
-                    </p>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <button className="text-secondary text-sm font-medium hover:underline mb-8 self-center">Read More</button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-[600px]">
-                        <DialogHeader>
-                          <div className="flex gap-1 mb-2">
-                            {[...Array(testimonial.stars)].map((_, i) => (
-                              <Star key={i} className="w-4 h-4 fill-secondary text-secondary" />
-                            ))}
-                          </div>
-                          <DialogTitle className="text-2xl">{testimonial.name}</DialogTitle>
-                          <DialogDescription>Reviewed on {testimonial.date} • {testimonial.location}</DialogDescription>
-                        </DialogHeader>
-                        <div className="mt-4 text-muted-foreground leading-relaxed whitespace-pre-wrap italic">
-                          "{testimonial.text}"
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                  <div>
-                    <p className="font-bold text-secondary uppercase tracking-wider text-sm">{testimonial.name}</p>
-                    <p className="text-white/50 text-xs mt-1">{testimonial.location}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section >
-
-        {/* Trustpilot Review Collector Widget */}
-        <section className="py-12 bg-background border-b border-border">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div
-              className="trustpilot-widget"
-              data-locale="en-US"
-              data-template-id="56278e9abfbbba0bdcd568bc"
-              data-businessunit-id="699dca7d276c188054148df5"
-              data-style-height="52px"
-              data-style-width="100%"
-              data-token="e687f79e-00d8-43eb-82fc-9da99cb7af9a"
-            >
-              <a href="https://www.trustpilot.com/review/moroccohive.com" target="_blank" rel="noopener noreferrer">Trustpilot</a>
-            </div>
-          </div>
-        </section>
 
         {/* Contact Section - Clean & Soft */}
         < section id="contact" className="py-24 bg-background/50" >
