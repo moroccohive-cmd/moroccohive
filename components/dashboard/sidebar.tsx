@@ -4,7 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Map, Calendar, Mail, LogOut, User, FileText, Settings } from "lucide-react"
+import { LayoutDashboard, Map, Calendar, Mail, LogOut, User, FileText, Settings, Star } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 
 const navigation = [
@@ -27,7 +27,7 @@ export function SidebarContent() {
             <div className="flex h-16 items-center px-6 border-b border-sidebar-border">
                 <Link href="/dashboard" className="flex items-center gap-2">
                     <Image
-                        src="/logo_1.PNG"
+                        src="/logo_1.webp"
                         alt="MoroccoHive"
                         width={180}
                         height={60}
@@ -65,6 +65,7 @@ export function SidebarContent() {
                         {[
                             { name: "Circuits", href: "/dashboard/circuits", icon: Map },
                             { name: "Blog", href: "/dashboard/blog", icon: FileText },
+                            { name: "Reviews", href: "/dashboard/reviews", icon: Star },
                         ].map((item) => (
                             <Link
                                 key={item.name}

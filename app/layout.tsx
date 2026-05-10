@@ -4,12 +4,21 @@ import { Quicksand } from "next/font/google"
 import Script from "next/script"
 import "./globals.css"
 
-import { WhatsAppButton } from "@/components/whatsapp-button"
-import { Toaster } from "@/components/ui/sonner"
+import dynamic from "next/dynamic"
+
+const WhatsAppButton = dynamic(() =>
+  import("@/components/whatsapp-button").then((m) => m.WhatsAppButton),
+)
+
+const Toaster = dynamic(
+  () => import("@/components/ui/sonner").then((m) => m.Toaster),
+)
 
 const quicksand = Quicksand({
   subsets: ["latin"],
   display: "swap",
+  weight: ["400", "700"],
+  preload: true,
 })
 
 export const metadata: Metadata = {
@@ -25,23 +34,27 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Google Analytics (gtag.js) */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-VRGBVDD9B5"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+        <link rel="dns-prefetch" href="https://www.googleadservices.com" />
+
+        {/* Partytown config — must run before partytown.js */}
+        <Script id="partytown-gtm-forward" strategy="lazyOnload">
           {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-VRGBVDD9B5');
-            gtag('config', 'AW-17989754948');
+            partytown = {
+              lib: "/~partytown/",
+              forward: ["dataLayer.push", "gtag"]
+            };
           `}
         </Script>
 
-        {/* Google Tag Manager */}
-        <Script id="google-tag-manager" strategy="afterInteractive">
+        <Script
+          src="/~partytown/partytown.js"
+          strategy="lazyOnload"
+        />
+
+        {/* GTM — runs inside Partytown web worker */}
+        <Script id="google-tag-manager" type="text/partytown">
           {`
             (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -50,15 +63,8 @@ export default function RootLayout({
             })(window,document,'script','dataLayer','GTM-WRZQZ6RN');
           `}
         </Script>
-
-        {/* TrustBox (Trustpilot) bootstrap */}
-        <Script
-          src="//widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js"
-          strategy="afterInteractive"
-        />
       </head>
       <body className={`${quicksand.className} font-sans antialiased`}>
-        {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
             src="https://www.googletagmanager.com/ns.html?id=GTM-WRZQZ6RN"

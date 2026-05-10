@@ -229,6 +229,18 @@ exports.Prisma.FavoriteScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.ReviewScalarFieldEnum = {
+  id: 'id',
+  circuitId: 'circuitId',
+  authorName: 'authorName',
+  authorLocation: 'authorLocation',
+  authorImage: 'authorImage',
+  rating: 'rating',
+  text: 'text',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SessionScalarFieldEnum = {
   id: 'id',
   expiresAt: 'expiresAt',
@@ -284,6 +296,7 @@ exports.Prisma.ModelName = {
   ContactMessage: 'ContactMessage',
   User: 'User',
   Favorite: 'Favorite',
+  Review: 'Review',
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification'

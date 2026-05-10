@@ -1,10 +1,7 @@
 import { Metadata } from "next"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import Link from "next/link"
-import Image from "next/image"
-import { ArrowRight } from "lucide-react"
-import { FavoriteButton } from "@/components/favorite-button"
+import { CircuitsList } from "@/components/circuits-list"
 import prisma from "@/lib/prisma"
 
 export const metadata: Metadata = {
@@ -79,75 +76,7 @@ export default async function CircuitsPage() {
 
                 {/* Circuits Grid */}
                 <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    {circuits.length === 0 ? (
-                        <div className="text-center py-20 bg-white rounded-md shadow-sm border border-gray-100">
-                            <p className="text-gray-400">No journeys available at the moment.</p>
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                            {circuits.map((circuit) => (
-                                <Link
-                                    key={circuit.id}
-                                    href={`/circuits/${circuit.slug}`}
-                                    className="group block"
-                                    aria-label={`View tour: ${circuit.name} - ${circuit.duration} days from $${circuit.price}`}
-                                >
-                                    <article className="bg-white rounded-md overflow-hidden shadow-[0_2px_20px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-500 h-full flex flex-col transform hover:-translate-y-1">
-                                        <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
-                                            {circuit.images[0] ? (
-                                                <Image
-                                                    src={circuit.images[0]}
-                                                    alt={`${circuit.name} tour image`}
-                                                    fill
-                                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                                    className="object-cover transform group-hover:scale-110 transition-transform duration-700"
-                                                />
-                                            ) : (
-                                                <div className="flex items-center justify-center h-full text-gray-300 bg-gray-50">
-                                                    <span className="text-sm">No Image</span>
-                                                </div>
-                                            )}
-                                            <div className="absolute top-4 right-4 z-10">
-                                                <FavoriteButton circuitId={circuit.id} />
-                                            </div>
-                                            <div className="absolute top-4 left-4">
-                                                <span className="inline-block px-3 py-1 rounded-md bg-white/95 text-xs font-semibold text-gray-700 uppercase tracking-wide shadow-sm border border-gray-100">
-                                                    {circuit.category}
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <div className="p-8 flex flex-col flex-1">
-                                            <div className="mb-4">
-                                                <div className="flex items-center justify-between text-xs font-medium text-gray-400 uppercase tracking-widest mb-2">
-                                                    <span>{circuit.duration} Days</span>
-                                                    <div className="flex flex-col">
-                                                        <div className="flex flex-col items-baseline">
-                                                            <p className="text-xl text-foreground font-bold">${circuit.price} <span className="text-muted-foreground text-sm font-medium">/ person</span></p>
-                                                            {circuit.originalPrice != null && (
-                                                                <span className="text-sm text-muted-foreground line-through">${circuit.originalPrice}</span>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <h2 className="text-2xl font-bold text-gray-800 group-hover:text-orange-500 transition-colors leading-tight">
-                                                    {circuit.name}
-                                                </h2>
-                                            </div>
-
-                                            <p className="text-gray-500 text-sm leading-relaxed mb-6 line-clamp-2 flex-1 font-light">
-                                                {circuit.description}
-                                            </p>
-
-                                            <div className="flex items-center text-gray-900 font-medium text-sm group-hover:translate-x-2 transition-transform duration-300">
-                                                View Itinerary <ArrowRight className="ml-2 h-4 w-4 text-orange-400" aria-hidden="true" />
-                                            </div>
-                                        </div>
-                                    </article>
-                                </Link>
-                            ))}
-                        </div>
-                    )}
+                    <CircuitsList circuits={circuits} />
                 </section>
             </main>
 

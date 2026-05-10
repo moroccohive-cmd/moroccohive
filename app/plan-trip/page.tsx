@@ -514,9 +514,41 @@ export default function PlanTripPage() {
     }
 
     const handleSubmit = async () => {
-        if (!user?.email || !user?.emailVerified) {
-            setAuthErrors({ form: "Please verify your email before submitting." })
-            return
+        // Validate contact fields if not authenticated
+        if (!user?.emailVerified) {
+            const nameRegex = /^[a-zA-Z\s]+$/
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+            const phoneRegex = /^[0-9]+$/
+            const newErrors: Record<string, string> = {}
+
+            if (!formData.fullName.trim()) {
+                newErrors.fullName = "Please enter your full name"
+            } else if (!nameRegex.test(formData.fullName.trim())) {
+                newErrors.fullName = "Name can only contain letters and spaces"
+            } else if (formData.fullName.trim().length > 50) {
+                newErrors.fullName = "Name is too long (max 50 characters)"
+            }
+
+            if (!formData.email.trim()) {
+                newErrors.email = "Please enter your email"
+            } else if (!emailRegex.test(formData.email.trim())) {
+                newErrors.email = "Please enter a valid email address"
+            } else if (formData.email.trim().length > 100) {
+                newErrors.email = "Email is too long (max 100 characters)"
+            }
+
+            if (!formData.phone.trim()) {
+                newErrors.phone = "Please enter your phone number"
+            } else if (!phoneRegex.test(formData.phone.trim())) {
+                newErrors.phone = "Phone can only contain numbers"
+            } else if (formData.phone.trim().length > 20) {
+                newErrors.phone = "Phone number is too long (max 20 digits)"
+            }
+
+            if (Object.keys(newErrors).length > 0) {
+                setErrors(prev => ({ ...prev, ...newErrors }))
+                return
+            }
         }
 
         setSubmitting(true)
@@ -526,9 +558,9 @@ export default function PlanTripPage() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     ...formData,
-                    fullName: user.name || user.email.split("@")[0],
-                    email: user.email,
-                    phone: (user as any).phone || "",
+                    fullName: user?.emailVerified ? (user.name || formData.fullName) : formData.fullName,
+                    email: user?.emailVerified ? user.email : formData.email,
+                    phone: user?.emailVerified ? ((user as any).phone || `${formData.countryCode} ${formData.phone}`) : `${formData.countryCode} ${formData.phone}`,
                     preferredPaymentMethod: formData.preferredPaymentMethod,
                 }),
             })
@@ -561,7 +593,7 @@ export default function PlanTripPage() {
                             <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors" />
                             <div className="flex flex-col md:flex-row items-center gap-6 relative z-10">
                                 <div className="relative w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-xl flex-shrink-0">
-                                    <Image src="/agent-2.jpeg" alt="Abdellatif" fill className="object-cover" />
+                                    <Image src="/agent-2.webp" alt="Abdellatif" fill className="object-cover" />
                                 </div>
                                 <div className="text-left">
                                     <h3 className="text-xl font-bold text-foreground mb-2 flex items-center gap-2">
@@ -1116,7 +1148,7 @@ export default function PlanTripPage() {
                                     <p className="text-muted-foreground">
                                         {user?.emailVerified
                                             ? "Review your trip details and submit your request"
-                                            : "Sign in or create an account to submit your trip request"
+                                            : "Fill in your contact details and submit your request"
                                         }
                                     </p>
                                 </div>
@@ -1175,150 +1207,97 @@ export default function PlanTripPage() {
                                         </Button>
                                     </div>
                                 ) : (
-                                    // User is not logged in or not verified - show auth forms
-                                    <div className="bg-card border border-border rounded-xl p-6">
-                                        {/* Auth mode toggle */}
-                                        <div className="flex mb-6 bg-muted/50 rounded-lg p-1">
-                                            <button
-                                                type="button"
-                                                className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${authMode === "login" ? "bg-background shadow-sm" : "text-muted-foreground"}`}
-                                                onClick={() => { setAuthMode("login"); setAuthErrors({}) }}
-                                            >
-                                                Sign In
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${authMode === "register" ? "bg-background shadow-sm" : "text-muted-foreground"}`}
-                                                onClick={() => { setAuthMode("register"); setAuthErrors({}) }}
-                                            >
-                                                Create Account
-                                            </button>
+                                    // Guest user - show contact fields
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium mb-2">Full Name <span className="text-destructive">*</span></label>
+                                            <div className="relative">
+                                                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                                <Input
+                                                    type="text"
+                                                    value={formData.fullName}
+                                                    onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
+                                                    placeholder="John Doe"
+                                                    maxLength={50}
+                                                    className={`pl-10 ${errors.fullName ? "border-destructive" : ""}`}
+                                                />
+                                            </div>
+                                            {errors.fullName && <p className="text-sm text-destructive mt-1">{errors.fullName}</p>}
                                         </div>
 
-                                        {/* Registration form */}
-                                        {authMode === "register" && (
-                                            <div className="space-y-4 mb-4">
-                                                <div>
-                                                    <label className="block text-sm font-medium mb-2">Full Name</label>
-                                                    <div className="relative">
-                                                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                                                        <Input
-                                                            type="text"
-                                                            value={authForm.fullName}
-                                                            onChange={(e) => setAuthForm(prev => ({ ...prev, fullName: e.target.value }))}
-                                                            placeholder="John Doe"
-                                                            maxLength={30}
-                                                            className={`pl-10 ${authErrors.fullName ? "border-destructive" : ""}`}
-                                                        />
-                                                    </div>
-                                                    {authErrors.fullName && <p className="text-sm text-destructive mt-1">{authErrors.fullName}</p>}
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        {/* Email field (both modes) */}
-                                        <div className="mb-4">
-                                            <label className="block text-sm font-medium mb-2">Email</label>
+                                        <div>
+                                            <label className="block text-sm font-medium mb-2">Email <span className="text-destructive">*</span></label>
                                             <div className="relative">
                                                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                                 <Input
                                                     type="email"
-                                                    value={authForm.email}
-                                                    onChange={(e) => setAuthForm(prev => ({ ...prev, email: e.target.value }))}
+                                                    value={formData.email}
+                                                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                                                     placeholder="youremail@example.com"
-                                                    maxLength={40}
-                                                    className={`pl-10 ${authErrors.email ? "border-destructive" : ""}`}
+                                                    maxLength={100}
+                                                    className={`pl-10 ${errors.email ? "border-destructive" : ""}`}
                                                 />
                                             </div>
-                                            {authErrors.email && <p className="text-sm text-destructive mt-1">{authErrors.email}</p>}
+                                            {errors.email && <p className="text-sm text-destructive mt-1">{errors.email}</p>}
                                         </div>
 
-                                        {/* Phone field (register only) */}
-                                        {authMode === "register" && (
-                                            <div className="mb-4">
-                                                <label className="block text-sm font-medium mb-2">Phone Number</label>
-                                                <div className="flex gap-2">
-                                                    <CountryCodeSelect
-                                                        value={authForm.countryCode}
-                                                        onChange={(val) => setAuthForm(prev => ({ ...prev, countryCode: val }))}
-                                                    />
-                                                    <div className="relative flex-1">
-                                                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                                                        <Input
-                                                            type="tel"
-                                                            value={authForm.phone}
-                                                            onChange={(e) => setAuthForm(prev => ({ ...prev, phone: e.target.value }))}
-                                                            placeholder="123 456 7890"
-                                                            maxLength={12}
-                                                            className={`pl-10 ${authErrors.phone ? "border-destructive" : ""}`}
-                                                        />
-                                                    </div>
-                                                </div>
-                                                {authErrors.phone && <p className="text-sm text-destructive mt-1">{authErrors.phone}</p>}
-                                            </div>
-                                        )}
-
-                                        {/* Password field */}
-                                        <div className="mb-4">
-                                            <label className="block text-sm font-medium mb-2">Password</label>
-                                            <div className="relative">
-                                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                                                <Input
-                                                    type="password"
-                                                    value={authForm.password}
-                                                    onChange={(e) => setAuthForm(prev => ({ ...prev, password: e.target.value }))}
-                                                    placeholder="••••••••"
-                                                    className={`pl-10 ${authErrors.password ? "border-destructive" : ""}`}
+                                        <div>
+                                            <label className="block text-sm font-medium mb-2">Phone <span className="text-destructive">*</span></label>
+                                            <div className="flex gap-2">
+                                                <CountryCodeSelect
+                                                    value={formData.countryCode}
+                                                    onChange={(val) => setFormData(prev => ({ ...prev, countryCode: val }))}
                                                 />
-                                            </div>
-                                            {authErrors.password && <p className="text-sm text-destructive mt-1">{authErrors.password}</p>}
-                                        </div>
-
-                                        {/* Confirm password (register only) */}
-                                        {authMode === "register" && (
-                                            <div className="mb-4">
-                                                <label className="block text-sm font-medium mb-2">Confirm Password</label>
-                                                <div className="relative">
-                                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                                <div className="relative flex-1">
+                                                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                                     <Input
-                                                        type="password"
-                                                        value={authForm.confirmPassword}
-                                                        onChange={(e) => setAuthForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                                                        placeholder="••••••••"
-                                                        className={`pl-10 ${authErrors.confirmPassword ? "border-destructive" : ""}`}
+                                                        type="tel"
+                                                        value={formData.phone}
+                                                        onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                                                        placeholder="123 456 7890"
+                                                        maxLength={20}
+                                                        className={`pl-10 ${errors.phone ? "border-destructive" : ""}`}
                                                     />
                                                 </div>
-                                                {authErrors.confirmPassword && <p className="text-sm text-destructive mt-1">{authErrors.confirmPassword}</p>}
+                                            </div>
+                                            {errors.phone && <p className="text-sm text-destructive mt-1">{errors.phone}</p>}
+                                        </div>
+
+                                        {/* Payment Method Dropdown */}
+                                        {paymentMethodsEnabled && enabledPaymentMethods.length > 0 && (
+                                            <div className="space-y-2">
+                                                <label className="block text-sm font-medium mb-2">Preferred Payment Method</label>
+                                                <select
+                                                    value={formData.preferredPaymentMethod}
+                                                    onChange={(e) => setFormData(prev => ({ ...prev, preferredPaymentMethod: e.target.value }))}
+                                                    className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background"
+                                                >
+                                                    <option value="">Select payment method (optional)</option>
+                                                    {PAYMENT_METHODS.filter(m => enabledPaymentMethods.includes(m.value)).map((method) => (
+                                                        <option key={method.value} value={method.value}>{method.label}</option>
+                                                    ))}
+                                                </select>
+                                                {formData.preferredPaymentMethod === "Deposit Payment" && (
+                                                    <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 text-sm space-y-1">
+                                                        <p className="font-semibold text-foreground">Deposit Payment Information:</p>
+                                                        <ul className="list-disc list-inside text-muted-foreground space-y-1">
+                                                            <li>To confirm your booking, a 20% deposit is required.</li>
+                                                            <li>The remaining balance will be paid in cash upon arrival in Morocco.</li>
+                                                        </ul>
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
 
-                                        {/* Form error message */}
-                                        {authErrors.form && (
-                                            <div className={`px-4 py-3 rounded text-sm mb-4 ${authErrors.form.includes("verify") || authErrors.form.includes("check") ? "bg-primary/10 text-primary border border-primary/20" : "bg-destructive/10 text-destructive border border-destructive/20"}`}>
-                                                {authErrors.form}
-                                            </div>
-                                        )}
-
-                                        {/* Submit button */}
                                         <Button
                                             type="button"
-                                            onClick={authMode === "login" ? handleInlineLogin : handleInlineRegister}
-                                            disabled={authLoading}
-                                            className="w-full"
+                                            onClick={handleSubmit}
+                                            disabled={submitting}
+                                            className="w-full flex items-center justify-center gap-2"
                                         >
-                                            {authLoading
-                                                ? (authMode === "login" ? "Signing in..." : "Creating account...")
-                                                : (authMode === "login" ? "Sign In & Continue" : "Create Account & Continue")
-                                            }
+                                            {submitting ? "Submitting..." : "Submit Trip Request"}
+                                            <Sparkles className="w-4 h-4" />
                                         </Button>
-
-                                        {authMode === "login" && (
-                                            <p className="text-center text-sm text-muted-foreground mt-4">
-                                                <Link href="/forgot-password" className="text-primary hover:underline">
-                                                    Forgot your password?
-                                                </Link>
-                                            </p>
-                                        )}
                                     </div>
                                 )}
                             </div>

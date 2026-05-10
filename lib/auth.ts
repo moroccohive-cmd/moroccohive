@@ -51,7 +51,7 @@ const emailWrapper = (content: string) => `
                     <!-- Header with Logo -->
                     <tr>
                         <td style="padding: 32px 40px 24px; text-align: center; border-bottom: 1px solid #e5e7eb;">
-                            <img src="https://www.moroccohive.com/logo_1.PNG" alt="Morocco Hive" style="height: 50px; width: auto; margin-bottom: 12px;" />
+                            <img src="https://www.moroccohive.com/logo_1.webp" alt="Morocco Hive" style="height: 50px; width: auto; margin-bottom: 12px;" />
                             <p style="margin: 0; font-size: 14px; color: #6b7280;">Your Gateway to Authentic Morocco</p>
                         </td>
                     </tr>

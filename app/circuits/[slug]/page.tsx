@@ -7,7 +7,7 @@ import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import Link from "next/link"
-import { Clock, MapPin, Check, X, ArrowLeft, Info, Calendar, Plus, Heart } from "lucide-react"
+import { Clock, MapPin, Check, X, ArrowLeft, Info, Calendar, Plus, Heart, Star } from "lucide-react"
 import { FavoriteButton } from "@/components/favorite-button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -46,6 +46,15 @@ export default function CircuitDetailPage() {
     const { user } = useAuth()
     const [circuit, setCircuit] = useState<Circuit | null>(null)
     const [loading, setLoading] = useState(true)
+    const [reviews, setReviews] = useState<Array<{
+        id: string
+        authorName: string
+        authorLocation: string | null
+        authorImage: string | null
+        rating: number
+        text: string
+        createdAt: string
+    }>>([])
     const [travelers, setTravelers] = useState({
         adults: 2,
         children: 0,
@@ -355,10 +364,22 @@ export default function CircuitDetailPage() {
             }
             const data = await response.json()
             setCircuit(data)
+            fetchReviews(data.id)
         } catch (err) {
             setError(err instanceof Error ? err.message : "Failed to load circuit")
         } finally {
             setLoading(false)
+        }
+    }
+
+    const fetchReviews = async (circuitId: string) => {
+        try {
+            const res = await fetch(`/api/reviews?circuitId=${circuitId}`)
+            if (res.ok) {
+                setReviews(await res.json())
+            }
+        } catch {
+            // reviews are non-critical, fail silently
         }
     }
 
@@ -368,22 +389,59 @@ export default function CircuitDetailPage() {
         // Validate dates first
         if (!validateDates()) return
 
-        // If user is not logged in + verified, show auth modal
+        // Validate contact fields for guests
         if (!user || !userVerified) {
-            setShowAuthModal(true)
-            return
+            const nameRegex = /^[a-zA-Z\s]+$/
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+            const phoneRegex = /^[0-9]+$/
+
+            if (!booking.fullName.trim()) {
+                setBookingError({ message: "Please enter your full name.", isServerError: false })
+                return
+            }
+            if (!nameRegex.test(booking.fullName.trim())) {
+                setBookingError({ message: "Name can only contain letters and spaces.", isServerError: false })
+                return
+            }
+            if (booking.fullName.trim().length > 50) {
+                setBookingError({ message: "Name is too long (max 50 characters).", isServerError: false })
+                return
+            }
+            if (!booking.email.trim()) {
+                setBookingError({ message: "Please enter your email address.", isServerError: false })
+                return
+            }
+            if (!emailRegex.test(booking.email.trim())) {
+                setBookingError({ message: "Please enter a valid email address.", isServerError: false })
+                return
+            }
+            if (booking.email.trim().length > 100) {
+                setBookingError({ message: "Email is too long (max 100 characters).", isServerError: false })
+                return
+            }
+            if (!booking.phone.trim()) {
+                setBookingError({ message: "Please enter your phone number.", isServerError: false })
+                return
+            }
+            if (!phoneRegex.test(booking.phone.trim())) {
+                setBookingError({ message: "Phone can only contain numbers.", isServerError: false })
+                return
+            }
+            if (booking.phone.trim().length > 20) {
+                setBookingError({ message: "Phone number is too long (max 20 digits).", isServerError: false })
+                return
+            }
         }
 
         setSubmitting(true)
         setBookingError(null)
 
         try {
-            // Use session data for authenticated users
             const submitData = {
                 ...booking,
-                fullName: user.name || booking.fullName,
-                email: user.email || booking.email,
-                phone: (user as any).phone || `${booking.countryCode} ${booking.phone}`,
+                fullName: (user && userVerified) ? (user.name || booking.fullName) : booking.fullName,
+                email: (user && userVerified) ? (user.email || booking.email) : booking.email,
+                phone: (user && userVerified) ? ((user as any).phone || `${booking.countryCode} ${booking.phone}`) : `${booking.countryCode} ${booking.phone}`,
                 travelStyle: "Custom Circuit",
                 arrivalCity: "N/A",
                 departureCity: "N/A",
@@ -668,6 +726,68 @@ export default function CircuitDetailPage() {
                                 </div>
                             )}
 
+                            {/* Reviews */}
+                            {reviews.length > 0 && (
+                                <div className="bg-card rounded-lg p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                                    <h2 className="text-2xl font-semibold text-foreground mb-2">Traveler Reviews</h2>
+                                    <div className="flex items-center gap-2 mb-8">
+                                        <div className="flex items-center gap-0.5">
+                                            {[1, 2, 3, 4, 5].map((s) => (
+                                                <Star
+                                                    key={s}
+                                                    className={`w-4 h-4 ${
+                                                        s <= Math.round(reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length)
+                                                            ? "fill-amber-400 text-amber-400"
+                                                            : "text-muted-foreground"
+                                                    }`}
+                                                />
+                                            ))}
+                                        </div>
+                                        <span className="text-sm text-muted-foreground">
+                                            {(reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)} · {reviews.length} {reviews.length === 1 ? "review" : "reviews"}
+                                        </span>
+                                    </div>
+                                    <div className="space-y-6">
+                                        {reviews.map((review) => (
+                                            <div key={review.id} className="flex items-start gap-4 pb-6 border-b border-border last:border-0 last:pb-0">
+                                                <div className="flex-shrink-0">
+                                                    {review.authorImage ? (
+                                                        <img
+                                                            src={review.authorImage}
+                                                            alt={review.authorName}
+                                                            className="w-12 h-12 rounded-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
+                                                            {review.authorName[0]?.toUpperCase()}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1">
+                                                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                                                        <span className="font-semibold text-foreground">{review.authorName}</span>
+                                                        {review.authorLocation && (
+                                                            <span className="text-sm text-muted-foreground">· {review.authorLocation}</span>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex items-center gap-0.5 mb-3">
+                                                        {[1, 2, 3, 4, 5].map((s) => (
+                                                            <Star
+                                                                key={s}
+                                                                className={`w-3.5 h-3.5 ${s <= review.rating ? "fill-amber-400 text-amber-400" : "text-muted-foreground"}`}
+                                                            />
+                                                        ))}
+                                                        <span className="text-xs text-muted-foreground ml-1">
+                                                            {new Date(review.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "short" })}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-sm text-muted-foreground leading-relaxed">"{review.text}"</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                         </div>
 
@@ -882,8 +1002,45 @@ export default function CircuitDetailPage() {
                                                 </div>
                                             </div>
                                         ) : (
-                                            <div className="text-sm text-muted-foreground text-center py-2">
-                                                You'll need to sign in to complete your booking
+                                            <div className="space-y-3">
+                                                <div className="space-y-1">
+                                                    <Label className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Full Name *</Label>
+                                                    <Input
+                                                        value={booking.fullName}
+                                                        onChange={(e) => setBooking({ ...booking, fullName: e.target.value })}
+                                                        placeholder="John Doe"
+                                                        maxLength={50}
+                                                        className="bg-gray-50 border-gray-100 rounded-md h-11"
+                                                    />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <Label className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Email *</Label>
+                                                    <Input
+                                                        type="email"
+                                                        value={booking.email}
+                                                        onChange={(e) => setBooking({ ...booking, email: e.target.value })}
+                                                        placeholder="you@example.com"
+                                                        maxLength={100}
+                                                        className="bg-gray-50 border-gray-100 rounded-md h-11"
+                                                    />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <Label className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Phone *</Label>
+                                                    <div className="flex gap-2">
+                                                        <CountryCodeSelect
+                                                            value={booking.countryCode}
+                                                            onChange={(val) => setBooking({ ...booking, countryCode: val })}
+                                                        />
+                                                        <Input
+                                                            type="tel"
+                                                            value={booking.phone}
+                                                            onChange={(e) => setBooking({ ...booking, phone: e.target.value })}
+                                                            placeholder="123 456 7890"
+                                                            maxLength={20}
+                                                            className="flex-1 bg-gray-50 border-gray-100 rounded-md h-11"
+                                                        />
+                                                    </div>
+                                                </div>
                                             </div>
                                         )}
 
@@ -914,154 +1071,6 @@ export default function CircuitDetailPage() {
                                         </p>
                                     </form>
 
-                                    {/* Auth Modal for guests */}
-                                    {showAuthModal && (
-                                        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                                            <div className="bg-card border border-border rounded-xl shadow-lg max-w-md w-full p-6 overflow-auto max-h-[90vh]">
-                                                <div className="flex items-center justify-between mb-6">
-                                                    <h2 className="text-xl font-bold">Sign in to Book</h2>
-                                                    <button onClick={() => { setShowAuthModal(false); setAuthErrors({}) }} className="text-muted-foreground hover:text-foreground">
-                                                        <X className="w-5 h-5" />
-                                                    </button>
-                                                </div>
-
-                                                {/* Auth mode toggle */}
-                                                <div className="flex mb-6 bg-muted/50 rounded-lg p-1">
-                                                    <button
-                                                        type="button"
-                                                        className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${authMode === "login" ? "bg-background shadow-sm" : "text-muted-foreground"}`}
-                                                        onClick={() => { setAuthMode("login"); setAuthErrors({}) }}
-                                                    >
-                                                        Sign In
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${authMode === "register" ? "bg-background shadow-sm" : "text-muted-foreground"}`}
-                                                        onClick={() => { setAuthMode("register"); setAuthErrors({}) }}
-                                                    >
-                                                        Create Account
-                                                    </button>
-                                                </div>
-
-                                                {/* Registration form fields */}
-                                                {authMode === "register" && (
-                                                    <div className="space-y-4 mb-4">
-                                                        <div>
-                                                            <label className="block text-sm font-medium mb-2">Full Name</label>
-                                                            <Input
-                                                                value={authForm.fullName}
-                                                                onChange={(e) => setAuthForm(prev => ({ ...prev, fullName: e.target.value }))}
-                                                                placeholder="John Doe"
-                                                                maxLength={30}
-                                                                className={authErrors.fullName ? "border-destructive" : ""}
-                                                            />
-                                                            {authErrors.fullName && <p className="text-sm text-destructive mt-1">{authErrors.fullName}</p>}
-                                                        </div>
-                                                    </div>
-                                                )}
-
-                                                {/* Email field (both modes) */}
-                                                <div className="mb-4">
-                                                    <label className="block text-sm font-medium mb-2">Email</label>
-                                                    <Input
-                                                        type="email"
-                                                        value={authForm.email}
-                                                        onChange={(e) => setAuthForm(prev => ({ ...prev, email: e.target.value }))}
-                                                        placeholder="you@example.com"
-                                                        maxLength={40}
-                                                        className={authErrors.email ? "border-destructive" : ""}
-                                                    />
-                                                    {authErrors.email && <p className="text-sm text-destructive mt-1">{authErrors.email}</p>}
-                                                </div>
-
-                                                {/* Phone field (register only) */}
-                                                {authMode === "register" && (
-                                                    <div className="mb-4">
-                                                        <label className="block text-sm font-medium mb-2">Phone Number</label>
-                                                        <div className="flex gap-2">
-                                                            <CountryCodeSelect
-                                                                value={authForm.countryCode}
-                                                                onChange={(val) => setAuthForm(prev => ({ ...prev, countryCode: val }))}
-                                                            />
-                                                            <Input
-                                                                type="tel"
-                                                                value={authForm.phone}
-                                                                onChange={(e) => setAuthForm(prev => ({ ...prev, phone: e.target.value }))}
-                                                                placeholder="123 456 7890"
-                                                                maxLength={12}
-                                                                className={`flex-1 ${authErrors.phone ? "border-destructive" : ""}`}
-                                                            />
-                                                        </div>
-                                                        {authErrors.phone && <p className="text-sm text-destructive mt-1">{authErrors.phone}</p>}
-                                                    </div>
-                                                )}
-
-                                                {/* Password field */}
-                                                <div className="mb-4">
-                                                    <label className="block text-sm font-medium mb-2">Password</label>
-                                                    <Input
-                                                        type="password"
-                                                        value={authForm.password}
-                                                        onChange={(e) => setAuthForm(prev => ({ ...prev, password: e.target.value }))}
-                                                        placeholder="••••••••"
-                                                        className={authErrors.password ? "border-destructive" : ""}
-                                                    />
-                                                    {authErrors.password && <p className="text-sm text-destructive mt-1">{authErrors.password}</p>}
-                                                </div>
-
-                                                {/* Confirm password (register only) */}
-                                                {authMode === "register" && (
-                                                    <div className="mb-4">
-                                                        <label className="block text-sm font-medium mb-2">Confirm Password</label>
-                                                        <Input
-                                                            type="password"
-                                                            value={authForm.confirmPassword}
-                                                            onChange={(e) => setAuthForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                                                            placeholder="••••••••"
-                                                            className={authErrors.confirmPassword ? "border-destructive" : ""}
-                                                        />
-                                                        {authErrors.confirmPassword && <p className="text-sm text-destructive mt-1">{authErrors.confirmPassword}</p>}
-                                                    </div>
-                                                )}
-
-                                                {/* Form error message */}
-                                                {authErrors.form && (
-                                                    <div className={`px-4 py-3 rounded text-sm mb-4 ${authErrors.form.includes("verify") || authErrors.form.includes("check") || authErrors.form.includes("created") ? "bg-primary/10 text-primary border border-primary/20" : "bg-destructive/10 text-destructive border border-destructive/20"}`}>
-                                                        <p>{authErrors.form}</p>
-                                                        {(authErrors.isServerError || authErrors.isEmailError) && (
-                                                            <Link
-                                                                href="/contact"
-                                                                className="inline-flex items-center gap-1 mt-2 text-sm font-medium underline underline-offset-2 hover:no-underline"
-                                                            >
-                                                                Contact Support
-                                                            </Link>
-                                                        )}
-                                                    </div>
-                                                )}
-
-                                                {/* Submit button */}
-                                                <Button
-                                                    type="button"
-                                                    onClick={authMode === "login" ? handleInlineLogin : handleInlineRegister}
-                                                    disabled={authLoading}
-                                                    className="w-full"
-                                                >
-                                                    {authLoading
-                                                        ? (authMode === "login" ? "Signing in..." : "Creating account...")
-                                                        : (authMode === "login" ? "Sign In & Book" : "Create Account & Book")
-                                                    }
-                                                </Button>
-
-                                                {authMode === "login" && (
-                                                    <p className="text-center text-sm text-muted-foreground mt-4">
-                                                        <Link href="/forgot-password" className="text-primary hover:underline">
-                                                            Forgot your password?
-                                                        </Link>
-                                                    </p>
-                                                )}
-                                            </div>
-                                        </div>
-                                    )}
                                 </div>
                             </div>
                         </div>

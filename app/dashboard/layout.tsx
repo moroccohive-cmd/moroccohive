@@ -33,7 +33,7 @@ export default async function DashboardLayout({
             <div className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-card">
                 <div className="flex items-center gap-2">
                     <Image
-                        src="/logo_1.PNG"
+                        src="/logo_1.webp"
                         alt="MoroccoHive"
                         width={180}
                         height={60}

@@ -1,6 +1,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { MapPin, Phone, Mail, Facebook, Instagram, MessageCircle } from "lucide-react"
+import { TrustpilotBadge } from "@/components/trustpilot-badge"
 
 export function Footer() {
     const currentYear = new Date().getFullYear()
@@ -13,7 +14,7 @@ export function Footer() {
                     <div className="space-y-4">
                         <Link href="/" className="inline-block">
                             <Image
-                                src="/logo_1.PNG"
+                                src="/logo_1.webp"
                                 alt="MoroccoHive Logo"
                                 width={180}
                                 height={180}
@@ -23,6 +24,12 @@ export function Footer() {
                         <p className="text-sm text-muted-foreground">
                             Discover the magic of Morocco with expertly curated tours and unforgettable experiences.
                         </p>
+                        
+                        <div className="flex items-center gap-3">
+                            <Image src="/Visa-Logo.webp" alt="Visa" width={50} height={32} className="h-7 w-auto object-contain opacity-80" />
+                            <Image src="/MasterCard_Logo.svg.webp" alt="Mastercard" width={50} height={32} className="h-7 w-auto object-contain opacity-80" />
+                            <Image src="/paypal.webp" alt="PayPal" width={70} height={32} className="h-7 w-auto object-contain opacity-80" />
+                        </div>
                         {/* <div className="flex space-x-4 align-center"> */}
                         {/* <Link href="https://www.tripadvisor.fr/Profile/moroccohive" target="_blank" className="text-muted-foreground ">
                                 <span className="sr-only">TripAdvisor</span>
@@ -120,12 +127,14 @@ export function Footer() {
                 </div>
 
                 {/* Bottom Bar */}
+                {/* Bottom Bar */}
                 <div className="mt-8 pt-8 border-t border-border">
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-6">
                         <p className="text-sm text-muted-foreground">
                             © {currentYear} MoroccoHive. All rights reserved.
                         </p>
                         <div className="flex items-center gap-6">
+                            <TrustpilotBadge variant="dark" />
                             <Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                                 Privacy Policy
                             </Link>

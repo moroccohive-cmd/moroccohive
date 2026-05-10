@@ -79,7 +79,7 @@ export default async function BlogListingPage({
             <section className="relative pt-32 pb-20 bg-primary overflow-hidden">
                 <div className="absolute inset-0 opacity-10">
                     <Image
-                        src="/hero-bg.png"
+                        src="/hero-bg.webp"
                         alt=""
                         fill
                         className="object-cover"
