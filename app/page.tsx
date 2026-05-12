@@ -163,7 +163,7 @@ export default async function HomePage() {
               Private Morocco Tours Built by a Local Who Actually Lives Here
             </h1>
 
-            <p className="text-xl md:text-2xl text-white/90 font-light leading-relaxed max-w-2xl mx-auto mb-10">
+            <p className="text-base md:text-2xl text-white/90 font-light leading-relaxed max-w-2xl mx-auto mb-6 md:mb-10">
               100% customizable private tours. Expert local guides. No group tours.
               From Sahara camps to medina walks - designed exactly how you want it.
             </p>
@@ -178,23 +178,30 @@ export default async function HomePage() {
             </div>
 
             <div className="mt-8 flex items-center justify-center">
-              <div className="flex items-center gap-2 text-white/90 text-sm font-medium px-6 py-3 rounded-md backdrop-blur-md border border-white/25 shadow-lg">
-                <div className="flex gap-0.5">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-secondary text-secondary" />
-                  ))}
+              <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-white/90 text-sm font-medium px-5 py-3 rounded-md backdrop-blur-md border border-white/25 shadow-lg">
+                <div className="flex items-center gap-1.5">
+                  <div className="flex gap-0.5">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star key={i} className="w-3.5 h-3.5 fill-secondary text-secondary" />
+                    ))}
+                  </div>
+                  <span>4.6/5 Stars</span>
                 </div>
-                <span>4.6/5 Stars</span>
-                <span className="text-white/40">|</span>
+                <span className="text-white/40 hidden sm:inline">|</span>
                 <span>200+ Happy Travelers</span>
-                <span className="text-white/40">|</span>
+                <span className="text-white/40 hidden sm:inline">|</span>
                 <span>10+ Years Experience</span>
               </div>
             </div>
+
+            {/* Trustpilot Badge — inline centered on mobile */}
+            <div className="mt-4 flex justify-center sm:hidden">
+              <TrustpilotBadge />
+            </div>
           </div>
 
-          {/* Trustpilot Badge */}
-          <div className="absolute bottom-8 left-6 z-20">
+          {/* Trustpilot Badge — absolute on desktop */}
+          <div className="hidden sm:block absolute bottom-8 left-6 z-20">
             <TrustpilotBadge />
           </div>
         </section>

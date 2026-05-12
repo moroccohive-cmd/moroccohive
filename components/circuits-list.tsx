@@ -1,7 +1,6 @@
 "use client"
 
-import { useMemo, useState, useEffect, Suspense } from "react"
-import { useSearchParams } from "next/navigation"
+import { useMemo, useState, Suspense } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { ArrowRight, X, Check, ChevronDown } from "lucide-react"
@@ -26,7 +25,6 @@ interface Circuit {
 type DurationFilter = "all" | "5" | "6-7" | "8-9" | "10-13"
 type TourTypeFilter = "all" | "Family with Kids" | "Honeymoon / Couples" | "Adventure & Trekking" | "Cultural Deep Dive" | "Budget-Friendly" | "Luxury Experience"
 type PriceFilter = "all" | "under-1500" | "1500-2000" | "2000-2500" | "2500+"
-type DestinationFilter = "all" | "sahara" | "imperial" | "coastal" | "mountains" | "medinas" | "mix"
 type SortOption = "default" | "price-asc" | "price-desc" | "duration-asc" | "duration-desc"
 
 const DURATION_OPTIONS: { value: DurationFilter; label: string }[] = [
@@ -53,16 +51,6 @@ const PRICE_OPTIONS: { value: PriceFilter; label: string }[] = [
     { value: "1500-2000", label: "$1,500 – $2,000" },
     { value: "2000-2500", label: "$2,000 – $2,500" },
     { value: "2500+", label: "$2,500+" },
-]
-
-const DESTINATION_OPTIONS: { value: DestinationFilter; label: string }[] = [
-    { value: "all", label: "All Destinations" },
-    { value: "sahara", label: "Sahara Desert" },
-    { value: "imperial", label: "Imperial Cities (Fes, Meknes, Marrakech, Rabat)" },
-    { value: "coastal", label: "Coastal Experience (Essaouira, Asilah)" },
-    { value: "mountains", label: "Mountains & Rif" },
-    { value: "medinas", label: "Medinas & Culture" },
-    { value: "mix", label: "Mix of Everything" },
 ]
 
 const SORT_LABELS: Record<SortOption, string> = {
@@ -96,26 +84,6 @@ function matchesPrice(price: number, filter: PriceFilter): boolean {
     return true
 }
 
-function matchesDestination(circuit: Circuit, filter: DestinationFilter): boolean {
-    if (filter === "all") return true
-    const text = `${circuit.name} ${circuit.description} ${circuit.highlights.join(" ")}`.toLowerCase()
-    if (filter === "sahara") return text.includes("sahara")
-    if (filter === "imperial") return (
-        text.includes("imperial") ||
-        text.includes("fes") || text.includes("fez") ||
-        text.includes("meknes") ||
-        text.includes("marrakech") ||
-        text.includes("rabat")
-    )
-    if (filter === "coastal") return text.includes("essaouira") || text.includes("asilah") || text.includes("coast")
-    if (filter === "mountains") return (
-        text.includes("atlas") || text.includes("rif") ||
-        text.includes("chefchaouen") || text.includes("mountain") || text.includes("toubkal")
-    )
-    if (filter === "medinas") return text.includes("medina") || text.includes("souk") || circuit.category.toLowerCase().includes("cultural")
-    if (filter === "mix") return circuit.category.toLowerCase().includes("mix") || text.includes("mix of")
-    return true
-}
 
 function FilterCheckbox<T extends string>({
     options,
@@ -153,26 +121,16 @@ function FilterCheckbox<T extends string>({
 }
 
 function CircuitsListContent({ circuits }: { circuits: Circuit[] }) {
-    const searchParams = useSearchParams()
     const [duration, setDuration] = useState<DurationFilter>("all")
     const [tourType, setTourType] = useState<TourTypeFilter>("all")
     const [price, setPrice] = useState<PriceFilter>("all")
-    const [destination, setDestination] = useState<DestinationFilter>("all")
     const [sort, setSort] = useState<SortOption>("default")
-
-    useEffect(() => {
-        const dest = searchParams.get("destination") as DestinationFilter | null
-        if (dest && DESTINATION_OPTIONS.some((o) => o.value === dest)) {
-            setDestination(dest)
-        }
-    }, [searchParams])
 
     const filtered = useMemo(() => {
         const list = circuits.filter((c) => {
             if (!matchesDuration(c.duration, duration)) return false
             if (!matchesTourType(c.category, tourType)) return false
             if (!matchesPrice(c.price, price)) return false
-            if (!matchesDestination(c, destination)) return false
             return true
         })
 
@@ -184,16 +142,15 @@ function CircuitsListContent({ circuits }: { circuits: Circuit[] }) {
             case "duration-desc": sorted.sort((a, b) => b.duration - a.duration); break
         }
         return sorted
-    }, [circuits, duration, tourType, price, destination, sort])
+    }, [circuits, duration, tourType, price, sort])
 
     const hasActiveFilters =
-        duration !== "all" || tourType !== "all" || price !== "all" || destination !== "all" || sort !== "default"
+        duration !== "all" || tourType !== "all" || price !== "all" || sort !== "default"
 
     function resetFilters() {
         setDuration("all")
         setTourType("all")
         setPrice("all")
-        setDestination("all")
         setSort("default")
     }
 
@@ -201,7 +158,7 @@ function CircuitsListContent({ circuits }: { circuits: Circuit[] }) {
         <>
             {/* ── Filter Panel ── */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 mb-10">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
 
                     {/* 1. Trip Duration */}
                     <div className="space-y-3">
@@ -239,17 +196,6 @@ function CircuitsListContent({ circuits }: { circuits: Circuit[] }) {
                         />
                     </div>
 
-                    {/* 4. Featured Destination */}
-                    <div className="space-y-3">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">
-                            Featured Destination
-                        </p>
-                        <FilterCheckbox
-                            options={DESTINATION_OPTIONS}
-                            value={destination}
-                            onChange={setDestination}
-                        />
-                    </div>
                 </div>
 
                 {/* Result count + sort + clear */}
