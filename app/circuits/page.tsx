@@ -5,8 +5,8 @@ import { CircuitsList } from "@/components/circuits-list"
 import prisma from "@/lib/prisma"
 
 export const metadata: Metadata = {
-    title: "Tours & Itineraries | Morocco Hive",
-    description: "Handpicked itineraries designed to immerse you in the magic of the kingdom.",
+    title: "Private Morocco Tour Itineraries | 5–13 Days | MoroccoHive",
+    description: "Browse private Morocco tour itineraries - from Sahara desert camps to imperial cities. 5 to 13 days. Fully customizable. From $1,400/person.",
 }
 
 // Disable caching to ensure fresh data (updated slugs, etc.) is always served
@@ -67,9 +67,9 @@ export default async function CircuitsPage() {
                 <section className="bg-white pt-32 pb-16 px-4 border-b border-gray-100">
                     <div className="max-w-7xl mx-auto text-center space-y-4">
                         <span className="text-orange-500 font-medium text-sm tracking-widest uppercase">Explore Morocco</span>
-                        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">Curated Journeys</h1>
+                        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">Browse Private Morocco Tour Itineraries</h1>
                         <p className="text-xl text-gray-500 max-w-2xl mx-auto font-light">
-                            Handpicked itineraries designed to immerse you in the magic of the kingdom.
+                            From Sahara desert camps to imperial cities. 5 to 13 days. Fully customizable. From $1,400/person.
                         </p>
                     </div>
                 </section>

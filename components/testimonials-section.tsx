@@ -89,7 +89,7 @@ export function TestimonialsSection() {
               </div>
               <div className="flex items-center gap-4">
                 <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-secondary/30 flex-shrink-0">
-                  <Image src={t.image} alt={t.name} fill sizes="48px" className="object-cover" />
+                  <Image src={t.image} alt={`${t.name} - Morocco Hive traveler`} fill sizes="48px" className="object-cover" />
                 </div>
                 <div className="text-left">
                   <p className="font-bold text-secondary uppercase tracking-wider text-sm">{t.name}</p>

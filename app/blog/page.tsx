@@ -8,8 +8,8 @@ import prisma from "@/lib/prisma"
 import BlogPagination from "@/components/blog-pagination"
 
 export const metadata: Metadata = {
-    title: "Blog | Morocco Hive",
-    description: "Stories, travel tips, and cultural insights from the heart of Morocco.",
+    title: "Morocco Travel Blog | Tips & Guides by Local Experts | MoroccoHive",
+    description: "Insider travel guides, tips, and cultural insights from Morocco - written by locals who live here. Plan smarter before you arrive.",
 }
 
 interface BlogPost {
@@ -91,7 +91,7 @@ export default async function BlogListingPage({
                 <div className="container mx-auto px-6 relative z-10 text-center">
                     <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Morocco Hive Blog</h1>
                     <p className="text-white/80 max-w-2xl mx-auto text-lg">
-                        Stories, travel tips, and cultural insights from the heart of Morocco.
+                        Insider travel guides, tips, and cultural insights from Morocco - written by locals who live here. Plan smarter before you arrive.
                     </p>
                 </div>
             </section>

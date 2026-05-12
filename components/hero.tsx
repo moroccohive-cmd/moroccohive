@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Sparkles } from "lucide-react"
+import { TrustpilotBadge } from "@/components/trustpilot-badge"
 
 export function Hero() {
     return (
@@ -23,17 +24,17 @@ export function Hero() {
                     <div className="flex items-center justify-center md:justify-start mb-2">
                         <div className="inline-flex items-center px-4 py-2 rounded-full bg-accent/20 border border-accent/30">
                             <Sparkles className="w-4 h-4 mr-2 text-accent" />
-                            <span className="text-sm font-medium text-accent">Authentic Moroccan Experiences</span>
+                            <span className="text-sm font-medium text-accent">Locally Planned, Locally Guided</span>
                         </div>
                     </div>
 
                     <h1 className="text-5xl md:text-7xl font-bold font-serif mb-2 leading-tight">
-                        Discover the
-                        <span className="block text-primary mt-2">Magic of Morocco</span>
+                        Morocco
+                        <span className="block text-primary mt-2">As Locals Know It</span>
                     </h1>
 
                     <p className="text-lg md:text-xl text-muted-foreground mb-4 max-w-2xl">
-                        Embark on unforgettable journeys through imperial cities, Sahara dunes, and ancient medinas. Let us craft your perfect Moroccan adventure.
+                        Private tours and custom itineraries, built by people based in Marrakech. From the medinas of Fes to the dunes at Erg Chebbi, no copy-paste packages.
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
@@ -51,7 +52,7 @@ export function Hero() {
                     </div>
 
                     {/* Trust Indicators */}
-                    <div className="mt-12 bg-red-900 flex flex-col sm:flex-row items-center justify-center md:justify-start gap-8 text-sm">
+                    <div className="mt-12 inline-flex flex-col sm:flex-row items-center justify-center md:justify-start gap-6 text-sm px-6 py-3 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 shadow-lg">
                         <div className="flex items-center">
                             <div className="flex -space-x-2 mr-3">
                                 {[1, 2, 3, 4].map((i) => (
@@ -61,15 +62,21 @@ export function Hero() {
                                     />
                                 ))}
                             </div>
-                            <span className="text-muted-foreground">
-                                <strong className="text-foreground">500+</strong> Happy Travelers
+                            <span className="text-white/80">
+                                <strong className="text-white">500+</strong> Happy Travelers
                             </span>
                         </div>
-                        <div className="text-muted-foreground">
-                            ⭐ <strong className="text-foreground">4.9/5</strong> Rating
+                        <div className="hidden sm:block w-px h-5 bg-white/30" />
+                        <div className="text-white/80">
+                            ⭐ <strong className="text-white">4.9/5</strong> Rating
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {/* Trustpilot Badge */}
+            <div className="absolute bottom-10 left-4 sm:left-8 z-20">
+                <TrustpilotBadge variant="light" />
             </div>
 
             {/* Decorative Elements */}

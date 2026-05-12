@@ -188,7 +188,7 @@ export default function ReviewsPage() {
                                             const count = reviewCountByCircuit(c.id)
                                             return (
                                                 <option key={c.id} value={c.id} disabled={count >= 3}>
-                                                    {c.name} {count >= 3 ? "(3/3 — full)" : `(${count}/3)`}
+                                                    {c.name} {count >= 3 ? "(3/3 - full)" : `(${count}/3)`}
                                                 </option>
                                             )
                                         })}

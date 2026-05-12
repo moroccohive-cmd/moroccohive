@@ -48,13 +48,26 @@ export async function generateMetadata({
         }
     }
 
+    const ogImage = post.coverImage
+        ? post.coverImage.replace(/^https?:\/\/[^/]+/, "")
+        : null
+
     return {
         title: `${post.title} | Morocco Hive Blog`,
         description: post.excerpt || post.content.substring(0, 160),
+        alternates: {
+            canonical: `https://www.moroccohive.com/blog/${post.slug}`,
+        },
         openGraph: {
             title: post.title,
             description: post.excerpt || post.content.substring(0, 160),
-            images: post.coverImage ? [post.coverImage] : [],
+            url: `https://www.moroccohive.com/blog/${post.slug}`,
+            images: ogImage ? [{ url: ogImage, width: 1200, height: 630 }] : [],
+        },
+        twitter: {
+            title: post.title,
+            description: post.excerpt || post.content.substring(0, 160),
+            images: ogImage ? [ogImage] : [],
         },
     }
 }

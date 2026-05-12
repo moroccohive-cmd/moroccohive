@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import dynamic from "next/dynamic"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
@@ -19,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { TrustpilotBadge } from "@/components/trustpilot-badge"
 import { FAQItem } from "@/components/faq-item"
+import { FAQSchema } from "@/components/structured-data"
 import prisma from "@/lib/prisma"
 const AgentsSection = dynamic(
   () => import("@/components/agents-section").then((m) => m.AgentsSection),
@@ -40,7 +42,35 @@ const ContactForm = dynamic(
   { loading: () => <div className="py-24 bg-background/50" /> },
 )
 
-// Revalidate every hour — circuits and blogs change infrequently
+export const metadata: Metadata = {
+  title: "Private Morocco Tours by Local Experts | Morocco Hive",
+  description:
+    "Custom private Morocco tours built by local guides in Marrakech. Sahara desert, Atlas Mountains, imperial cities - designed around you. 4.9★ on Trustpilot.",
+  alternates: {
+    canonical: "https://www.moroccohive.com",
+  },
+  openGraph: {
+    title: "Private Morocco Tours by Local Experts | Morocco Hive",
+    description:
+      "Custom private Morocco tours built by local guides in Marrakech. Sahara desert, Atlas Mountains, imperial cities - designed around you.",
+    url: "https://www.moroccohive.com",
+    images: [
+      {
+        url: "/hero-bg.webp",
+        width: 1200,
+        height: 630,
+        alt: "Morocco Sahara desert dunes at golden hour - private tours by Morocco Hive",
+      },
+    ],
+  },
+  twitter: {
+    title: "Private Morocco Tours by Local Experts | Morocco Hive",
+    description:
+      "Custom private Morocco tours built by local guides in Marrakech. Sahara desert, Atlas Mountains, imperial cities - designed around you.",
+  },
+}
+
+// Revalidate every hour - circuits and blogs change infrequently
 export const revalidate = 3600
 
 async function getFeaturedCircuits() {
@@ -93,7 +123,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Is Morocco a safe country?",
-    a: "Yes, Morocco is generally considered a safe country for tourists, with low levels of violent crime and no significant gun violence, though petty crimes like pickpocketing and scams are common in tourist areas. Official advisories recommend exercising increased caution due to a potential terrorism threat, but this applies to many destinations globally. As of 2025, there are no major conflicts affecting visitors, and millions travel there annually without issues—stick to common-sense precautions like not walking alone at night in isolated areas.",
+    a: "Yes, Morocco is generally considered a safe country for tourists, with low levels of violent crime and no significant gun violence, though petty crimes like pickpocketing and scams are common in tourist areas. Official advisories recommend exercising increased caution due to a potential terrorism threat, but this applies to many destinations globally. As of 2025, there are no major conflicts affecting visitors, and millions travel there annually without issues-stick to common-sense precautions like not walking alone at night in isolated areas.",
   },
   {
     q: "Do I need to purchase travel insurance?",
@@ -118,7 +148,7 @@ export default async function HomePage() {
           <div className="absolute inset-0 z-0">
             <Image
               src="/hero-bg.webp"
-              alt="Morocco Sahara"
+              alt="Morocco Sahara desert dunes at golden hour - private tour by MoroccoHive"
               fill
               className="object-cover"
               priority
@@ -135,7 +165,7 @@ export default async function HomePage() {
 
             <p className="text-xl md:text-2xl text-white/90 font-light leading-relaxed max-w-2xl mx-auto mb-10">
               100% customizable private tours. Expert local guides. No group tours.
-              From Sahara camps to medina walks — designed exactly how you want it.
+              From Sahara camps to medina walks - designed exactly how you want it.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -147,25 +177,25 @@ export default async function HomePage() {
               </Button>
             </div>
 
-            <div className="mt-8 flex flex-col items-center gap-3">
-              <div className="flex items-center gap-2 text-white/90 text-sm font-medium">
+            <div className="mt-8 flex items-center justify-center">
+              <div className="flex items-center gap-2 text-white/90 text-sm font-medium px-6 py-3 rounded-md backdrop-blur-md border border-white/25 shadow-lg">
                 <div className="flex gap-0.5">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star key={i} className="w-4 h-4 fill-secondary text-secondary" />
                   ))}
                 </div>
-                <span>4.9/5 Stars</span>
-                <span className="text-white/40">•</span>
+                <span>4.6/5 Stars</span>
+                <span className="text-white/40">|</span>
                 <span>200+ Happy Travelers</span>
-                <span className="text-white/40">•</span>
+                <span className="text-white/40">|</span>
                 <span>10+ Years Experience</span>
-                <span className="text-white/40">•</span>
               </div>
-              <p className="text-white/70 text-sm italic max-w-md">
-                &ldquo;Best tour guide we&apos;ve had in Morocco. Abdellatif truly knows the country.&rdquo; — Martin S., Canada
-              </p>
-              <TrustpilotBadge variant="light" />
             </div>
+          </div>
+
+          {/* Trustpilot Badge */}
+          <div className="absolute bottom-8 left-6 z-20">
+            <TrustpilotBadge />
           </div>
         </section>
 
@@ -459,6 +489,7 @@ export default async function HomePage() {
         {/* Contact */}
         <ContactForm />
       </main>
+      <FAQSchema items={FAQ_ITEMS} />
 
       <Footer />
     </div>

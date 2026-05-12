@@ -3,8 +3,28 @@ import { Footer } from "@/components/footer"
 import { MapPin, Phone, Mail, CheckCircle, Clock, MessageCircle } from "lucide-react"
 
 export const metadata = {
-    title: "About Us | Morocco Hive",
-    description: "Morocco Hive is a Morocco-based travel agency in Marrakech, specializing in private tours, small group journeys, and fully customized itineraries.",
+    title: "About Morocco Hive - Morocco-Based Private Tour Agency",
+    description: "Morocco Hive is a Marrakech-based travel agency creating private, customizable tours led by local experts. Learn our story, team, and philosophy.",
+    alternates: {
+        canonical: "https://www.moroccohive.com/about",
+    },
+    openGraph: {
+        title: "About Morocco Hive - Morocco-Based Private Tour Agency",
+        description: "Morocco Hive is a Marrakech-based travel agency creating private, customizable tours led by local experts. Learn our story, team, and philosophy.",
+        url: "https://www.moroccohive.com/about",
+        images: [
+            {
+                url: "/hero-bg.webp",
+                width: 1200,
+                height: 630,
+                alt: "Morocco Hive - local tour guides in Marrakech",
+            },
+        ],
+    },
+    twitter: {
+        title: "About Morocco Hive - Morocco-Based Private Tour Agency",
+        description: "Morocco Hive is a Marrakech-based travel agency creating private, customizable tours led by local experts.",
+    },
 }
 
 export default function AboutPage() {
@@ -22,7 +42,7 @@ export default function AboutPage() {
     const whyUs = [
         { title: "Local Expertise", description: "We live here. We know the routes, the seasons, and the details that make the difference." },
         { title: "Tailor-Made Journeys", description: "No copy-paste tours. Every itinerary is crafted around you." },
-        { title: "Authentic Experiences", description: "Real places, real people, genuine moments." },
+        { title: "No generic packages", description: "We don't sell the same 7-day circuit to everyone. Each itinerary is built around where you actually want to go." },
         { title: "Reliable & Transparent", description: "Clear communication, honest advice, and flexible booking options." },
         { title: "Worldwide Travelers Welcome", description: "We work with travelers from all over the world and understand international expectations." },
     ]
@@ -43,7 +63,7 @@ export default function AboutPage() {
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                         <h1 className="text-4xl md:text-5xl font-bold font-serif mb-6">About Morocco Hive</h1>
                         <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-                            Your gateway to authentic, meaningful, and well-crafted travel experiences in Morocco.
+                            A Morocco-based travel agency in Marrakech. We plan private tours and custom itineraries, and we're available before, during, and after your trip.
                         </p>
                     </div>
                 </section>
@@ -55,7 +75,7 @@ export default function AboutPage() {
                             <p className="text-lg text-muted-foreground leading-relaxed">
                                 We are a Morocco-based travel agency located in Marrakech, specializing in private tours,
                                 small group journeys, and fully customized itineraries designed for travelers from around the world.
-                                Our mission is simple: to help you experience Morocco beyond the surface — naturally, comfortably,
+                                Our goal is straightforward: help you see more of Morocco than the standard circuit, comfortably
                                 and at your own pace.
                             </p>
                         </div>
@@ -68,14 +88,14 @@ export default function AboutPage() {
                         <h2 className="text-2xl md:text-3xl font-bold font-serif mb-6">Who We Are</h2>
                         <div className="prose prose-lg max-w-none">
                             <p className="text-muted-foreground leading-relaxed">
-                                Morocco Hive is an independently owned travel business, created by locals who know Morocco deeply —
-                                its landscapes, cultures, traditions, and hidden places.
+                                Morocco Hive is an independently owned travel business, created by locals who know Morocco well:
+                                its landscapes, cultures, traditions, and the places most visitors never reach.
                             </p>
                             <p className="text-muted-foreground leading-relaxed mt-4">
                                 The name <strong className="text-foreground">Morocco Hive</strong> reflects our philosophy: like a hive,
-                                Morocco is alive with diversity — deserts, mountains, cities, coastlines, and cultures — all working
-                                together to create something unique. We carefully connect these elements to build journeys that feel
-                                organic, balanced, and unforgettable.
+                                Morocco is alive with diversity (deserts, mountains, cities, coastlines, and cultures) all working
+                                together to create something unlike anywhere else. We connect these elements to build journeys that feel
+                                organic and well-balanced.
                             </p>
                         </div>
                     </div>
@@ -129,8 +149,8 @@ export default function AboutPage() {
                         <h2 className="text-2xl md:text-3xl font-bold font-serif mb-6">Our Travel Philosophy</h2>
                         <div className="prose prose-lg max-w-none">
                             <p className="text-muted-foreground leading-relaxed">
-                                We believe travel should be personal, respectful, and enriching. Our goal is not just to show you Morocco,
-                                but to help you <em>feel</em> it — through its landscapes, hospitality, food, history, and everyday life.
+                                We believe travel should be personal, respectful, and honest. Our goal isn't just to show you the highlights,
+                                but to give you context: the food, the history, the hospitality, and the everyday life that makes Morocco worth the trip.
                             </p>
                             <p className="text-muted-foreground leading-relaxed mt-4">
                                 We support responsible tourism by working with local drivers, guides, riads, and desert camps,

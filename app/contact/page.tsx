@@ -146,8 +146,8 @@ export default function ContactPage() {
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                         <h1 className="text-4xl md:text-5xl font-bold font-serif mb-6">Contact Us</h1>
                         <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-                            We're here to help you plan an unforgettable journey in Morocco. Whether you're looking for
-                            a private tour, a custom itinerary, or simply need travel advice, feel free to reach out.
+                            We're based in Marrakech and answer every message ourselves. Whether you need a full itinerary
+                            or just have a question about traveling in Morocco, send us a message.
                         </p>
                     </div>
                 </section>
@@ -329,10 +329,10 @@ export default function ContactPage() {
                 {/* CTA */}
                 <section className="py-12 md:py-16">
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                        <h2 className="text-2xl md:text-3xl font-bold font-serif mb-4">Let's Start Your Morocco Journey</h2>
+                        <h2 className="text-2xl md:text-3xl font-bold font-serif mb-4">Ready to plan your trip?</h2>
                         <p className="text-muted-foreground text-lg mb-8">
-                            Morocco is a land of contrasts, culture, and unforgettable experiences.
-                            Contact Morocco Hive today and let us help you design a journey made just for you.
+                            Tell us your dates and what you want to see. We'll put together something that fits,
+                            whether you have five days or three weeks.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <a href="mailto:info@moroccohive.com">

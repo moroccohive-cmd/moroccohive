@@ -1,11 +1,11 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect, Suspense } from "react"
+import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowRight, Search, X } from "lucide-react"
+import { ArrowRight, X, Check, ChevronDown } from "lucide-react"
 import { FavoriteButton } from "@/components/favorite-button"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 
 interface Circuit {
@@ -23,15 +23,47 @@ interface Circuit {
     category: string
 }
 
-type DurationBucket = "all" | "short" | "medium" | "long"
+type DurationFilter = "all" | "5" | "6-7" | "8-9" | "10-13"
+type TourTypeFilter = "all" | "Family with Kids" | "Honeymoon / Couples" | "Adventure & Trekking" | "Cultural Deep Dive" | "Budget-Friendly" | "Luxury Experience"
+type PriceFilter = "all" | "under-1500" | "1500-2000" | "2000-2500" | "2500+"
+type DestinationFilter = "all" | "sahara" | "imperial" | "coastal" | "mountains" | "medinas" | "mix"
 type SortOption = "default" | "price-asc" | "price-desc" | "duration-asc" | "duration-desc"
 
-const DURATION_LABELS: Record<DurationBucket, string> = {
-    all: "Any duration",
-    short: "1-3 days",
-    medium: "4-7 days",
-    long: "8+ days",
-}
+const DURATION_OPTIONS: { value: DurationFilter; label: string }[] = [
+    { value: "all", label: "All Durations" },
+    { value: "5", label: "5 Days" },
+    { value: "6-7", label: "6-7 Days" },
+    { value: "8-9", label: "8-9 Days" },
+    { value: "10-13", label: "10-13 Days" },
+]
+
+const TOUR_TYPE_OPTIONS: { value: TourTypeFilter; label: string }[] = [
+    { value: "all", label: "All Types" },
+    { value: "Family with Kids", label: "Family with Kids" },
+    { value: "Honeymoon / Couples", label: "Honeymoon / Couples" },
+    { value: "Adventure & Trekking", label: "Adventure & Trekking" },
+    { value: "Cultural Deep Dive", label: "Cultural Deep Dive" },
+    { value: "Budget-Friendly", label: "Budget-Friendly" },
+    { value: "Luxury Experience", label: "Luxury Experience" },
+]
+
+const PRICE_OPTIONS: { value: PriceFilter; label: string }[] = [
+    { value: "all", label: "All Prices" },
+    { value: "under-1500", label: "Under $1,500" },
+    { value: "1500-2000", label: "$1,500 – $2,000" },
+    { value: "2000-2500", label: "$2,000 – $2,500" },
+    { value: "2500+", label: "$2,500+" },
+]
+
+const DESTINATION_OPTIONS: { value: DestinationFilter; label: string }[] = [
+    { value: "all", label: "All Destinations" },
+    { value: "sahara", label: "Sahara Desert" },
+    { value: "imperial", label: "Imperial Cities (Fes, Meknes, Marrakech, Rabat)" },
+    { value: "coastal", label: "Coastal Experience (Essaouira, Asilah)" },
+    { value: "mountains", label: "Mountains & Rif" },
+    { value: "medinas", label: "Medinas & Culture" },
+    { value: "mix", label: "Mix of Everything" },
+]
 
 const SORT_LABELS: Record<SortOption, string> = {
     default: "Featured",
@@ -41,170 +73,187 @@ const SORT_LABELS: Record<SortOption, string> = {
     "duration-desc": "Duration: Long to Short",
 }
 
-function matchesDuration(days: number, bucket: DurationBucket): boolean {
-    if (bucket === "all") return true
-    if (bucket === "short") return days <= 3
-    if (bucket === "medium") return days >= 4 && days <= 7
-    return days >= 8
+function matchesDuration(days: number, filter: DurationFilter): boolean {
+    if (filter === "all") return true
+    if (filter === "5") return days === 5
+    if (filter === "6-7") return days >= 6 && days <= 7
+    if (filter === "8-9") return days >= 8 && days <= 9
+    if (filter === "10-13") return days >= 10 && days <= 13
+    return true
 }
 
-export function CircuitsList({ circuits }: { circuits: Circuit[] }) {
-    const [search, setSearch] = useState("")
-    const [category, setCategory] = useState<string>("all")
-    const [duration, setDuration] = useState<DurationBucket>("all")
+function matchesTourType(category: string, filter: TourTypeFilter): boolean {
+    if (filter === "all") return true
+    return category.toLowerCase() === filter.toLowerCase()
+}
+
+function matchesPrice(price: number, filter: PriceFilter): boolean {
+    if (filter === "all") return true
+    if (filter === "under-1500") return price < 1500
+    if (filter === "1500-2000") return price >= 1500 && price <= 2000
+    if (filter === "2000-2500") return price > 2000 && price <= 2500
+    if (filter === "2500+") return price > 2500
+    return true
+}
+
+function matchesDestination(circuit: Circuit, filter: DestinationFilter): boolean {
+    if (filter === "all") return true
+    const text = `${circuit.name} ${circuit.description} ${circuit.highlights.join(" ")}`.toLowerCase()
+    if (filter === "sahara") return text.includes("sahara")
+    if (filter === "imperial") return (
+        text.includes("imperial") ||
+        text.includes("fes") || text.includes("fez") ||
+        text.includes("meknes") ||
+        text.includes("marrakech") ||
+        text.includes("rabat")
+    )
+    if (filter === "coastal") return text.includes("essaouira") || text.includes("asilah") || text.includes("coast")
+    if (filter === "mountains") return (
+        text.includes("atlas") || text.includes("rif") ||
+        text.includes("chefchaouen") || text.includes("mountain") || text.includes("toubkal")
+    )
+    if (filter === "medinas") return text.includes("medina") || text.includes("souk") || circuit.category.toLowerCase().includes("cultural")
+    if (filter === "mix") return circuit.category.toLowerCase().includes("mix") || text.includes("mix of")
+    return true
+}
+
+function FilterCheckbox<T extends string>({
+    options,
+    value,
+    onChange,
+}: {
+    options: { value: T; label: string }[]
+    value: T
+    onChange: (v: T) => void
+}) {
+    return (
+        <div className="flex flex-col gap-2">
+            {options.map((opt) => (
+                <label
+                    key={opt.value}
+                    className="flex items-start gap-2.5 cursor-pointer group"
+                    onClick={() => onChange(opt.value)}
+                >
+                    <div
+                        className={`mt-0.5 w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center transition-all ${
+                            value === opt.value
+                                ? "bg-orange-500 border-orange-500"
+                                : "border-gray-300 bg-white group-hover:border-orange-400"
+                        }`}
+                    >
+                        {value === opt.value && <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />}
+                    </div>
+                    <span className={`text-sm leading-snug ${value === opt.value ? "text-gray-900 font-medium" : "text-gray-600"}`}>
+                        {opt.label}
+                    </span>
+                </label>
+            ))}
+        </div>
+    )
+}
+
+function CircuitsListContent({ circuits }: { circuits: Circuit[] }) {
+    const searchParams = useSearchParams()
+    const [duration, setDuration] = useState<DurationFilter>("all")
+    const [tourType, setTourType] = useState<TourTypeFilter>("all")
+    const [price, setPrice] = useState<PriceFilter>("all")
+    const [destination, setDestination] = useState<DestinationFilter>("all")
     const [sort, setSort] = useState<SortOption>("default")
 
-    const categories = useMemo(() => {
-        const set = new Set<string>()
-        for (const c of circuits) set.add(c.category)
-        return Array.from(set).sort((a, b) => a.localeCompare(b))
-    }, [circuits])
+    useEffect(() => {
+        const dest = searchParams.get("destination") as DestinationFilter | null
+        if (dest && DESTINATION_OPTIONS.some((o) => o.value === dest)) {
+            setDestination(dest)
+        }
+    }, [searchParams])
 
     const filtered = useMemo(() => {
-        const term = search.trim().toLowerCase()
         const list = circuits.filter((c) => {
-            if (category !== "all" && c.category !== category) return false
             if (!matchesDuration(c.duration, duration)) return false
-            if (term) {
-                const haystack = `${c.name} ${c.tagline ?? ""} ${c.description} ${c.category}`.toLowerCase()
-                if (!haystack.includes(term)) return false
-            }
+            if (!matchesTourType(c.category, tourType)) return false
+            if (!matchesPrice(c.price, price)) return false
+            if (!matchesDestination(c, destination)) return false
             return true
         })
 
         const sorted = [...list]
         switch (sort) {
-            case "price-asc":
-                sorted.sort((a, b) => a.price - b.price)
-                break
-            case "price-desc":
-                sorted.sort((a, b) => b.price - a.price)
-                break
-            case "duration-asc":
-                sorted.sort((a, b) => a.duration - b.duration)
-                break
-            case "duration-desc":
-                sorted.sort((a, b) => b.duration - a.duration)
-                break
+            case "price-asc": sorted.sort((a, b) => a.price - b.price); break
+            case "price-desc": sorted.sort((a, b) => b.price - a.price); break
+            case "duration-asc": sorted.sort((a, b) => a.duration - b.duration); break
+            case "duration-desc": sorted.sort((a, b) => b.duration - a.duration); break
         }
         return sorted
-    }, [circuits, search, category, duration, sort])
+    }, [circuits, duration, tourType, price, destination, sort])
 
     const hasActiveFilters =
-        search.trim() !== "" || category !== "all" || duration !== "all" || sort !== "default"
+        duration !== "all" || tourType !== "all" || price !== "all" || destination !== "all" || sort !== "default"
 
     function resetFilters() {
-        setSearch("")
-        setCategory("all")
         setDuration("all")
+        setTourType("all")
+        setPrice("all")
+        setDestination("all")
         setSort("default")
     }
 
     return (
         <>
             {/* ── Filter Panel ── */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 mb-10 space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 mb-10">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
 
-                {/* Search */}
-                <div className="space-y-2">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-gray-400">Search</p>
-                    <div className="relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" aria-hidden="true" />
-                        <Input
-                            type="search"
-                            placeholder="Search tours..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="pl-11 h-11 rounded-xl border-gray-200 bg-gray-50/60 focus-visible:ring-2 focus-visible:ring-orange-400/40 focus-visible:border-orange-400 text-sm placeholder:text-gray-400 transition-all"
-                            aria-label="Search tours"
+                    {/* 1. Trip Duration */}
+                    <div className="space-y-3">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">
+                            Trip Duration
+                        </p>
+                        <FilterCheckbox
+                            options={DURATION_OPTIONS}
+                            value={duration}
+                            onChange={setDuration}
+                        />
+                    </div>
+
+                    {/* 2. Tour Type */}
+                    <div className="space-y-3">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">
+                            Tour Type
+                        </p>
+                        <FilterCheckbox
+                            options={TOUR_TYPE_OPTIONS}
+                            value={tourType}
+                            onChange={setTourType}
+                        />
+                    </div>
+
+                    {/* 3. Price Range */}
+                    <div className="space-y-3">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">
+                            Price Range
+                        </p>
+                        <FilterCheckbox
+                            options={PRICE_OPTIONS}
+                            value={price}
+                            onChange={setPrice}
+                        />
+                    </div>
+
+                    {/* 4. Featured Destination */}
+                    <div className="space-y-3">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">
+                            Featured Destination
+                        </p>
+                        <FilterCheckbox
+                            options={DESTINATION_OPTIONS}
+                            value={destination}
+                            onChange={setDestination}
                         />
                     </div>
                 </div>
 
-                <div className="h-px bg-gray-100" />
-
-                {/* Category */}
-                <div className="space-y-2.5">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-gray-400">Category</p>
-                    <div className="flex flex-wrap gap-2">
-                        <button
-                            type="button"
-                            onClick={() => setCategory("all")}
-                            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 ${
-                                category === "all"
-                                    ? "bg-orange-500 text-white shadow-sm"
-                                    : "bg-gray-50 text-gray-600 border border-gray-200 hover:border-orange-300 hover:text-orange-500"
-                            }`}
-                        >
-                            All
-                        </button>
-                        {categories.map((c) => (
-                            <button
-                                key={c}
-                                type="button"
-                                onClick={() => setCategory(c)}
-                                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 ${
-                                    category === c
-                                        ? "bg-orange-500 text-white shadow-sm"
-                                        : "bg-gray-50 text-gray-600 border border-gray-200 hover:border-orange-300 hover:text-orange-500"
-                                }`}
-                            >
-                                {c}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="h-px bg-gray-100" />
-
-                {/* Duration + Sort */}
-                <div className="flex flex-col lg:flex-row gap-6">
-                    <div className="space-y-2.5 flex-1">
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-gray-400">Duration</p>
-                        <div className="flex flex-wrap gap-2">
-                            {(Object.keys(DURATION_LABELS) as DurationBucket[]).map((key) => (
-                                <button
-                                    key={key}
-                                    type="button"
-                                    onClick={() => setDuration(key)}
-                                    className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 ${
-                                        duration === key
-                                            ? "bg-orange-500 text-white shadow-sm"
-                                            : "bg-gray-50 text-gray-600 border border-gray-200 hover:border-orange-300 hover:text-orange-500"
-                                    }`}
-                                >
-                                    {DURATION_LABELS[key]}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="space-y-2.5 lg:min-w-[220px]">
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-gray-400">Sort by</p>
-                        <div className="relative">
-                            <select
-                                value={sort}
-                                onChange={(e) => setSort(e.target.value as SortOption)}
-                                aria-label="Sort tours"
-                                className="w-full h-11 rounded-xl border border-gray-200 bg-gray-50/60 px-4 pr-10 text-sm font-medium text-gray-700 appearance-none focus:outline-none focus:ring-2 focus:ring-orange-400/40 focus:border-orange-400 transition-all cursor-pointer"
-                            >
-                                {(Object.keys(SORT_LABELS) as SortOption[]).map((key) => (
-                                    <option key={key} value={key}>
-                                        {SORT_LABELS[key]}
-                                    </option>
-                                ))}
-                            </select>
-                            <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400">
-                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                                    <path d="M3 5l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Result count + clear */}
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                {/* Result count + sort + clear */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-6 mt-6 border-t border-gray-100">
                     <div className="flex items-center gap-3">
                         <span className="block w-[3px] h-5 rounded-full bg-orange-400 flex-shrink-0" />
                         <p className="text-sm text-gray-500">
@@ -215,18 +264,34 @@ export function CircuitsList({ circuits }: { circuits: Circuit[] }) {
                             tours
                         </p>
                     </div>
-                    {hasActiveFilters && (
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={resetFilters}
-                            className="text-orange-500 hover:text-orange-600 hover:bg-orange-50 gap-1.5"
-                        >
-                            <X className="h-3.5 w-3.5" aria-hidden="true" />
-                            Clear filters
-                        </Button>
-                    )}
+                    <div className="flex items-center gap-3">
+                        {/* Sort */}
+                        <div className="relative">
+                            <select
+                                value={sort}
+                                onChange={(e) => setSort(e.target.value as SortOption)}
+                                aria-label="Sort tours"
+                                className="h-9 rounded-lg border border-gray-200 bg-gray-50/60 px-3 pr-8 text-sm font-medium text-gray-700 appearance-none focus:outline-none focus:ring-2 focus:ring-orange-400/40 focus:border-orange-400 transition-all cursor-pointer"
+                            >
+                                {(Object.keys(SORT_LABELS) as SortOption[]).map((key) => (
+                                    <option key={key} value={key}>{SORT_LABELS[key]}</option>
+                                ))}
+                            </select>
+                            <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" aria-hidden="true" />
+                        </div>
+                        {hasActiveFilters && (
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={resetFilters}
+                                className="text-orange-500 hover:text-orange-600 hover:bg-orange-50 gap-1.5"
+                            >
+                                <X className="h-3.5 w-3.5" aria-hidden="true" />
+                                Clear filters
+                            </Button>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -263,7 +328,7 @@ export function CircuitsList({ circuits }: { circuits: Circuit[] }) {
                                     {circuit.images[0] ? (
                                         <Image
                                             src={circuit.images[0]}
-                                            alt={`${circuit.name} tour image`}
+                                            alt={`${circuit.name} – ${circuit.duration}-day Morocco tour`}
                                             fill
                                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                             className="object-cover transform group-hover:scale-110 transition-transform duration-700"
@@ -287,13 +352,14 @@ export function CircuitsList({ circuits }: { circuits: Circuit[] }) {
                                     <div className="mb-4">
                                         <div className="flex items-center justify-between text-xs font-medium text-gray-400 uppercase tracking-widest mb-2">
                                             <span>{circuit.duration} Days</span>
-                                            <div className="flex flex-col">
-                                                <div className="flex flex-col items-baseline">
-                                                    <p className="text-xl text-foreground font-bold">${circuit.price} <span className="text-muted-foreground text-sm font-medium">/ person</span></p>
-                                                    {circuit.originalPrice != null && (
-                                                        <span className="text-sm text-muted-foreground line-through">${circuit.originalPrice}</span>
-                                                    )}
-                                                </div>
+                                            <div className="flex flex-col items-end">
+                                                <p className="text-xl text-foreground font-bold">
+                                                    ${circuit.price}{" "}
+                                                    <span className="text-muted-foreground text-sm font-medium">/ person</span>
+                                                </p>
+                                                {circuit.originalPrice != null && (
+                                                    <span className="text-sm text-muted-foreground line-through">${circuit.originalPrice}</span>
+                                                )}
                                             </div>
                                         </div>
                                         <h2 className="text-2xl font-bold text-gray-800 group-hover:text-orange-500 transition-colors leading-tight">
@@ -315,5 +381,13 @@ export function CircuitsList({ circuits }: { circuits: Circuit[] }) {
                 </div>
             )}
         </>
+    )
+}
+
+export function CircuitsList({ circuits }: { circuits: Circuit[] }) {
+    return (
+        <Suspense fallback={<div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-10 h-64 animate-pulse" />}>
+            <CircuitsListContent circuits={circuits} />
+        </Suspense>
     )
 }

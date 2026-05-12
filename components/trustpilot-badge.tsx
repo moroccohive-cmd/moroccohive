@@ -15,11 +15,11 @@ export function TrustpilotBadge({ variant = "dark" }: TrustpilotBadgeProps) {
       aria-label="See our reviews on Trustpilot"
     >
       <Image
-        src="/Trustpilot_Logo_(2022).svg.webp"
+        src="/trustpilot.webp"
         alt="Trustpilot"
-        width={120}
+        width={260}
         height={43}
-        className="bg-white p-2 px-3 border border-gray-300"
+        className="bg-white"
       />
     </Link>
   )

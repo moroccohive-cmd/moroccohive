@@ -8,14 +8,14 @@ const LOCAL_AGENTS = [
     role: "Dedicated Tour Guide",
     image: "/agent-1.webp",
     description:
-      "Hello dear travelers, Hello, my name is Elhoussain Iggui, and I have been a dedicated tour guide in Morocco since 1995, bringing over three decades of expertise to travelers seeking authentic adventures. Specializing in hiking tours, I expertly navigate the diverse landscapes of the Atlas Mountains, Rif ranges, and Sahara dunes, offering immersive experiences that blend cultural insights, scenic trails, and personalized itineraries. With a passion for Morocco's natural beauty and heritage, I ensure safe, memorable journeys for hikers of all levels, from casual treks to challenging expeditions, while sharing stories of local traditions and hidden gems along the way.",
+      "Hello, my name is Elhoussain Iggui, and I have been a tour guide in Morocco since 1995. I specialize in hiking: the Atlas Mountains, the Rif ranges, and the Sahara dunes. Over thirty years I have guided hikers of all levels, from short day walks to multi-day expeditions, sharing the history, landscapes, and traditions of the regions we pass through.",
   },
   {
     name: "Abdellatif",
     role: "Professional Driver & Tour Guide",
     image: "/agent-2.webp",
     description:
-      "Hello, my name is Abdellatif Iggui, and I have been a dedicated driver & tour guide in Morocco for over 7 years, specializing in organized trips across the entire country. With expertise as a professional driver, I lead immersive road trips that showcase Morocco's diverse landscapes, from the bustling cities of Casablanca and Marrakech to the serene Atlas Mountains and Sahara deserts. Having guided more than 210 tours with tourists from around the world, I ensure safe, seamless journeys filled with cultural insights, hidden gems, and personalized itineraries tailored to every adventurer's pace and interests.",
+      "Hello, my name is Abdellatif Iggui, and I have been a driver and tour guide in Morocco for over 7 years. I've led more than 210 trips across the country, from Casablanca and Marrakech to the Atlas Mountains and the Sahara. I know the roads, the timing, and the stops that most itineraries miss. Every route I drive is one I know well.",
   },
 ]
 
@@ -72,9 +72,8 @@ export function AgentsSection() {
             </h2>
             <div className="space-y-6">
               <p className="text-muted-foreground text-lg font-light leading-relaxed">
-                Our local agents are more than just guides; they are storytellers, historians, and friends. Born and
-                raised in the regions they lead, they provide an insider&apos;s perspective that you won&apos;t find in
-                any guidebook.
+                Our guides were born and raised in Morocco. They know which roads to take, which towns are worth stopping in,
+                and when the crowds arrive. That's the kind of knowledge you only get from living here.
               </p>
             </div>
           </div>

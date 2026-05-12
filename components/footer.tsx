@@ -22,7 +22,7 @@ export function Footer() {
                             />
                         </Link>
                         <p className="text-sm text-muted-foreground">
-                            Discover the magic of Morocco with expertly curated tours and unforgettable experiences.
+                            Private tours and custom itineraries, planned by people who live in Morocco.
                         </p>
                         
                         <div className="flex items-center gap-3">
@@ -86,11 +86,31 @@ export function Footer() {
                             Popular Destinations
                         </h3>
                         <ul className="space-y-2">
-                            <li className="text-sm text-muted-foreground">Marrakech</li>
-                            <li className="text-sm text-muted-foreground">Fes</li>
-                            <li className="text-sm text-muted-foreground">Sahara Desert</li>
-                            <li className="text-sm text-muted-foreground">Chefchaouen</li>
-                            <li className="text-sm text-muted-foreground">Casablanca</li>
+                            <li>
+                                <Link href="/circuits?destination=imperial" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                                    Marrakech
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/circuits?destination=imperial" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                                    Fes
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/circuits?destination=sahara" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                                    Sahara Desert
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/circuits?destination=mountains" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                                    Chefchaouen
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/circuits" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                                    Casablanca
+                                </Link>
+                            </li>
                         </ul>
                     </div>
 

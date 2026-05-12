@@ -159,7 +159,7 @@ export const auth = betterAuth({
                     Hi ${user.name || "there"},
                 </p>
                 <p style="margin: 0 0 24px; font-size: 16px; color: #374151; line-height: 1.6;">
-                    Thank you for joining Morocco Hive! We're thrilled to help you discover the magic of Morocco. Just one more step — please verify your email address to get started:
+                    Thank you for joining Morocco Hive! We're thrilled to help you discover the magic of Morocco. Just one more step - please verify your email address to get started:
                 </p>
                 
                 <!-- Button -->
