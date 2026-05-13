@@ -138,8 +138,8 @@ export function Footer() {
                             </li>
                             <li className="flex items-center text-sm text-muted-foreground">
                                 <MessageCircle className="w-4 h-4 mr-2 flex-shrink-0 text-primary" />
-                                <a href="https://wa.me/212681135299" className="hover:text-primary transition-colors">
-                                    +212 681135299
+                                <a href="https://wa.me/212681134299" className="hover:text-primary transition-colors">
+                                    +212 681134299
                                 </a>
                             </li>
                         </ul>
