@@ -341,7 +341,7 @@ export default function ContactPage() {
                                     Email Us
                                 </Button>
                             </a>
-                            <a href="https://wa.me/212634717423" target="_blank" rel="noopener noreferrer">
+                            <a href="https://wa.me/212681134299" target="_blank" rel="noopener noreferrer">
                                 <Button size="lg" variant="outline">
                                     <MessageCircle className="w-4 h-4 mr-2" />
                                     WhatsApp

@@ -31,7 +31,7 @@ const TESTIMONIALS = [
     location: "USA",
     date: "Sep 3, 2025",
     image: "/r1.webp",
-    text: "Morocco We'll Be Back! I want to thank Travel Local and the staff that made my Moroccan vacation a beautiful experience for both me and my sister. It was our first time traveling to Morocco. Our driver and guide Abdellatif was very kind and welcoming. He made every day fun and interesting. He even went so far as to teach us some Arabic words (shukran). The Sahara Desert camp site in Merzouga was one of the best highlights of our tour. Watching the sunrise the next morning in the desert was awesome.",
+    text: "Morocco We'll Be Back! I want to thank MoroccoHive and the staff that made my Moroccan vacation a beautiful experience for both me and my sister. It was our first time traveling to Morocco. Our driver and guide Abdellatif was very kind and welcoming. He made every day fun and interesting. He even went so far as to teach us some Arabic words (shukran). The Sahara Desert camp site in Merzouga was one of the best highlights of our tour. Watching the sunrise the next morning in the desert was awesome.",
     stars: 5,
   },
   {

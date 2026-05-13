@@ -71,7 +71,7 @@ const emailWrapper = (content: string) => `
                                         <p style="margin: 0;">
                                             <a href="mailto:info@moroccohive.com" style="color: #d58930; text-decoration: none; font-size: 14px;">info@moroccohive.com</a>
                                             <span style="color: #d1d5db; margin: 0 8px;">•</span>
-                                            <a href="https://wa.me/212634717423" style="color: #d58930; text-decoration: none; font-size: 14px;">WhatsApp</a>
+                                            <a href="https://wa.me/212681134299" style="color: #d58930; text-decoration: none; font-size: 14px;">WhatsApp</a>
                                         </p>
                                     </td>
                                 </tr>

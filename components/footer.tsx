@@ -39,7 +39,7 @@ export function Footer() {
                                 <span className="sr-only">Instagram</span>
                                 <Instagram className="h-5 w-5" />
                             </Link> */}
-                        {/* <Link href="https://wa.me/212634717423" target="_blank" className="text-muted-foreground ">
+                        {/* <Link href="https://wa.me/212681134299" target="_blank" className="text-muted-foreground ">
                                 <span className="sr-only">Whatsapp</span>
                                 <MessageCircle className="h-5 w-5" />
                             </Link> */}

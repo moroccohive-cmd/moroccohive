@@ -165,7 +165,7 @@ export default async function HomePage() {
 
             <p className="text-base md:text-2xl text-white/90 font-light leading-relaxed max-w-2xl mx-auto mb-6 md:mb-10">
               100% customizable private tours. Expert local guides. No group tours.
-              From Sahara camps to medina walks - designed exactly how you want it.
+              From Sahara camps to medina walks. designed exactly how you want it.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
