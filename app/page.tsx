@@ -179,14 +179,7 @@ export default async function HomePage() {
 
             <div className="mt-8 flex items-center justify-center">
               <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-white/90 text-sm font-medium px-5 py-3 rounded-md backdrop-blur-md border border-white/25 shadow-lg">
-                <div className="flex items-center gap-1.5">
-                  <div className="flex gap-0.5">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 fill-secondary text-secondary" />
-                    ))}
-                  </div>
-                  <span>4.8★ on Trustpilot</span>
-                </div>
+                <span>4.8★ on Trustpilot</span>
                 <span className="text-white/40 hidden sm:inline">|</span>
                 <span>200+ Travelers Guided</span>
                 <span className="text-white/40 hidden sm:inline">|</span>
