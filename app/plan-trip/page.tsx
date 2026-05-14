@@ -612,12 +612,12 @@ export default function PlanTripPage() {
                     </div>
 
                     {/* Trust indicators */}
-                    <div className="flex items-center justify-center gap-x-3 text-xs text-muted-foreground mb-8 whitespace-nowrap">
-                        <span>Free consultation</span>
-                        <span className="text-border">·</span>
-                        <span>No credit card required</span>
-                        <span className="text-border">·</span>
-                        <span>Reply within 48h</span>
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-x-3 text-xs text-muted-foreground mb-8">
+                        <span>Free consultation </span>
+                        
+                        <span>· No credit card required</span>
+                        
+                        <span>· Reply within 48h</span>
                     </div>
 
                     {/* Progress Steps */}
