@@ -612,7 +612,7 @@ export default function PlanTripPage() {
                     </div>
 
                     {/* Trust indicators */}
-                    <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-muted-foreground mb-8">
+                    <div className="flex items-center justify-center gap-x-3 text-xs text-muted-foreground mb-8 whitespace-nowrap">
                         <span>Free consultation</span>
                         <span className="text-border">·</span>
                         <span>No credit card required</span>
