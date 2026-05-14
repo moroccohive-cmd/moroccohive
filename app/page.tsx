@@ -185,10 +185,10 @@ export default async function HomePage() {
                       <Star key={i} className="w-3.5 h-3.5 fill-secondary text-secondary" />
                     ))}
                   </div>
-                  <span>4.6/5 Stars</span>
+                  <span>4.8★ on Trustpilot</span>
                 </div>
                 <span className="text-white/40 hidden sm:inline">|</span>
-                <span>200+ Happy Travelers</span>
+                <span>200+ Travelers Guided</span>
                 <span className="text-white/40 hidden sm:inline">|</span>
                 <span>10+ Years Experience</span>
               </div>
