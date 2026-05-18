@@ -107,6 +107,18 @@ export default function PlanTripPage() {
     const [paymentMethodsEnabled, setPaymentMethodsEnabled] = useState(true)
     const [enabledPaymentMethods, setEnabledPaymentMethods] = useState<string[]>(PAYMENT_METHODS.map(m => m.value))
 
+    // Budget settings from dashboard
+    const [budgetType, setBudgetType] = useState<"dropdown" | "slider">("dropdown")
+    const [budgetDropdownOptions, setBudgetDropdownOptions] = useState<string[]>([
+        "$500-$1000",
+        "$1000-$2000",
+        "$2000-$3500",
+        "$3500+",
+    ])
+    const [budgetMin, setBudgetMin] = useState<number>(500)
+    const [budgetMax, setBudgetMax] = useState<number>(5000)
+    const [budgetStep, setBudgetStep] = useState<number>(100)
+
     // Separate state for slider display to prevent full form re-renders
     const [sliderBudget, setSliderBudget] = useState<number>(500)
 
@@ -145,21 +157,35 @@ export default function PlanTripPage() {
 
 
 
-    // Fetch payment method enabled status
+    // Fetch site settings (payment methods + budget configuration)
     useEffect(() => {
-        const fetchPaymentSettings = async () => {
+        const fetchSiteSettings = async () => {
             try {
                 const res = await fetch("/api/settings")
                 if (res.ok) {
                     const data = await res.json()
                     setPaymentMethodsEnabled(data.paymentMethodsEnabled ?? true)
                     setEnabledPaymentMethods(data.enabledPaymentMethods ?? PAYMENT_METHODS.map(m => m.value))
+
+                    if (data.budgetType) setBudgetType(data.budgetType)
+                    if (Array.isArray(data.budgetDropdownOptions) && data.budgetDropdownOptions.length > 0) {
+                        setBudgetDropdownOptions(data.budgetDropdownOptions)
+                    }
+                    if (typeof data.budgetMin === "number") {
+                        setBudgetMin(data.budgetMin)
+                        setSliderBudget(data.budgetMin)
+                        if (data.budgetType === "slider") {
+                            setFormData((prev) => prev.budget ? prev : { ...prev, budget: `$${data.budgetMin}` })
+                        }
+                    }
+                    if (typeof data.budgetMax === "number") setBudgetMax(data.budgetMax)
+                    if (typeof data.budgetStep === "number") setBudgetStep(data.budgetStep)
                 }
             } catch (error) {
-                console.error("Error fetching payment settings:", error)
+                console.error("Error fetching site settings:", error)
             }
         }
-        fetchPaymentSettings()
+        fetchSiteSettings()
     }, [])
 
     // Auto-set travelers when travel style is solo or couple
@@ -977,18 +1003,36 @@ export default function PlanTripPage() {
                                         Budget Range (per person)
                                     </label>
 
-                                    <select
-                                        id="budget"
-                                        value={formData.budget}
-                                        onChange={(e) => setFormData((prev) => ({ ...prev, budget: e.target.value }))}
-                                        className="w-full px-4 py-3 cursor-pointer border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background"
-                                    >
-                                        <option value="">Select budget</option>
-                                        <option value="$500-$1000">$500-$1000</option>
-                                        <option value="$1000-$2000">$1000-$2000</option>
-                                        <option value="$2000-$3500">$2000-$3500</option>
-                                        <option value="$3500+">$3500+</option>
-                                    </select>
+                                    {budgetType === "slider" ? (
+                                        <div className="p-5 bg-muted/30 rounded-lg border border-border">
+                                            <Slider
+                                                value={[sliderBudget]}
+                                                min={budgetMin}
+                                                max={budgetMax}
+                                                step={budgetStep}
+                                                onValueChange={(val) => setSliderBudget(val[0])}
+                                                onValueCommit={(val) => setFormData((prev) => ({ ...prev, budget: `$${val[0]}` }))}
+                                                className="mb-4"
+                                            />
+                                            <div className="flex justify-between text-sm text-muted-foreground">
+                                                <span>${budgetMin}</span>
+                                                <span className="font-semibold text-foreground text-lg">${sliderBudget}</span>
+                                                <span>${budgetMax}</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <select
+                                            id="budget"
+                                            value={formData.budget}
+                                            onChange={(e) => setFormData((prev) => ({ ...prev, budget: e.target.value }))}
+                                            className="w-full px-4 py-3 cursor-pointer border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background"
+                                        >
+                                            <option value="">Select budget</option>
+                                            {budgetDropdownOptions.map((option) => (
+                                                <option key={option} value={option}>{option}</option>
+                                            ))}
+                                        </select>
+                                    )}
                                     {errors.budget && <p className="text-sm text-destructive mt-2">{errors.budget}</p>}
                                 </div>
 
