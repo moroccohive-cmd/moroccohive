@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { revalidatePath } from "next/cache"
 import prisma from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
@@ -91,6 +92,9 @@ export async function POST(request: NextRequest) {
                 active: body.active !== undefined ? body.active : true,
             },
         })
+
+        revalidatePath("/")
+        revalidatePath("/circuits")
 
         return NextResponse.json(circuit, { status: 201 })
     } catch (error) {

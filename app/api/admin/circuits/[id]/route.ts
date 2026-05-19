@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { revalidatePath } from "next/cache"
 import prisma from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
@@ -61,6 +62,10 @@ export async function PATCH(
             data: updateData,
         })
 
+        revalidatePath("/")
+        revalidatePath("/circuits")
+        revalidatePath(`/circuits/${circuit.slug}`)
+
         return NextResponse.json(circuit)
     } catch (error) {
         console.error("Error updating circuit:", error)
@@ -85,6 +90,9 @@ export async function DELETE(
         await prisma.circuit.delete({
             where: { id },
         })
+
+        revalidatePath("/")
+        revalidatePath("/circuits")
 
         return NextResponse.json({ success: true })
     } catch (error) {

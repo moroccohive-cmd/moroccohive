@@ -23,7 +23,7 @@ interface Circuit {
 }
 
 type DurationFilter = "all" | "5" | "6-7" | "8-9" | "10-13"
-type TourTypeFilter = "all" | "Family with Kids" | "Honeymoon / Couples" | "Adventure & Trekking" | "Cultural Deep Dive" | "Budget-Friendly" | "Luxury Experience"
+type TourTypeFilter = "all" | "Luxury & Grand Tours" | "Desert & Sahara" | "Imperial Cities" | "Honeymoon & Couples" | "Family with Kids"
 type PriceFilter = "all" | "under-1500" | "1500-2000" | "2000-2500" | "2500+"
 type SortOption = "default" | "price-asc" | "price-desc" | "duration-asc" | "duration-desc"
 
@@ -37,12 +37,11 @@ const DURATION_OPTIONS: { value: DurationFilter; label: string }[] = [
 
 const TOUR_TYPE_OPTIONS: { value: TourTypeFilter; label: string }[] = [
     { value: "all", label: "All Types" },
+    { value: "Luxury & Grand Tours", label: "Luxury & Grand Tours" },
+    { value: "Desert & Sahara", label: "Desert & Sahara" },
+    { value: "Imperial Cities", label: "Imperial Cities" },
+    { value: "Honeymoon & Couples", label: "Honeymoon & Couples" },
     { value: "Family with Kids", label: "Family with Kids" },
-    { value: "Honeymoon / Couples", label: "Honeymoon / Couples" },
-    { value: "Adventure & Trekking", label: "Adventure & Trekking" },
-    { value: "Cultural Deep Dive", label: "Cultural Deep Dive" },
-    { value: "Budget-Friendly", label: "Budget-Friendly" },
-    { value: "Luxury Experience", label: "Luxury Experience" },
 ]
 
 const PRICE_OPTIONS: { value: PriceFilter; label: string }[] = [
