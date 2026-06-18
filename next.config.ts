@@ -1,6 +1,4 @@
 import type { NextConfig } from "next";
-import { copyLibFiles } from "@builder.io/partytown/utils"
-import path from "path"
 
 const nextConfig: NextConfig = {
     images: {
@@ -40,11 +38,5 @@ const nextConfig: NextConfig = {
         ];
     },
 };
-
-// Copy Partytown lib files to public/~partytown at build time
-const partytownCopyLib = async () => {
-    await copyLibFiles(path.join(process.cwd(), "public", "~partytown"))
-}
-partytownCopyLib()
 
 export default nextConfig;
