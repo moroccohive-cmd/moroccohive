@@ -237,6 +237,23 @@ exports.Prisma.ReviewScalarFieldEnum = {
   authorImage: 'authorImage',
   rating: 'rating',
   text: 'text',
+  country: 'country',
+  displayDate: 'displayDate',
+  source: 'source',
+  showOnHome: 'showOnHome',
+  order: 'order',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.FaqScalarFieldEnum = {
+  id: 'id',
+  question: 'question',
+  answer: 'answer',
+  category: 'category',
+  showOnHome: 'showOnHome',
+  active: 'active',
+  order: 'order',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -297,6 +314,7 @@ exports.Prisma.ModelName = {
   User: 'User',
   Favorite: 'Favorite',
   Review: 'Review',
+  Faq: 'Faq',
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification'

@@ -4,7 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Map, Calendar, Mail, LogOut, User, FileText, Settings, Star } from "lucide-react"
+import { LayoutDashboard, Map, Calendar, Mail, LogOut, User, FileText, Settings, Star, HelpCircle } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 
 const navigation = [
@@ -66,6 +66,7 @@ export function SidebarContent() {
                             { name: "Circuits", href: "/dashboard/circuits", icon: Map },
                             { name: "Blog", href: "/dashboard/blog", icon: FileText },
                             { name: "Reviews", href: "/dashboard/reviews", icon: Star },
+                            { name: "FAQs", href: "/dashboard/faqs", icon: HelpCircle },
                         ].map((item) => (
                             <Link
                                 key={item.name}

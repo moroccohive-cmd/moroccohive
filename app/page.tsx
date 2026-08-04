@@ -19,8 +19,10 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { TrustpilotBadge } from "@/components/trustpilot-badge"
+import { HeroBackgroundSlider } from "@/components/hero-background-slider"
 import { FAQItem } from "@/components/faq-item"
 import { FAQSchema } from "@/components/structured-data"
+import { getHomeFaqs, getHomeReviews } from "@/lib/site-content"
 import prisma from "@/lib/prisma"
 const AgentsSection = dynamic(
   () => import("@/components/agents-section").then((m) => m.AgentsSection),
@@ -29,7 +31,7 @@ const AgentsSection = dynamic(
 
 const TestimonialsSection = dynamic(
   () => import("@/components/testimonials-section").then((m) => m.TestimonialsSection),
-  { loading: () => <div className="py-24 bg-primary min-h-[680px]" /> },
+  { loading: () => <div className="py-24 bg-background min-h-[520px]" /> },
 )
 
 const FavoriteButton = dynamic(
@@ -116,27 +118,15 @@ async function getLatestBlogs() {
   }
 }
 
-const FAQ_ITEMS = [
-  {
-    q: "When is the best time to visit Morocco?",
-    a: "Spring (March to May) and fall (September to mid-November) are the ideal seasons to travel to Morocco. In contrast to the bitter cold and snow of winter or the intense heat of summer, the weather is pleasant but warm. If you enjoy the warmer weather, summer is also a great time to visit. You can travel to the coastal areas.",
-  },
-  {
-    q: "Is Morocco a safe country?",
-    a: "Yes, Morocco is generally considered a safe country for tourists, with low levels of violent crime and no significant gun violence, though petty crimes like pickpocketing and scams are common in tourist areas. Official advisories recommend exercising increased caution due to a potential terrorism threat, but this applies to many destinations globally. As of 2025, there are no major conflicts affecting visitors, and millions travel there annually without issues-stick to common-sense precautions like not walking alone at night in isolated areas.",
-  },
-  {
-    q: "Do I need to purchase travel insurance?",
-    a: "Yes, before taking part in any of our tours, all travelers using MoroccoHive must have travel insurance. On the first day of your trip, your guide will gather your travel insurance information. It is your duty to ensure that you have appropriate and sufficient travel insurance.",
-  },
-  {
-    q: "Do I need to tip?",
-    a: "Tipping service staff is common in Morocco – typically around 15% for a restaurant meal. It is also standard to round up the fare or the bill for taxi drivers and porters (around 20 MAD). Your tour guide and crew would be especially appreciative and honored with this kind of traditional gratitude at the end of your tour.",
-  },
-]
-
 export default async function HomePage() {
-  const [circuits, blogPosts] = await Promise.all([getFeaturedCircuits(), getLatestBlogs()])
+  const [circuits, blogPosts, reviews, faqs] = await Promise.all([
+    getFeaturedCircuits(),
+    getLatestBlogs(),
+    getHomeReviews(),
+    getHomeFaqs(),
+  ])
+
+  const faqSchemaItems = faqs.map((faq) => ({ q: faq.question, a: faq.answer }))
 
   return (
     <div className="min-h-screen bg-background/50 flex flex-col font-sans">
@@ -145,18 +135,7 @@ export default async function HomePage() {
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative h-[85vh] flex items-center justify-center overflow-hidden">
-          <div className="absolute inset-0 z-0">
-            <Image
-              src="/hero-bg.webp"
-              alt="Morocco Sahara desert dunes at golden hour - private tour by MoroccoHive"
-              fill
-              className="object-cover"
-              priority
-              sizes="100vw"
-              fetchPriority="high"
-            />
-            <div className="absolute inset-0 bg-black/50" />
-          </div>
+          <HeroBackgroundSlider />
 
           <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
             <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight leading-[1.1] mb-6">
@@ -403,7 +382,7 @@ export default async function HomePage() {
         <AgentsSection />
 
         {/* Testimonials */}
-        <TestimonialsSection />
+        <TestimonialsSection reviews={reviews} />
 
         {/* FAQ */}
         <section className="py-24 bg-card border-y border-border cv-auto">
@@ -415,9 +394,15 @@ export default async function HomePage() {
             </div>
 
             <div className="space-y-4">
-              {FAQ_ITEMS.map((faq, i) => (
-                <FAQItem key={i} question={faq.q} answer={faq.a} />
+              {faqs.map((faq) => (
+                <FAQItem key={faq.id} question={faq.question} answer={faq.answer} />
               ))}
+            </div>
+
+            <div className="text-center mt-10">
+              <Link href="/faq" className="inline-flex items-center text-accent hover:text-accent/90 font-medium text-sm group" aria-label="View all frequently asked questions">
+                View All FAQs <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
+              </Link>
             </div>
           </div>
         </section>
@@ -488,7 +473,7 @@ export default async function HomePage() {
         {/* Contact */}
         <ContactForm />
       </main>
-      <FAQSchema items={FAQ_ITEMS} />
+      <FAQSchema items={faqSchemaItems} />
 
       <Footer />
     </div>

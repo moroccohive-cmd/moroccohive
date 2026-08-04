@@ -18,7 +18,8 @@ const NAV_ITEMS = [
   { name: "Trip Ideas", href: "/circuits" },
   { name: "Plan Your Trip", href: "/plan-trip" },
   { name: "Blog", href: "/blog" },
-  { name: "Guest Reviews", href: "/#testimonials" },
+  { name: "Guest Reviews", href: "/reviews" },
+  { name: "FAQ", href: "/faq" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
 ]

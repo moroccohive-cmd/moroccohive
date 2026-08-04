@@ -68,6 +68,16 @@ export function Footer() {
                                 </Link>
                             </li>
                             <li>
+                                <Link href="/reviews" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                                    Guest Reviews
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/faq" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                                    FAQ
+                                </Link>
+                            </li>
+                            <li>
                                 <Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                                     About Us
                                 </Link>
