@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Sparkles } from "lucide-react"
 import { TrustpilotBadge } from "@/components/trustpilot-badge"
+import { SITE_RATING } from "@/lib/seo"
 
 export function Hero() {
     return (
@@ -68,7 +69,7 @@ export function Hero() {
                         </div>
                         <div className="hidden sm:block w-px h-5 bg-white/30" />
                         <div className="text-white/80">
-                            ⭐ <strong className="text-white">4.9/5</strong> Rating
+                            ⭐ <strong className="text-white">{SITE_RATING.ratingValue}/5</strong> Rating
                         </div>
                     </div>
                 </div>

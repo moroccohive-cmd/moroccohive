@@ -5,9 +5,12 @@ import { Check, Home, Plane } from "lucide-react"
 import Link from "next/link"
 import type { Metadata } from "next"
 
+// Post-conversion page: no search value, and indexing it would leak the
+// confirmation step into results ahead of /plan-trip itself.
 export const metadata: Metadata = {
-    title: "Thank You | Morocco Hive",
+    title: "Thank You",
     description: "Your trip plan request has been received. We'll get back to you within 24 hours with a personalized itinerary.",
+    robots: { index: false, follow: false },
 }
 
 export default function PlanTripThankYouPage() {

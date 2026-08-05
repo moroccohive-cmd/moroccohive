@@ -95,30 +95,30 @@ export function Footer() {
                         <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-4">
                             Popular Destinations
                         </h3>
+                        {/* These previously pointed at ?destination= filters, two of
+                            them at the wrong one. They now link to the destination
+                            guides, which is also how those pages get crawled. */}
                         <ul className="space-y-2">
+                            {[
+                                { name: "Marrakech", slug: "marrakech" },
+                                { name: "Fes", slug: "fes" },
+                                { name: "Sahara Desert", slug: "sahara-desert-merzouga" },
+                                { name: "Chefchaouen", slug: "chefchaouen" },
+                                { name: "Atlas Mountains", slug: "atlas-mountains" },
+                                { name: "Essaouira", slug: "essaouira" },
+                            ].map((destination) => (
+                                <li key={destination.slug}>
+                                    <Link
+                                        href={`/destinations/${destination.slug}`}
+                                        className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                                    >
+                                        {destination.name}
+                                    </Link>
+                                </li>
+                            ))}
                             <li>
-                                <Link href="/circuits?destination=imperial" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                                    Marrakech
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/circuits?destination=imperial" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                                    Fes
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/circuits?destination=sahara" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                                    Sahara Desert
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/circuits?destination=mountains" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                                    Chefchaouen
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/circuits" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                                    Casablanca
+                                <Link href="/destinations" className="text-sm font-medium text-primary hover:underline">
+                                    All destinations →
                                 </Link>
                             </li>
                         </ul>

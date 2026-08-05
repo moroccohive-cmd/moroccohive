@@ -8,6 +8,8 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { FavoriteButton } from "@/components/favorite-button"
 import { BookingFormSidebar } from "./BookingFormSidebar"
+import { BreadcrumbSchema, TourSchema } from "@/components/structured-data"
+import { bestSummary, buildMetadata, truncate } from "@/lib/seo"
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -15,29 +17,40 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params
     const circuit = await prisma.circuit.findUnique({
         where: { slug },
-        select: { name: true, description: true, tagline: true, images: true },
+        select: {
+            name: true,
+            description: true,
+            tagline: true,
+            images: true,
+            duration: true,
+            price: true,
+        },
     })
 
     if (!circuit) return { title: "Circuit Not Found" }
 
-    const description = circuit.tagline || (circuit.description?.slice(0, 155) + "...") || ""
+    // Most taglines hold site-wide boilerplate, which would give every tour page
+    // the same meta description. bestSummary falls back to the real prose.
+    const description = truncate(bestSummary(circuit.tagline, circuit.description), 155)
 
-    return {
-        title: `${circuit.name} | MoroccoHive`,
+    // Duration in the title captures the long-tail queries people actually type
+    // ("5 day morocco tour"), but most tour names already state it — appending
+    // then reads "A 5-Day Imperial Cities Tour — 5-Day Private Morocco Tour".
+    const statesDuration = new RegExp(`\\b${circuit.duration}[\\s-]*days?\\b`, "i").test(
+        circuit.name,
+    )
+    // The root layout appends "| Morocco Hive", so leaving the name alone keeps
+    // these titles inside the ~60 characters Google will actually render.
+    const title = statesDuration
+        ? circuit.name
+        : `${circuit.name} — ${circuit.duration}-Day Private Morocco Tour`
+
+    return buildMetadata({
+        title,
         description,
-        openGraph: {
-            title: circuit.name,
-            description,
-            images: (circuit.images as string[])?.[0] ? [{ url: (circuit.images as string[])[0] }] : [],
-            type: "website",
-        },
-        twitter: {
-            card: "summary_large_image",
-            title: circuit.name,
-            description,
-            images: (circuit.images as string[])?.[0] ? [(circuit.images as string[])[0]] : [],
-        },
-    }
+        path: `/circuits/${slug}`,
+        images: (circuit.images as string[])?.slice(0, 1),
+    })
 }
 
 function renderRichText(text: string): string {
@@ -69,16 +82,19 @@ export default async function CircuitDetailPage({ params }: Props) {
     const circuit = await prisma.circuit.findUnique({ where: { slug } })
     if (!circuit) notFound()
 
-    const reviewsRaw = await (prisma as any).review.findMany({
+    // All reviews, so the aggregate rating in schema reflects the true count
+    // rather than only the three rendered on the page.
+    const allReviewsRaw = await (prisma as any).review.findMany({
         where: { circuitId: circuit.id },
         orderBy: { createdAt: "desc" },
-        take: 3,
     })
 
-    const reviews = reviewsRaw.map((r: any) => ({
+    const allReviews = allReviewsRaw.map((r: any) => ({
         ...r,
         createdAt: r.createdAt instanceof Date ? r.createdAt.toISOString() : String(r.createdAt),
     }))
+
+    const reviews = allReviews.slice(0, 3)
 
     const images = circuit.images as string[]
     const highlights = circuit.highlights as string[]
@@ -87,8 +103,8 @@ export default async function CircuitDetailPage({ params }: Props) {
     const optional = circuit.optional as string[]
     const itineraryGlance = circuit.itineraryGlance as string[]
 
-    const avgRating = reviews.length
-        ? reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / reviews.length
+    const avgRating = allReviews.length
+        ? allReviews.reduce((sum: number, r: any) => sum + r.rating, 0) / allReviews.length
         : 0
 
     return (
@@ -287,7 +303,7 @@ export default async function CircuitDetailPage({ params }: Props) {
                                             ))}
                                         </div>
                                         <span className="text-sm text-muted-foreground">
-                                            {avgRating.toFixed(1)} · {reviews.length} {reviews.length === 1 ? "review" : "reviews"}
+                                            {avgRating.toFixed(1)} · {allReviews.length} {allReviews.length === 1 ? "review" : "reviews"}
                                         </span>
                                     </div>
                                     <div className="space-y-6">
@@ -348,6 +364,35 @@ export default async function CircuitDetailPage({ params }: Props) {
                     </div>
                 </div>
             </main>
+
+            <BreadcrumbSchema
+                items={[
+                    { name: "Morocco Tours", path: "/circuits" },
+                    { name: circuit.name, path: `/circuits/${circuit.slug}` },
+                ]}
+            />
+            <TourSchema
+                name={circuit.name}
+                slug={circuit.slug}
+                description={circuit.description}
+                images={images}
+                price={circuit.price}
+                duration={circuit.duration}
+                category={circuit.category}
+                itinerary={itineraryGlance}
+                highlights={highlights}
+                aggregateRating={
+                    allReviews.length
+                        ? { ratingValue: avgRating, reviewCount: allReviews.length }
+                        : null
+                }
+                reviews={allReviews.slice(0, 10).map((r: any) => ({
+                    authorName: r.authorName,
+                    rating: r.rating,
+                    text: r.text,
+                    createdAt: r.createdAt,
+                }))}
+            />
 
             <Footer />
         </div>

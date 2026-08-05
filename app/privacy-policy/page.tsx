@@ -3,8 +3,9 @@ import { Footer } from "@/components/footer"
 import { Mail, Phone, MapPin } from "lucide-react"
 
 export const metadata = {
-    title: "Privacy Policy | Morocco Hive",
+    title: "Privacy Policy",
     description: "Morocco Hive Privacy Policy - How we collect, use, and protect your personal information.",
+    alternates: { canonical: "https://www.moroccohive.com/privacy-policy" },
 }
 
 export default function PrivacyPolicyPage() {

@@ -7,6 +7,8 @@ import Link from "next/link"
 import Image from "next/image"
 import prisma from "@/lib/prisma"
 import { MobileBottomCTA } from "@/components/mobile-bottom-cta"
+import { ArticleSchema, BreadcrumbSchema } from "@/components/structured-data"
+import { buildMetadata, truncate } from "@/lib/seo"
 
 interface BlogPost {
     id: string
@@ -52,24 +54,17 @@ export async function generateMetadata({
         ? post.coverImage.replace(/^https?:\/\/[^/]+/, "")
         : null
 
-    return {
-        title: `${post.title} | Morocco Hive Blog`,
-        description: post.excerpt || post.content.substring(0, 160),
-        alternates: {
-            canonical: `https://www.moroccohive.com/blog/${post.slug}`,
-        },
-        openGraph: {
-            title: post.title,
-            description: post.excerpt || post.content.substring(0, 160),
-            url: `https://www.moroccohive.com/blog/${post.slug}`,
-            images: ogImage ? [{ url: ogImage, width: 1200, height: 630 }] : [],
-        },
-        twitter: {
-            title: post.title,
-            description: post.excerpt || post.content.substring(0, 160),
-            images: ogImage ? [ogImage] : [],
-        },
-    }
+    return buildMetadata({
+        title: post.title,
+        description: truncate(post.excerpt || post.content, 155),
+        path: `/blog/${post.slug}`,
+        images: ogImage ? [ogImage] : undefined,
+        type: "article",
+        publishedTime: new Date(post.createdAt).toISOString(),
+        modifiedTime: new Date(post.updatedAt).toISOString(),
+        authors: [post.author || "Morocco Hive"],
+        tags: post.tags,
+    })
 }
 
 function renderHTML(content: string): string {
@@ -190,6 +185,24 @@ export default async function BlogDetailPage({
                 description="Chat with a local specialist"
                 buttonText="Get Started"
                 href="/plan-trip"
+            />
+
+            <BreadcrumbSchema
+                items={[
+                    { name: "Blog", path: "/blog" },
+                    { name: post.title, path: `/blog/${post.slug}` },
+                ]}
+            />
+            <ArticleSchema
+                title={post.title}
+                slug={post.slug}
+                description={truncate(post.excerpt || post.content, 200)}
+                image={post.coverImage}
+                author={post.author}
+                publishedAt={new Date(post.createdAt).toISOString()}
+                modifiedAt={new Date(post.updatedAt).toISOString()}
+                tags={post.tags}
+                wordCount={post.content.split(/\s+/).filter(Boolean).length}
             />
 
             <Footer />

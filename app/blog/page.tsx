@@ -6,10 +6,31 @@ import Link from "next/link"
 import Image from "next/image"
 import prisma from "@/lib/prisma"
 import BlogPagination from "@/components/blog-pagination"
+import { BreadcrumbSchema, ItemListSchema } from "@/components/structured-data"
+import { buildMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
-    title: "Morocco Travel Blog | Tips & Guides by Local Experts | MoroccoHive",
-    description: "Insider travel guides, tips, and cultural insights from Morocco - written by locals who live here. Plan smarter before you arrive.",
+/**
+ * Paginated, so the canonical has to carry ?page=N. Pointing every page at
+ * /blog would tell Google pages 2+ are duplicates and drop those posts from
+ * the index.
+ */
+export async function generateMetadata({
+    searchParams,
+}: {
+    searchParams: Promise<{ page?: string }>
+}): Promise<Metadata> {
+    const { page } = await searchParams
+    const pageNum = Math.max(1, parseInt(page || "1", 10) || 1)
+
+    return buildMetadata({
+        title:
+            pageNum > 1
+                ? `Morocco Travel Blog — Page ${pageNum}`
+                : "Morocco Travel Blog | Tips & Guides by Local Experts",
+        description:
+            "Insider travel guides, tips, and cultural insights from Morocco - written by locals who live here. Plan smarter before you arrive.",
+        path: pageNum > 1 ? `/blog?page=${pageNum}` : "/blog",
+    })
 }
 
 interface BlogPost {
@@ -177,6 +198,19 @@ export default async function BlogListingPage({
                     </>
                 )}
             </section>
+
+            <BreadcrumbSchema items={[{ name: "Blog", path: "/blog" }]} />
+            <ItemListSchema
+                name="Morocco Travel Blog"
+                description="Travel guides, tips and cultural insights from local Moroccan experts."
+                path={page > 1 ? `/blog?page=${page}` : "/blog"}
+                items={blogs.map((post) => ({
+                    name: post.title,
+                    path: `/blog/${post.slug}`,
+                    description: post.excerpt ?? undefined,
+                    image: post.coverImage,
+                }))}
+            />
 
             <Footer />
         </main>

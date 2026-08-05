@@ -3,11 +3,15 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { CircuitsList } from "@/components/circuits-list"
 import prisma from "@/lib/prisma"
+import { BreadcrumbSchema, ItemListSchema } from "@/components/structured-data"
+import { bestSummary, buildMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
-    title: "Private Morocco Tour Itineraries | 5–13 Days | MoroccoHive",
-    description: "Browse private Morocco tour itineraries - from Sahara desert camps to imperial cities. 5 to 13 days. Fully customizable. From $1,400/person.",
-}
+export const metadata: Metadata = buildMetadata({
+    title: "Private Morocco Tour Itineraries | 5–13 Days",
+    description:
+        "Browse private Morocco tour itineraries - from Sahara desert camps to imperial cities. 5 to 13 days. Fully customizable. From $1,400/person.",
+    path: "/circuits",
+})
 
 // Disable caching to ensure fresh data (updated slugs, etc.) is always served
 export const dynamic = "force-dynamic"
@@ -79,6 +83,20 @@ export default async function CircuitsPage() {
                     <CircuitsList circuits={circuits} />
                 </section>
             </main>
+
+            <BreadcrumbSchema items={[{ name: "Morocco Tours", path: "/circuits" }]} />
+            <ItemListSchema
+                name="Private Morocco Tour Itineraries"
+                description="Private, customizable Morocco tours from 5 to 13 days."
+                path="/circuits"
+                items={circuits.map((c) => ({
+                    name: c.name,
+                    path: `/circuits/${c.slug}`,
+                    description: bestSummary(c.tagline, c.description),
+                    image: c.images?.[0],
+                    price: c.price,
+                }))}
+            />
 
             <Footer />
         </div>

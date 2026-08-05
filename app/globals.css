@@ -189,5 +189,45 @@
     content-visibility: auto;
     contain-intrinsic-size: auto 1px;
   }
+
+  /* Hero slider: slow Ken Burns drift on the background images */
+  @keyframes hero-pan-in {
+    from { transform: scale(1) translate3d(0, 0, 0); }
+    to   { transform: scale(1.12) translate3d(-1.5%, -1%, 0); }
+  }
+
+  @keyframes hero-pan-out {
+    from { transform: scale(1.12) translate3d(1.5%, 1%, 0); }
+    to   { transform: scale(1) translate3d(0, 0, 0); }
+  }
+
+  .hero-pan-in {
+    animation: hero-pan-in 12s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+
+  .hero-pan-out {
+    animation: hero-pan-out 12s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+
+  /* Hero slider: indicator fill that tracks the active slide's time */
+  @keyframes hero-progress {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+  }
+
+  .hero-progress {
+    transform-origin: left;
+    animation: hero-progress linear forwards;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-pan-in,
+    .hero-pan-out,
+    .hero-progress {
+      animation: none;
+    }
+  }
 }
 

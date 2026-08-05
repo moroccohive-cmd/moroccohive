@@ -3,8 +3,9 @@ import { Footer } from "@/components/footer"
 import { Mail, Phone } from "lucide-react"
 
 export const metadata = {
-    title: "Terms of Use | Morocco Hive",
+    title: "Terms of Use",
     description: "Morocco Hive Terms of Use - Terms and conditions for using our website and services.",
+    alternates: { canonical: "https://www.moroccohive.com/terms" },
 }
 
 export default function TermsOfUsePage() {

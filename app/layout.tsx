@@ -6,6 +6,7 @@ import "./globals.css"
 
 import dynamic from "next/dynamic"
 import { OrganizationSchema } from "@/components/structured-data"
+import { SITE, SITE_URL } from "@/lib/seo"
 
 const WhatsAppButton = dynamic(() =>
   import("@/components/whatsapp-button").then((m) => m.WhatsAppButton),
@@ -23,14 +24,35 @@ const quicksand = Quicksand({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.moroccohive.com"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Morocco Hive | Private Tours in Morocco",
     template: "%s | Morocco Hive",
   },
-  description: "Morocco-based travel agency offering private, customizable tours led by local guides. Sahara desert, Atlas Mountains, imperial cities - designed around you.",
+  description: SITE.description,
+  applicationName: SITE.name,
+  authors: [{ name: SITE.name, url: SITE_URL }],
+  creator: SITE.name,
+  publisher: SITE.name,
+  category: "travel",
+  // Without max-image-preview:large, Google renders a thumbnail instead of a
+  // full-width image in Discover and AI Overviews. max-snippet:-1 lifts the
+  // snippet length cap, which matters for being quoted by answer engines.
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  // Stops iOS Safari auto-linking numbers in body copy as phone numbers.
+  formatDetection: { telephone: false, address: false, email: false },
   openGraph: {
-    siteName: "Morocco Hive",
+    siteName: SITE.name,
     type: "website",
     locale: "en_US",
     images: [
@@ -44,7 +66,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    site: "@moroccohive",
+    site: SITE.twitter,
     images: ["/hero-bg.webp"],
   },
 }

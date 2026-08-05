@@ -5,9 +5,12 @@ import { Check, Home, Plane } from "lucide-react"
 import Link from "next/link"
 import type { Metadata } from "next"
 
+// Post-conversion page: keep it out of the index so it never competes with the
+// tour pages in search results.
 export const metadata: Metadata = {
-    title: "Booking Request Sent | Morocco Hive",
+    title: "Booking Request Sent",
     description: "Your trip booking request has been received. Our team will get back to you shortly to confirm your booking.",
+    robots: { index: false, follow: false },
 }
 
 export default function CircuitThankYouPage() {

@@ -1,31 +1,15 @@
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { MapPin, Phone, Mail, CheckCircle, Clock, MessageCircle } from "lucide-react"
+import { BreadcrumbSchema, WebPageSchema } from "@/components/structured-data"
+import { buildMetadata } from "@/lib/seo"
 
-export const metadata = {
+export const metadata = buildMetadata({
     title: "About Morocco Hive - Morocco-Based Private Tour Agency",
-    description: "Morocco Hive is a Marrakech-based travel agency creating private, customizable tours led by local experts. Learn our story, team, and philosophy.",
-    alternates: {
-        canonical: "https://www.moroccohive.com/about",
-    },
-    openGraph: {
-        title: "About Morocco Hive - Morocco-Based Private Tour Agency",
-        description: "Morocco Hive is a Marrakech-based travel agency creating private, customizable tours led by local experts. Learn our story, team, and philosophy.",
-        url: "https://www.moroccohive.com/about",
-        images: [
-            {
-                url: "/hero-bg.webp",
-                width: 1200,
-                height: 630,
-                alt: "Morocco Hive - local tour guides in Marrakech",
-            },
-        ],
-    },
-    twitter: {
-        title: "About Morocco Hive - Morocco-Based Private Tour Agency",
-        description: "Morocco Hive is a Marrakech-based travel agency creating private, customizable tours led by local experts.",
-    },
-}
+    description:
+        "Morocco Hive is a Marrakech-based travel agency creating private, customizable tours led by local experts. Learn our story, team, and philosophy.",
+    path: "/about",
+})
 
 export default function AboutPage() {
     const services = [
@@ -178,6 +162,14 @@ export default function AboutPage() {
                     </div>
                 </section>
             </main>
+
+            <BreadcrumbSchema items={[{ name: "About", path: "/about" }]} />
+            <WebPageSchema
+                name="About Morocco Hive"
+                description="Morocco Hive is a Marrakech-based travel agency creating private, customizable tours led by local experts."
+                path="/about"
+            />
+
             <Footer />
         </div>
     )

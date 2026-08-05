@@ -30,6 +30,8 @@ const SLIDES = [
   },
 ]
 
+const SLIDE_DURATION = 2500
+
 export function HeroBackgroundSlider() {
   const [current, setCurrent] = useState(0)
 
@@ -37,13 +39,13 @@ export function HeroBackgroundSlider() {
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
-    const timer = setInterval(next, 6000)
+    const timer = setInterval(next, SLIDE_DURATION)
     return () => clearInterval(timer)
   }, [next])
 
   return (
     <>
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 overflow-hidden">
         {SLIDES.map((slide, i) => (
           <Image
             key={slide.src}
@@ -55,9 +57,10 @@ export function HeroBackgroundSlider() {
             loading="eager"
             fetchPriority={i === 0 ? "high" : "low"}
             aria-hidden={i !== current}
+            style={{ animationPlayState: current === i ? "running" : "paused" }}
             className={`object-cover transition-opacity duration-1000 ease-in-out ${
-              current === i ? "opacity-100" : "opacity-0"
-            }`}
+              i % 2 === 0 ? "hero-pan-in" : "hero-pan-out"
+            } ${current === i ? "opacity-100" : "opacity-0"}`}
           />
         ))}
         <div className="absolute inset-0 bg-black/50" />
@@ -70,12 +73,20 @@ export function HeroBackgroundSlider() {
             key={i}
             onClick={() => setCurrent(i)}
             aria-label={`Background image ${i + 1}`}
-            className={`rounded-full transition-all duration-300 ${
+            className={`h-1.5 overflow-hidden rounded-full transition-all duration-500 ease-out ${
               current === i
-                ? "w-4 h-1.5 bg-white/70"
-                : "w-1.5 h-1.5 bg-white/30 hover:bg-white/50"
+                ? "w-8 bg-white/25"
+                : "w-1.5 bg-white/30 hover:scale-125 hover:bg-white/60"
             }`}
-          />
+          >
+            {current === i && (
+              <span
+                key={current}
+                className="hero-progress block h-full w-full rounded-full bg-white/80"
+                style={{ animationDuration: `${SLIDE_DURATION}ms` }}
+              />
+            )}
+          </button>
         ))}
       </div>
     </>

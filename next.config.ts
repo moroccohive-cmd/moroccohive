@@ -20,6 +20,26 @@ const nextConfig: NextConfig = {
     },
     async headers() {
         return [
+            // robots.txt only asks crawlers not to fetch these — a URL linked from
+            // elsewhere can still get indexed without ever being crawled. An
+            // X-Robots-Tag is the enforceable version, and it works for the auth
+            // pages, which are client components and so cannot export metadata.
+            ...[
+                "/login",
+                "/register",
+                "/forgot-password",
+                "/reset-password",
+                "/verify-email",
+                "/profile",
+                "/access-denied",
+                "/dashboard/:path*",
+                "/uploads/:path*",
+            ].map((source) => ({
+                source,
+                headers: [
+                    { key: "X-Robots-Tag", value: "noindex, nofollow" },
+                ],
+            })),
             {
                 source: "/:path*",
                 headers: [

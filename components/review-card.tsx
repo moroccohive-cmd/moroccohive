@@ -12,7 +12,9 @@ export function TrustStars({ rating, size = 20 }: { rating: number; size?: numbe
         <div
             className="flex items-center gap-[2px]"
             role="img"
-            aria-label={`${filled} out of 5 stars`}
+            // Tiles round to whole stars, but the label states the real rating -
+            // otherwise 4.8 is announced as "5 out of 5".
+            aria-label={`${Number(rating.toFixed(1))} out of 5 stars`}
         >
             {Array.from({ length: 5 }).map((_, i) => (
                 <span

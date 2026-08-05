@@ -7,7 +7,8 @@ export function FAQItem({ question, answer }: { question: string; answer: string
         <span className="text-base font-semibold text-foreground pr-4">{question}</span>
         <ChevronDown className="w-5 h-5 text-primary flex-shrink-0 transition-transform duration-300 group-open:rotate-180" />
       </summary>
-      <p className="px-6 pb-6 text-muted-foreground font-light leading-relaxed">{answer}</p>
+      {/* `faq-answer` is the speakable selector referenced by FAQSchema. */}
+      <p className="faq-answer px-6 pb-6 text-muted-foreground font-light leading-relaxed">{answer}</p>
     </details>
   )
 }

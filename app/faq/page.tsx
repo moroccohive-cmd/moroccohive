@@ -4,36 +4,16 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { FAQItem } from "@/components/faq-item"
-import { FAQSchema } from "@/components/structured-data"
+import { BreadcrumbSchema, FAQSchema } from "@/components/structured-data"
 import { getAllFaqs, groupFaqsByCategory } from "@/lib/site-content"
+import { buildMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
-    title: "Frequently Asked Questions",
+export const metadata: Metadata = buildMetadata({
+    title: "Morocco Travel FAQ — Booking, Safety, Best Time to Visit",
     description:
         "Answers about booking a private Morocco tour: best time to visit, safety, travel insurance, payments, tipping and what's included in our itineraries.",
-    alternates: {
-        canonical: "https://www.moroccohive.com/faq",
-    },
-    openGraph: {
-        title: "Frequently Asked Questions | Morocco Hive",
-        description:
-            "Answers about booking a private Morocco tour: best time to visit, safety, insurance, payments and more.",
-        url: "https://www.moroccohive.com/faq",
-        images: [
-            {
-                url: "/hero-bg.webp",
-                width: 1200,
-                height: 630,
-                alt: "Morocco Hive frequently asked questions",
-            },
-        ],
-    },
-    twitter: {
-        title: "Frequently Asked Questions | Morocco Hive",
-        description:
-            "Answers about booking a private Morocco tour with Morocco Hive.",
-    },
-}
+    path: "/faq",
+})
 
 export const revalidate = 3600
 
@@ -116,6 +96,7 @@ export default async function FaqPage() {
                 </section>
             </main>
 
+            <BreadcrumbSchema items={[{ name: "FAQ", path: "/faq" }]} />
             <FAQSchema items={schemaItems} />
 
             <Footer />

@@ -21,8 +21,9 @@ import { Button } from "@/components/ui/button"
 import { TrustpilotBadge } from "@/components/trustpilot-badge"
 import { HeroBackgroundSlider } from "@/components/hero-background-slider"
 import { FAQItem } from "@/components/faq-item"
-import { FAQSchema } from "@/components/structured-data"
+import { FAQSchema, ItemListSchema } from "@/components/structured-data"
 import { getHomeFaqs, getHomeReviews } from "@/lib/site-content"
+import { buildMetadata, SITE_RATING_LABEL } from "@/lib/seo"
 import prisma from "@/lib/prisma"
 const AgentsSection = dynamic(
   () => import("@/components/agents-section").then((m) => m.AgentsSection),
@@ -45,31 +46,13 @@ const ContactForm = dynamic(
 )
 
 export const metadata: Metadata = {
+  ...buildMetadata({
+    title: "Private Morocco Tours by Local Experts",
+    description: `Custom private Morocco tours built by local guides in Marrakech. Sahara desert, Atlas Mountains, imperial cities - designed around you. ${SITE_RATING_LABEL}.`,
+    path: "/",
+  }),
+  // The root layout's template would otherwise append "| Morocco Hive" twice.
   title: "Private Morocco Tours by Local Experts | Morocco Hive",
-  description:
-    "Custom private Morocco tours built by local guides in Marrakech. Sahara desert, Atlas Mountains, imperial cities - designed around you. 4.9★ on Trustpilot.",
-  alternates: {
-    canonical: "https://www.moroccohive.com",
-  },
-  openGraph: {
-    title: "Private Morocco Tours by Local Experts | Morocco Hive",
-    description:
-      "Custom private Morocco tours built by local guides in Marrakech. Sahara desert, Atlas Mountains, imperial cities - designed around you.",
-    url: "https://www.moroccohive.com",
-    images: [
-      {
-        url: "/hero-bg.webp",
-        width: 1200,
-        height: 630,
-        alt: "Morocco Sahara desert dunes at golden hour - private tours by Morocco Hive",
-      },
-    ],
-  },
-  twitter: {
-    title: "Private Morocco Tours by Local Experts | Morocco Hive",
-    description:
-      "Custom private Morocco tours built by local guides in Marrakech. Sahara desert, Atlas Mountains, imperial cities - designed around you.",
-  },
 }
 
 // Revalidate every hour - circuits and blogs change infrequently
@@ -157,7 +140,7 @@ export default async function HomePage() {
 
             <div className="mt-8 flex items-center justify-center">
               <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-white/90 text-sm font-medium px-5 py-3 rounded-md backdrop-blur-md border border-white/25 shadow-lg">
-                <span>4.8★ on Trustpilot</span>
+                <span>{SITE_RATING_LABEL}</span>
                 <span className="text-white/40 hidden sm:inline">|</span>
                 <span>200+ Travelers Guided</span>
                 <span className="text-white/40 hidden sm:inline">|</span>
@@ -473,7 +456,22 @@ export default async function HomePage() {
         {/* Contact */}
         <ContactForm />
       </main>
+
       <FAQSchema items={faqSchemaItems} />
+      {circuits.length > 0 && (
+        <ItemListSchema
+          name="Featured Morocco Tours"
+          description="Hand-picked private Morocco itineraries by Morocco Hive."
+          path="/"
+          items={circuits.map((c) => ({
+            name: c.name,
+            path: `/circuits/${c.slug}`,
+            description: c.description,
+            image: (c.images as string[])?.[0],
+            price: c.price,
+          }))}
+        />
+      )}
 
       <Footer />
     </div>

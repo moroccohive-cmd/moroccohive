@@ -6,44 +6,23 @@ import { Button } from "@/components/ui/button"
 import { TrustpilotBadge } from "@/components/trustpilot-badge"
 import { ReviewCard, TrustStars } from "@/components/review-card"
 import { getAllReviews } from "@/lib/site-content"
+import {
+    BreadcrumbSchema,
+    ReviewCollectionSchema,
+} from "@/components/structured-data"
+import { buildMetadata, SITE_RATING } from "@/lib/seo"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
     title: "Traveler Reviews",
     description:
         "Read what travelers say about their private Morocco tours with Morocco Hive - honest reviews from guests guided across the Sahara, Atlas Mountains and imperial cities.",
-    alternates: {
-        canonical: "https://www.moroccohive.com/reviews",
-    },
-    openGraph: {
-        title: "Traveler Reviews | Morocco Hive",
-        description:
-            "Honest reviews from travelers who booked private Morocco tours with Morocco Hive.",
-        url: "https://www.moroccohive.com/reviews",
-        images: [
-            {
-                url: "/hero-bg.webp",
-                width: 1200,
-                height: 630,
-                alt: "Morocco Hive traveler reviews",
-            },
-        ],
-    },
-    twitter: {
-        title: "Traveler Reviews | Morocco Hive",
-        description:
-            "Honest reviews from travelers who booked private Morocco tours with Morocco Hive.",
-    },
-}
+    path: "/reviews",
+})
 
 export const revalidate = 3600
 
 export default async function ReviewsPage() {
     const reviews = await getAllReviews()
-
-    const average =
-        reviews.length > 0
-            ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
-            : 0
 
     return (
         <div className="min-h-screen bg-background flex flex-col font-sans">
@@ -66,13 +45,14 @@ export default async function ReviewsPage() {
 
                         {reviews.length > 0 && (
                             <div className="mt-8 flex flex-col items-center gap-3">
-                                <TrustStars rating={average} size={24} />
+                                {/* The headline is the full Trustpilot profile, not an
+                                    average of the excerpts below, which are a subset. */}
+                                <TrustStars rating={Number(SITE_RATING.ratingValue)} size={24} />
                                 <p className="text-sm text-muted-foreground">
                                     <span className="font-semibold text-foreground">
-                                        {average.toFixed(1)}
+                                        {SITE_RATING.ratingValue}
                                     </span>{" "}
-                                    average from {reviews.length}{" "}
-                                    {reviews.length === 1 ? "review" : "reviews"}
+                                    average from {SITE_RATING.reviewCount} Trustpilot reviews
                                 </p>
                                 <div className="mt-2">
                                     <TrustpilotBadge variant="dark" />
@@ -123,6 +103,9 @@ export default async function ReviewsPage() {
                     </div>
                 </section>
             </main>
+
+            <BreadcrumbSchema items={[{ name: "Reviews", path: "/reviews" }]} />
+            <ReviewCollectionSchema reviews={reviews} />
 
             <Footer />
         </div>
