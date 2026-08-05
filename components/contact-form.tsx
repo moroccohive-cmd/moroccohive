@@ -94,7 +94,7 @@ export function ContactForm() {
                   <Mail className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-foreground">Email Us</h4>
+                  <h3 className="font-semibold text-foreground">Email Us</h3>
                   <p className="text-muted-foreground font-light mt-1">info@moroccohive.com</p>
                 </div>
               </div>
@@ -103,7 +103,7 @@ export function ContactForm() {
                   <Phone className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-foreground">Call Us</h4>
+                  <h3 className="font-semibold text-foreground">Call Us</h3>
                   <p className="text-muted-foreground font-light mt-1">+212 634717423</p>
                 </div>
               </div>
@@ -112,7 +112,7 @@ export function ContactForm() {
                   <MapPin className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-foreground">Visit Us</h4>
+                  <h3 className="font-semibold text-foreground">Visit Us</h3>
                   <p className="text-muted-foreground font-light mt-1">Morocco Hive, Marrakech, Morocco</p>
                 </div>
               </div>

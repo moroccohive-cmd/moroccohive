@@ -134,7 +134,7 @@ export default function OrdersPage() {
                                             value={order.status}
                                             onValueChange={(value) => handleUpdateOrderStatus(order.id, value)}
                                         >
-                                            <SelectTrigger className={`text-xs ${getStatusColor(order.status)}`}>
+                                            <SelectTrigger aria-label="Order status" className={`text-xs ${getStatusColor(order.status)}`}>
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>

@@ -130,7 +130,7 @@ export default async function HomePage() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-secondary hover:bg-secondary/90 text-white/90 px-8 h-12 text-base rounded-md font-medium transition-all">
+              <Button asChild size="lg" className="bg-cta hover:bg-cta/90 text-cta-foreground px-8 h-12 text-base rounded-md font-medium transition-all">
                 <Link href="/plan-trip">Book a Private Tour</Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="bg-transparent hover:bg-white/10 text-white/90 border-white/20 px-8 h-12 text-base rounded-md font-medium transition-all">
@@ -205,7 +205,7 @@ export default async function HomePage() {
               ].map((item, idx) => (
                 <div key={idx} className="relative z-10 bg-background border border-border/50 p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow group overflow-hidden">
                   <div className="absolute top-0 right-0 p-4">
-                    <span className="text-4xl font-bold text-primary/20 transition-colors">{item.step}</span>
+                    <span className="text-4xl font-bold text-primary/60 transition-colors">{item.step}</span>
                   </div>
                   <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform">
                     <item.icon className="w-6 h-6" />

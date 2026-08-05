@@ -66,26 +66,32 @@ export function HeroBackgroundSlider() {
         <div className="absolute inset-0 bg-black/50" />
       </div>
 
-      {/* Slide Indicators */}
-      <div className="absolute bottom-8 right-6 z-20 flex items-center gap-2">
+      {/* Slide Indicators — the bar is 6px tall, so the button pads it out to a 24px touch target */}
+      <div className="absolute bottom-8 right-6 z-20 flex items-center">
         {SLIDES.map((_, i) => (
           <button
             key={i}
+            type="button"
             onClick={() => setCurrent(i)}
-            aria-label={`Background image ${i + 1}`}
-            className={`h-1.5 overflow-hidden rounded-full transition-all duration-500 ease-out ${
-              current === i
-                ? "w-8 bg-white/25"
-                : "w-1.5 bg-white/30 hover:scale-125 hover:bg-white/60"
-            }`}
+            aria-label={`Show background image ${i + 1}`}
+            aria-current={current === i}
+            className="group flex h-6 items-center justify-center px-2.5"
           >
-            {current === i && (
-              <span
-                key={current}
-                className="hero-progress block h-full w-full rounded-full bg-white/80"
-                style={{ animationDuration: `${SLIDE_DURATION}ms` }}
-              />
-            )}
+            <span
+              className={`block h-1.5 overflow-hidden rounded-full transition-all duration-500 ease-out ${
+                current === i
+                  ? "w-8 bg-white/25"
+                  : "w-1.5 bg-white/30 group-hover:scale-125 group-hover:bg-white/60"
+              }`}
+            >
+              {current === i && (
+                <span
+                  key={current}
+                  className="hero-progress block h-full w-full rounded-full bg-white/80"
+                  style={{ animationDuration: `${SLIDE_DURATION}ms` }}
+                />
+              )}
+            </span>
           </button>
         ))}
       </div>

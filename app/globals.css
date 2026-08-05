@@ -17,8 +17,12 @@
   --secondary-foreground: oklch(0.20 0.05 35);
   --muted: oklch(0.92 0.02 85);
   --muted-foreground: oklch(0.55 0.03 60);
-  --accent: oklch(0.65 0.20 60);
+  /* Deep enough to clear 4.5:1 as `text-accent` on --card and --background. */
+  --accent: oklch(0.53 0.20 60);
   --accent-foreground: oklch(0.98 0 0);
+  /* Orange CTA fill that clears 4.5:1 against white label text, unlike --secondary. */
+  --cta: oklch(0.54 0.16 68);
+  --cta-foreground: oklch(1 0 0);
   --destructive: oklch(0.6332 0.1578 22.6734);
   --destructive-foreground: oklch(0.9777 0.0041 301.4256);
   --border: oklch(0.88 0.02 85);
@@ -74,6 +78,8 @@
   --muted-foreground: oklch(0.70 0.05 65);
   --accent: oklch(0.30 0.05 50);
   --accent-foreground: oklch(0.90 0.05 80);
+  --cta: oklch(0.54 0.16 68);
+  --cta-foreground: oklch(1 0 0);
   --destructive: oklch(0.6875 0.1420 21.4566);
   --destructive-foreground: oklch(0.2166 0.0215 292.8474);
   --border: oklch(0.35 0.03 50);
@@ -127,6 +133,8 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-cta: var(--cta);
+  --color-cta-foreground: var(--cta-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);

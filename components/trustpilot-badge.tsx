@@ -18,7 +18,7 @@ export function TrustpilotBadge({ variant = "dark" }: TrustpilotBadgeProps) {
         src="/trustpilot.webp"
         alt="Trustpilot"
         width={260}
-        height={43}
+        height={36}
         className="bg-white"
       />
     </Link>

@@ -81,7 +81,8 @@ export function CountryCodeSelect({ value, onChange, disabled }: CountryCodeSele
 
     return (
         <Select value={selectedValue} onValueChange={handleChange} disabled={disabled}>
-            <SelectTrigger className="w-[110px] h-11">
+            {/* role="combobox" does not take its name from content, so label it explicitly. */}
+            <SelectTrigger aria-label="Country calling code" className="w-[110px] h-11">
                 <SelectValue placeholder="Code">
                     {selectedCountry && (
                         <span className="font-mono text-sm">
