@@ -6,6 +6,21 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { LayoutDashboard, Map, Calendar, Mail, LogOut, User, FileText, Settings, Star, HelpCircle } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
+import { useAdminNotifications } from "@/hooks/use-admin-notifications"
+
+/** Red pill carrying the number of unhandled entries for a nav item. */
+function NewBadge({ count }: { count: number }) {
+    if (count <= 0) return null
+
+    return (
+        <span
+            className="ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-xs font-bold text-white"
+            aria-label={`${count} new`}
+        >
+            {count > 99 ? "99+" : count}
+        </span>
+    )
+}
 
 const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -20,6 +35,7 @@ const navigation = [
 export function SidebarContent() {
     const { user, logout } = useAuth()
     const pathname = usePathname()
+    const unread = useAdminNotifications()
 
     return (
         <div className="flex h-full flex-col bg-sidebar border-r border-sidebar-border">
@@ -91,8 +107,8 @@ export function SidebarContent() {
                     </p>
                     <div className="space-y-1">
                         {[
-                            { name: "Trip Requests", href: "/dashboard/trip-requests", icon: Calendar },
-                            { name: "Messages", href: "/dashboard/messages", icon: Mail },
+                            { name: "Trip Requests", href: "/dashboard/trip-requests", icon: Calendar, count: unread.tripRequests },
+                            { name: "Messages", href: "/dashboard/messages", icon: Mail, count: unread.messages },
                         ].map((item) => (
                             <Link
                                 key={item.name}
@@ -106,6 +122,7 @@ export function SidebarContent() {
                             >
                                 <item.icon className="h-5 w-5" />
                                 {item.name}
+                                <NewBadge count={item.count} />
                             </Link>
                         ))}
                     </div>

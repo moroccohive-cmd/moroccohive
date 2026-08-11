@@ -1,17 +1,22 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Mail, Search, Eye, Trash } from "lucide-react"
+import { Mail, Search, Eye, Trash, Phone } from "lucide-react"
+import { refreshAdminNotifications } from "@/hooks/use-admin-notifications"
 
 interface ContactMessage {
     id: string
     name: string
     email: string
+    phone?: string | null
     subject: string
     message: string
     status: string
     createdAt: string
 }
+
+/** The form writes "new"; the schema default is "unread". Both mean unhandled. */
+const isUnread = (status: string) => status === "new" || status === "unread"
 
 export default function MessagesPage() {
     const [messages, setMessages] = useState<ContactMessage[]>([])
@@ -21,6 +26,8 @@ export default function MessagesPage() {
     const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null)
     const [currentPage, setCurrentPage] = useState(1)
     const [hasMore, setHasMore] = useState(true)
+    const [totalMessages, setTotalMessages] = useState(0)
+    const [newMessages, setNewMessages] = useState(0)
     const itemsPerPage = 10
 
     useEffect(() => {
@@ -44,6 +51,8 @@ export default function MessagesPage() {
                     setMessages(prev => [...prev, ...data.messages])
                 }
                 setHasMore(data.pagination.currentPage < data.pagination.pages)
+                setTotalMessages(data.pagination.total)
+                setNewMessages(data.newCount ?? 0)
             }
         } catch (error) {
             console.error("Failed to fetch:", error)
@@ -73,6 +82,7 @@ export default function MessagesPage() {
             if (response.ok) {
                 fetchMessages(1, true)
                 setCurrentPage(1)
+                refreshAdminNotifications()
                 if (selectedMessage?.id === id) {
                     setSelectedMessage(null)
                 }
@@ -83,6 +93,11 @@ export default function MessagesPage() {
     }
 
     const markAsRead = async (id: string) => {
+        // Patched in place rather than re-fetched: the message the admin just
+        // opened would otherwise jump as the list collapsed back to page one.
+        setMessages(prev => prev.map(m => (m.id === id ? { ...m, status: "read" } : m)))
+        setNewMessages(prev => Math.max(0, prev - 1))
+
         try {
             await fetch(`/api/admin/messages/${id}`, {
                 method: "PATCH",
@@ -90,20 +105,19 @@ export default function MessagesPage() {
                 credentials: "include",
                 body: JSON.stringify({ status: "read" })
             })
-            fetchMessages(1, true)
-            setCurrentPage(1)
+            refreshAdminNotifications()
         } catch (error) {
             console.error("Failed to update:", error)
         }
     }
 
+    const query = searchQuery.toLowerCase()
     const filteredMessages = messages.filter(msg =>
-        msg.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        msg.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        msg.message.toLowerCase().includes(searchQuery.toLowerCase())
+        msg.name.toLowerCase().includes(query) ||
+        msg.email.toLowerCase().includes(query) ||
+        (msg.phone ?? "").toLowerCase().includes(query) ||
+        msg.message.toLowerCase().includes(query)
     )
-
-    const newMessages = messages.filter(m => m.status === "new").length
 
     if (loading) {
         return (
@@ -117,10 +131,17 @@ export default function MessagesPage() {
         <div className="p-8 space-y-6">
             {/* Header */}
             <div>
-                <h1 className="text-2xl font-semibold text-foreground">Messages</h1>
+                <div className="flex items-center gap-3">
+                    <h1 className="text-2xl font-semibold text-foreground">Messages</h1>
+                    {newMessages > 0 && (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-destructive/10 px-3 py-1 text-xs font-bold text-destructive border border-destructive/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-destructive animate-pulse" />
+                            {newMessages} new
+                        </span>
+                    )}
+                </div>
                 <p className="text-sm text-muted-foreground mt-1">
-                    {messages.length} total messages
-                    {newMessages > 0 && ` • ${newMessages} unread`}
+                    {totalMessages} total messages
                 </p>
             </div>
 
@@ -149,26 +170,46 @@ export default function MessagesPage() {
                         {filteredMessages.map((message) => (
                             <div
                                 key={message.id}
-                                className="p-4 hover:bg-muted/50 cursor-pointer transition-colors"
+                                className={`p-4 cursor-pointer transition-colors ${isUnread(message.status)
+                                    ? "bg-primary/5 border-l-4 border-l-primary hover:bg-primary/10"
+                                    : "hover:bg-muted/50"
+                                    }`}
                                 onClick={() => {
                                     setSelectedMessage(message)
-                                    if (message.status === "new") markAsRead(message.id)
+                                    if (isUnread(message.status)) markAsRead(message.id)
                                 }}
                             >
                                 <div className="flex items-start justify-between">
                                     <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            {message.status === "new" && (
-                                                <span className="w-2 h-2 bg-primary rounded-full"></span>
-                                            )}
-                                            <h3 className={`font-medium ${message.status === "new" ? "text-foreground" : "text-muted-foreground"}`}>
+                                        <div className="flex items-center gap-3 mb-2 flex-wrap">
+                                            <h3 className={isUnread(message.status) ? "font-semibold text-foreground" : "font-medium text-muted-foreground"}>
                                                 {message.name}
                                             </h3>
+                                            {isUnread(message.status) && (
+                                                <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full bg-destructive text-white">
+                                                    New
+                                                </span>
+                                            )}
                                             <span className="text-xs text-muted-foreground">
                                                 {new Date(message.createdAt).toLocaleDateString()}
                                             </span>
                                         </div>
-                                        <p className="text-sm text-muted-foreground mb-1">{message.email}</p>
+                                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mb-1 text-sm text-muted-foreground">
+                                            <span className="inline-flex items-center gap-1.5">
+                                                <Mail className="h-3.5 w-3.5 shrink-0" />
+                                                {message.email}
+                                            </span>
+                                            {message.phone && (
+                                                <a
+                                                    href={`tel:${message.phone.replace(/\s+/g, "")}`}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    className="inline-flex items-center gap-1.5 font-medium text-foreground hover:text-primary transition-colors"
+                                                >
+                                                    <Phone className="h-3.5 w-3.5 shrink-0" />
+                                                    {message.phone}
+                                                </a>
+                                            )}
+                                        </div>
                                         {message.subject && (
                                             <p className="text-sm font-medium text-foreground mb-1">{message.subject}</p>
                                         )}
@@ -232,6 +273,50 @@ export default function MessagesPage() {
                         </div>
 
                         <div className="p-6 space-y-4">
+                            <div className="grid gap-3 sm:grid-cols-2">
+                                <a
+                                    href={`mailto:${selectedMessage.email}`}
+                                    className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group"
+                                >
+                                    <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                                        <Mail className="h-4 w-4 text-primary" />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="text-xs text-muted-foreground uppercase tracking-wide">Email</p>
+                                        <p className="text-foreground font-medium truncate group-hover:text-primary transition-colors">
+                                            {selectedMessage.email}
+                                        </p>
+                                    </div>
+                                </a>
+
+                                {selectedMessage.phone ? (
+                                    <a
+                                        href={`tel:${selectedMessage.phone.replace(/\s+/g, "")}`}
+                                        className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group"
+                                    >
+                                        <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                                            <Phone className="h-4 w-4 text-primary" />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="text-xs text-muted-foreground uppercase tracking-wide">Phone</p>
+                                            <p className="text-foreground font-medium truncate group-hover:text-primary transition-colors">
+                                                {selectedMessage.phone}
+                                            </p>
+                                        </div>
+                                    </a>
+                                ) : (
+                                    <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
+                                        <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center shrink-0">
+                                            <Phone className="h-4 w-4 text-muted-foreground" />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-muted-foreground uppercase tracking-wide">Phone</p>
+                                            <p className="text-muted-foreground">Not provided</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
                             {selectedMessage.subject && (
                                 <div>
                                     <h3 className="text-sm font-semibold text-muted-foreground mb-1">Subject</h3>

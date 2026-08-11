@@ -13,6 +13,10 @@ export async function GET(request: NextRequest) {
             headers: await headers()
         });
 
+        if (!session || (session.user as { role?: string }).role !== "admin") {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         const searchParams = request.nextUrl.searchParams;
         const status = searchParams.get("status");
 
@@ -25,7 +29,7 @@ export async function GET(request: NextRequest) {
         const limit = parseInt(searchParams.get("limit") || "10");
         const skip = (page - 1) * limit;
 
-        const [tripRequests, total] = await Promise.all([
+        const [tripRequests, total, newCount] = await Promise.all([
             prisma.tripRequest.findMany({
                 where,
                 skip,
@@ -43,11 +47,14 @@ export async function GET(request: NextRequest) {
                     }
                 }
             }),
-            prisma.tripRequest.count({ where })
+            prisma.tripRequest.count({ where }),
+            // Unfiltered, so the header badge stays right on every tab.
+            prisma.tripRequest.count({ where: { status: "new" } })
         ]);
 
         return NextResponse.json({
             tripRequests,
+            newCount,
             pagination: {
                 total,
                 pages: Math.ceil(total / limit),

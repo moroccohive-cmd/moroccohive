@@ -97,6 +97,13 @@ export const auth = betterAuth({
     database: prismaAdapter(prisma, {
         provider: "mongodb",
     }),
+    // Only BETTER_AUTH_URL is trusted implicitly, so `next dev` falling back to
+    // another port (3001, 3002, ...) rejects every request as INVALID_ORIGIN.
+    // Trust any localhost port in development; production stays pinned.
+    trustedOrigins:
+        process.env.NODE_ENV === "development"
+            ? ["http://localhost:*", "http://127.0.0.1:*"]
+            : ["https://moroccohive.com", "https://www.moroccohive.com"],
     emailAndPassword: {
         enabled: true,
         requireEmailVerification: true,

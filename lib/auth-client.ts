@@ -1,5 +1,5 @@
 import { createAuthClient } from "better-auth/react"
 
-export const authClient = createAuthClient({
-    baseURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-})
+// No baseURL: the browser client always calls its own origin, so the app works
+// on whatever port `next dev` picks and needs no CORS handling in production.
+export const authClient = createAuthClient()

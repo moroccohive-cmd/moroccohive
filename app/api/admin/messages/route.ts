@@ -22,17 +22,20 @@ export async function GET(request: NextRequest) {
         const limit = parseInt(searchParams.get("limit") || "10");
         const skip = (page - 1) * limit;
 
-        const [messages, total] = await Promise.all([
+        const [messages, total, newCount] = await Promise.all([
             prisma.contactMessage.findMany({
                 skip,
                 take: limit,
                 orderBy: { createdAt: "desc" },
             }),
-            prisma.contactMessage.count()
+            prisma.contactMessage.count(),
+            // "new" is what the contact form writes, "unread" is the schema default.
+            prisma.contactMessage.count({ where: { status: { in: ["new", "unread"] } } })
         ]);
 
         return NextResponse.json({
             messages,
+            newCount,
             pagination: {
                 total,
                 pages: Math.ceil(total / limit),

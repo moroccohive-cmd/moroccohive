@@ -48,9 +48,11 @@ interface ReviewCardProps {
     review: PublicReview
     /** Clamps the quote so cards in a rail stay the same height. */
     clamp?: boolean
+    /** Renders a "Read full review" button - pair with `clamp`. */
+    onReadMore?: () => void
 }
 
-export function ReviewCard({ review, clamp = false }: ReviewCardProps) {
+export function ReviewCard({ review, clamp = false, onReadMore }: ReviewCardProps) {
     return (
         <figure className="flex h-full flex-col rounded-xl border border-border/70 bg-card p-7 shadow-[0_1px_2px_rgb(0,0,0,0.03)] transition-shadow hover:shadow-[0_4px_24px_rgb(0,0,0,0.06)]">
             <div className="mb-5">
@@ -62,6 +64,17 @@ export function ReviewCard({ review, clamp = false }: ReviewCardProps) {
             >
                 {review.text}
             </blockquote>
+
+            {onReadMore && (
+                <button
+                    type="button"
+                    onClick={onReadMore}
+                    aria-label={`Read the full review from ${review.authorName}`}
+                    className="mt-3 self-start text-sm font-medium text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 rounded-sm"
+                >
+                    Read full review
+                </button>
+            )}
 
             <figcaption className="mt-auto pt-6">
                 <div className="flex items-center gap-3 border-t border-border/70 pt-5">

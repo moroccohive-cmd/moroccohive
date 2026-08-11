@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { X, Calendar, MapPin, Users, Mail, Phone, Search } from "lucide-react"
+import { refreshAdminNotifications } from "@/hooks/use-admin-notifications"
 
 interface TripRequest {
     id: string
@@ -50,6 +51,8 @@ export default function TripRequestsPage() {
     const [updating, setUpdating] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
     const [hasMore, setHasMore] = useState(true)
+    const [totalRequests, setTotalRequests] = useState(0)
+    const [newCount, setNewCount] = useState(0)
     const itemsPerPage = 6
 
     useEffect(() => {
@@ -79,6 +82,8 @@ export default function TripRequestsPage() {
                     setRequests(prev => [...prev, ...data.tripRequests])
                 }
                 setHasMore(data.pagination.currentPage < data.pagination.pages)
+                setTotalRequests(data.pagination.total)
+                setNewCount(data.newCount ?? 0)
             }
         } catch {
         } finally {
@@ -108,6 +113,7 @@ export default function TripRequestsPage() {
             if (response.ok) {
                 await fetchRequests(1, true)
                 setCurrentPage(1)
+                refreshAdminNotifications()
                 if (selectedRequest?.id === id) {
                     setSelectedRequest({ ...selectedRequest, status: newStatus })
                 }
@@ -136,8 +142,16 @@ export default function TripRequestsPage() {
         <div className="p-8 space-y-6">
             {/* Header */}
             <div>
-                <h1 className="text-2xl font-semibold text-foreground">Trip Requests</h1>
-                <p className="text-sm text-muted-foreground mt-1">{requests.length} total requests</p>
+                <div className="flex items-center gap-3">
+                    <h1 className="text-2xl font-semibold text-foreground">Trip Requests</h1>
+                    {newCount > 0 && (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-destructive/10 px-3 py-1 text-xs font-bold text-destructive border border-destructive/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-destructive animate-pulse" />
+                            {newCount} new
+                        </span>
+                    )}
+                </div>
+                <p className="text-sm text-muted-foreground mt-1">{totalRequests} total requests</p>
             </div>
 
             {/* Filters and Search */}
@@ -165,6 +179,11 @@ export default function TripRequestsPage() {
                                 }`}
                         >
                             {status === "all" ? "All" : status.replace("-", " ")}
+                            {status === "new" && newCount > 0 && (
+                                <span className="ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-white">
+                                    {newCount}
+                                </span>
+                            )}
                         </button>
                     ))}
                 </div>
@@ -188,15 +207,26 @@ export default function TripRequestsPage() {
                             <div
                                 key={request.id}
                                 onClick={() => setSelectedRequest(request)}
-                                className="p-4 hover:bg-muted/50 cursor-pointer transition-colors"
+                                className={`p-4 cursor-pointer transition-colors ${request.status === "new"
+                                    ? "bg-primary/5 border-l-4 border-l-primary hover:bg-primary/10"
+                                    : "hover:bg-muted/50"
+                                    }`}
                             >
                                 <div className="flex items-start justify-between">
                                     <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <h3 className="font-medium text-foreground">{request.fullName}</h3>
-                                            <span className={`px-2 py-0.5 text-xs font-medium rounded border ${statusStyles[request.status as keyof typeof statusStyles] || statusStyles.new}`}>
-                                                {request.status}
-                                            </span>
+                                        <div className="flex items-center gap-3 mb-2 flex-wrap">
+                                            <h3 className={`text-foreground ${request.status === "new" ? "font-semibold" : "font-medium"}`}>
+                                                {request.fullName}
+                                            </h3>
+                                            {request.status === "new" ? (
+                                                <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full bg-destructive text-white">
+                                                    New
+                                                </span>
+                                            ) : (
+                                                <span className={`px-2 py-0.5 text-xs font-medium rounded border ${statusStyles[request.status as keyof typeof statusStyles] || statusStyles.new}`}>
+                                                    {request.status}
+                                                </span>
+                                            )}
                                         </div>
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm text-muted-foreground">
                                             <div className="flex items-center gap-1.5">

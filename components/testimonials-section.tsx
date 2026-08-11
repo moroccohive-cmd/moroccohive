@@ -3,7 +3,15 @@
 import Link from "next/link"
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
-import { ReviewCard } from "@/components/review-card"
+import { ReviewAvatar } from "@/components/review-avatar"
+import { ReviewCard, TrustStars } from "@/components/review-card"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
 import type { PublicReview } from "@/lib/site-content"
 
 interface TestimonialsSectionProps {
@@ -18,10 +26,21 @@ const DEFAULT_NOTE =
 /** Matches the `gap-5` between cards, so one click advances by exactly one card. */
 const CARD_GAP = 20
 
+/** How long each card sits before the rail advances on its own. */
+const AUTOPLAY_MS = 5000
+
 export function TestimonialsSection({ reviews, note = DEFAULT_NOTE }: TestimonialsSectionProps) {
     const railRef = useRef<HTMLDivElement>(null)
     const [atStart, setAtStart] = useState(true)
     const [atEnd, setAtEnd] = useState(true)
+    const [openReview, setOpenReview] = useState<PublicReview | null>(null)
+    const [interacting, setInteracting] = useState(false)
+
+    // Read inside the autoplay tick so pausing never restarts the timer.
+    const pausedRef = useRef(false)
+    useEffect(() => {
+        pausedRef.current = interacting || openReview !== null
+    }, [interacting, openReview])
 
     const syncEdges = useCallback(() => {
         const rail = railRef.current
@@ -51,14 +70,46 @@ export function TestimonialsSection({ reviews, note = DEFAULT_NOTE }: Testimonia
         }
     }, [syncEdges])
 
-    const scrollByCard = (direction: 1 | -1) => {
+    const scrollByCard = useCallback((direction: 1 | -1) => {
         const rail = railRef.current
         if (!rail) return
 
         const card = rail.querySelector("li")
         const step = card ? card.getBoundingClientRect().width + CARD_GAP : rail.clientWidth * 0.8
         rail.scrollBy({ left: direction * step, behavior: "smooth" })
-    }
+    }, [])
+
+    // Autoplay: advance a card at a time, wrapping back to the first once the
+    // rail bottoms out. Idle while hovered, focused, off-screen or backgrounded.
+    useEffect(() => {
+        const rail = railRef.current
+        if (!rail || reviews.length < 2) return
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+
+        let inView = true
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                inView = entry.isIntersecting
+            },
+            { threshold: 0.25 }
+        )
+        observer.observe(rail)
+
+        const timer = window.setInterval(() => {
+            if (pausedRef.current || !inView || document.hidden) return
+
+            const max = rail.scrollWidth - rail.clientWidth
+            if (max <= 0) return
+
+            if (rail.scrollLeft >= max - 1) rail.scrollTo({ left: 0, behavior: "smooth" })
+            else scrollByCard(1)
+        }, AUTOPLAY_MS)
+
+        return () => {
+            window.clearInterval(timer)
+            observer.disconnect()
+        }
+    }, [reviews.length, scrollByCard])
 
     if (reviews.length === 0) return null
 
@@ -66,7 +117,16 @@ export function TestimonialsSection({ reviews, note = DEFAULT_NOTE }: Testimonia
     const scrollable = !(atStart && atEnd)
 
     return (
-        <section id="testimonials" className="bg-background py-24 cv-auto">
+        <section
+            id="testimonials"
+            className="bg-background py-24 cv-auto"
+            onMouseEnter={() => setInteracting(true)}
+            onMouseLeave={() => setInteracting(false)}
+            onFocus={() => setInteracting(true)}
+            onBlur={() => setInteracting(false)}
+            onTouchStart={() => setInteracting(true)}
+            onTouchEnd={() => setInteracting(false)}
+        >
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="mb-12 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
                     <div className="space-y-3">
@@ -134,11 +194,65 @@ export function TestimonialsSection({ reviews, note = DEFAULT_NOTE }: Testimonia
                 <ul className="mx-auto flex w-max max-w-none list-none gap-5 px-4 sm:px-6 lg:px-[max(2rem,calc((100vw-80rem)/2+2rem))]">
                     {reviews.map((review) => (
                         <li key={review.id} className="w-[320px] flex-shrink-0 sm:w-[340px]">
-                            <ReviewCard review={review} clamp />
+                            <ReviewCard
+                                review={review}
+                                clamp
+                                onReadMore={() => setOpenReview(review)}
+                            />
                         </li>
                     ))}
                 </ul>
             </div>
+
+            <Dialog open={openReview !== null} onOpenChange={(open) => !open && setOpenReview(null)}>
+                <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-xl">
+                    {openReview && (
+                        <>
+                            <DialogHeader>
+                                <DialogTitle className="flex items-center gap-3">
+                                    <ReviewAvatar
+                                        src={openReview.authorImage}
+                                        name={openReview.authorName}
+                                    />
+                                    <span>{openReview.authorName}</span>
+                                </DialogTitle>
+                                <DialogDescription>
+                                    {[
+                                        openReview.country?.trim() ||
+                                            openReview.authorLocation?.trim(),
+                                        openReview.displayDate?.trim() ||
+                                            new Date(openReview.createdAt).toLocaleDateString(
+                                                "en-US",
+                                                { month: "long", year: "numeric" }
+                                            ),
+                                        openReview.source,
+                                    ]
+                                        .filter(Boolean)
+                                        .join(" · ")}
+                                </DialogDescription>
+                            </DialogHeader>
+
+                            <TrustStars rating={openReview.rating} size={18} />
+
+                            <blockquote className="whitespace-pre-wrap text-[15px] leading-[1.75] text-foreground">
+                                {openReview.text}
+                            </blockquote>
+
+                            {openReview.circuit && (
+                                <p className="text-xs text-muted-foreground">
+                                    Tour:{" "}
+                                    <Link
+                                        href={`/circuits/${openReview.circuit.slug}`}
+                                        className="font-medium text-accent hover:underline"
+                                    >
+                                        {openReview.circuit.name}
+                                    </Link>
+                                </p>
+                            )}
+                        </>
+                    )}
+                </DialogContent>
+            </Dialog>
         </section>
     )
 }

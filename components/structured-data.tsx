@@ -543,16 +543,12 @@ export function ReviewCollectionSchema({
     "@id": ORG_ID,
     name: SITE.name,
     url: SITE_URL,
-    // Shares ORG_ID with the Organization node, so the aggregate has to be the
-    // same site-wide figure - averaging the published excerpts would put two
-    // conflicting ratings on one entity.
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: SITE_RATING.ratingValue,
-      reviewCount: SITE_RATING.reviewCount,
-      bestRating: SITE_RATING.bestRating,
-      worstRating: SITE_RATING.worstRating,
-    },
+    // No aggregateRating here on purpose. This node shares ORG_ID with the
+    // Organization node emitted in the root layout, so engines merge the two
+    // into one entity - repeating the rating gave that entity two of them and
+    // Search Console rejected every nested Review with "Review has multiple
+    // aggregate ratings". The layout node is the single source of the site-wide
+    // figure; this block only contributes the individual reviews.
     review: reviews.slice(0, 25).map((r) => ({
       "@type": "Review",
       author: {
