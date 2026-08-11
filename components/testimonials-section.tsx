@@ -29,18 +29,21 @@ const CARD_GAP = 20
 /** How long each card sits before the rail advances on its own. */
 const AUTOPLAY_MS = 5000
 
+/**
+ * The first advance after the rail scrolls into view is quicker, so the motion
+ * that tells people the rail is swipeable happens while they are still looking.
+ */
+const FIRST_ADVANCE_MS = 1200
+
 export function TestimonialsSection({ reviews, note = DEFAULT_NOTE }: TestimonialsSectionProps) {
     const railRef = useRef<HTMLDivElement>(null)
+    const sectionRef = useRef<HTMLElement>(null)
     const [atStart, setAtStart] = useState(true)
     const [atEnd, setAtEnd] = useState(true)
     const [openReview, setOpenReview] = useState<PublicReview | null>(null)
     const [interacting, setInteracting] = useState(false)
-
-    // Read inside the autoplay tick so pausing never restarts the timer.
-    const pausedRef = useRef(false)
-    useEffect(() => {
-        pausedRef.current = interacting || openReview !== null
-    }, [interacting, openReview])
+    const [inView, setInView] = useState(false)
+    const [tabVisible, setTabVisible] = useState(true)
 
     const syncEdges = useCallback(() => {
         const rail = railRef.current
@@ -79,37 +82,65 @@ export function TestimonialsSection({ reviews, note = DEFAULT_NOTE }: Testimonia
         rail.scrollBy({ left: direction * step, behavior: "smooth" })
     }, [])
 
+    // Watch the section, never the rail. The section carries `content-visibility:
+    // auto`, so while it is off-screen its contents are skipped and the rail has
+    // no box at all: an observer aimed at the rail reports a single empty,
+    // non-intersecting record on load and then goes quiet for good, which is what
+    // used to wedge autoplay off permanently. The section itself always has a
+    // box, so its records keep arriving. A zero threshold keeps this working even
+    // while `contain-intrinsic-size` still has it collapsed to a sliver.
+    useEffect(() => {
+        const section = sectionRef.current
+        if (!section) return
+
+        const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting))
+        observer.observe(section)
+        return () => observer.disconnect()
+    }, [])
+
+    useEffect(() => {
+        const sync = () => setTabVisible(!document.hidden)
+
+        sync()
+        document.addEventListener("visibilitychange", sync)
+        return () => document.removeEventListener("visibilitychange", sync)
+    }, [])
+
     // Autoplay: advance a card at a time, wrapping back to the first once the
     // rail bottoms out. Idle while hovered, focused, off-screen or backgrounded.
+    // The countdown is a chain of timeouts rather than an interval so that
+    // leaving a pause restarts it from zero instead of landing mid-cycle.
+    const paused = interacting || openReview !== null || !inView || !tabVisible
+    const startedRef = useRef(false)
+    // Bumped by the arrow buttons so a manual advance gets a full cycle to
+    // settle instead of being overtaken by an already-running countdown.
+    const [nudge, setNudge] = useState(0)
+
     useEffect(() => {
         const rail = railRef.current
-        if (!rail || reviews.length < 2) return
+        if (!rail || paused || reviews.length < 2) return
         if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
 
-        let inView = true
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                inView = entry.isIntersecting
-            },
-            { threshold: 0.25 }
-        )
-        observer.observe(rail)
-
-        const timer = window.setInterval(() => {
-            if (pausedRef.current || !inView || document.hidden) return
-
+        let timer = 0
+        const tick = () => {
             const max = rail.scrollWidth - rail.clientWidth
-            if (max <= 0) return
-
-            if (rail.scrollLeft >= max - 1) rail.scrollTo({ left: 0, behavior: "smooth" })
-            else scrollByCard(1)
-        }, AUTOPLAY_MS)
-
-        return () => {
-            window.clearInterval(timer)
-            observer.disconnect()
+            if (max > 0) {
+                startedRef.current = true
+                if (rail.scrollLeft >= max - 1) rail.scrollTo({ left: 0, behavior: "smooth" })
+                else scrollByCard(1)
+            }
+            timer = window.setTimeout(tick, AUTOPLAY_MS)
         }
-    }, [reviews.length, scrollByCard])
+
+        timer = window.setTimeout(tick, startedRef.current ? AUTOPLAY_MS : FIRST_ADVANCE_MS)
+        return () => window.clearTimeout(timer)
+    }, [paused, nudge, reviews.length, scrollByCard])
+
+    const stepByCard = (direction: 1 | -1) => {
+        startedRef.current = true
+        setNudge((n) => n + 1)
+        scrollByCard(direction)
+    }
 
     if (reviews.length === 0) return null
 
@@ -117,16 +148,7 @@ export function TestimonialsSection({ reviews, note = DEFAULT_NOTE }: Testimonia
     const scrollable = !(atStart && atEnd)
 
     return (
-        <section
-            id="testimonials"
-            className="bg-background py-24 cv-auto"
-            onMouseEnter={() => setInteracting(true)}
-            onMouseLeave={() => setInteracting(false)}
-            onFocus={() => setInteracting(true)}
-            onBlur={() => setInteracting(false)}
-            onTouchStart={() => setInteracting(true)}
-            onTouchEnd={() => setInteracting(false)}
-        >
+        <section ref={sectionRef} id="testimonials" className="bg-background py-24 cv-auto">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="mb-12 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
                     <div className="space-y-3">
@@ -158,7 +180,7 @@ export function TestimonialsSection({ reviews, note = DEFAULT_NOTE }: Testimonia
                             <div className="hidden items-center gap-2 sm:flex">
                                 <button
                                     type="button"
-                                    onClick={() => scrollByCard(-1)}
+                                    onClick={() => stepByCard(-1)}
                                     disabled={atStart}
                                     aria-label="Previous reviews"
                                     aria-controls="testimonials-rail"
@@ -168,7 +190,7 @@ export function TestimonialsSection({ reviews, note = DEFAULT_NOTE }: Testimonia
                                 </button>
                                 <button
                                     type="button"
-                                    onClick={() => scrollByCard(1)}
+                                    onClick={() => stepByCard(1)}
                                     disabled={atEnd}
                                     aria-label="Next reviews"
                                     aria-controls="testimonials-rail"
@@ -190,6 +212,25 @@ export function TestimonialsSection({ reviews, note = DEFAULT_NOTE }: Testimonia
                 aria-label="Traveler reviews"
                 tabIndex={0}
                 className="overflow-x-auto pb-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                // Only a real cursor pauses: touch fires emulated pointerenter
+                // after a tap and never a matching leave, which used to wedge
+                // autoplay off for the rest of the visit on mobile.
+                onPointerEnter={(event) => {
+                    if (event.pointerType === "mouse") setInteracting(true)
+                }}
+                onPointerLeave={(event) => {
+                    if (event.pointerType === "mouse") setInteracting(false)
+                }}
+                // Likewise for focus: closing the read-more dialog hands focus
+                // back to a card button, so pause only for keyboard users, who
+                // are the ones the moving rail would actually fight with.
+                onFocus={(event) => {
+                    if (event.target.matches(":focus-visible")) setInteracting(true)
+                }}
+                onBlur={() => setInteracting(false)}
+                onTouchStart={() => setInteracting(true)}
+                onTouchEnd={() => setInteracting(false)}
+                onTouchCancel={() => setInteracting(false)}
             >
                 <ul className="mx-auto flex w-max max-w-none list-none gap-5 px-4 sm:px-6 lg:px-[max(2rem,calc((100vw-80rem)/2+2rem))]">
                     {reviews.map((review) => (
