@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { checkRateLimit } from "@/lib/limiter";
+import { sanitizeTranslations } from "@/lib/i18n/content"
 
 export async function GET(request: NextRequest) {
     try {
@@ -56,8 +57,9 @@ export async function POST(request: NextRequest) {
         }
 
         const body = await request.json()
+        const translations = sanitizeTranslations("blog", body.translations)
         const blog = await prisma.blogPost.create({
-            data: body,
+            data: { ...body, translations: translations ?? undefined },
         })
 
         return NextResponse.json(blog)

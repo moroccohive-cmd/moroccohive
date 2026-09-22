@@ -1,5 +1,6 @@
 "use client"
 
+import { LocaleBadge } from "@/components/dashboard/locale-badge"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { X, Calendar, MapPin, Users, Mail, Phone, Search } from "lucide-react"
@@ -25,6 +26,7 @@ interface TripRequest {
     status: string
     createdAt: string
     preferredPaymentMethod?: string
+    locale?: string | null
     user?: {
         name: string
         email: string
@@ -218,6 +220,7 @@ export default function TripRequestsPage() {
                                             <h3 className={`text-foreground ${request.status === "new" ? "font-semibold" : "font-medium"}`}>
                                                 {request.fullName}
                                             </h3>
+                                            <LocaleBadge locale={request.locale} />
                                             {request.status === "new" ? (
                                                 <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full bg-destructive text-white">
                                                     New
@@ -282,7 +285,7 @@ export default function TripRequestsPage() {
                                     {selectedRequest.fullName.charAt(0).toUpperCase()}
                                 </div>
                                 <div>
-                                    <h2 className="text-2xl font-bold text-foreground">{selectedRequest.fullName}</h2>
+                                    <h2 className="flex items-center gap-3 text-2xl font-bold text-foreground">{selectedRequest.fullName} <LocaleBadge locale={selectedRequest.locale} /></h2>
                                     <p className="text-sm text-muted-foreground">
                                         Submitted {new Date(selectedRequest.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} at {new Date(selectedRequest.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                                     </p>

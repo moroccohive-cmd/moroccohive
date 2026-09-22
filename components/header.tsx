@@ -2,6 +2,9 @@ import dynamic from "next/dynamic"
 import Link from "next/link"
 import Image from "next/image"
 import { MapPin, Phone, Mail } from "lucide-react"
+import { DEFAULT_LOCALE, localizePath, type Locale } from "@/lib/i18n/config"
+import { getMessages } from "@/lib/i18n/messages"
+import { LanguageSwitcher } from "@/components/i18n/language-switcher"
 
 const HeaderMobileNav = dynamic(
   () => import("@/components/header-mobile-nav").then((m) => m.HeaderMobileNav),
@@ -14,18 +17,20 @@ const HeaderUserMenu = dynamic(() =>
 )
 
 const NAV_ITEMS = [
-  { name: "Home", href: "/" },
-  { name: "Trip Ideas", href: "/circuits" },
-  { name: "Destinations", href: "/destinations" },
-  { name: "Plan Your Trip", href: "/plan-trip" },
-  { name: "Blog", href: "/blog" },
-  { name: "Guest Reviews", href: "/reviews" },
-  { name: "FAQ", href: "/faq" },
-  { name: "About", href: "/about" },
-  { name: "Contact", href: "/contact" },
-]
+  { key: "home", href: "/" },
+  { key: "tripIdeas", href: "/circuits" },
+  { key: "destinations", href: "/destinations" },
+  { key: "planTrip", href: "/plan-trip" },
+  { key: "blog", href: "/blog" },
+  { key: "reviews", href: "/reviews" },
+  { key: "faq", href: "/faq" },
+  { key: "about", href: "/about" },
+  { key: "contact", href: "/contact" },
+] as const
 
-export function Header() {
+export function Header({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
+  const t = getMessages(locale)
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95">
       {/* Top Bar */}
@@ -43,7 +48,7 @@ export function Header() {
               </a>
               <div className="flex items-center">
                 <MapPin className="w-3 h-3 mr-2" />
-                Morocco
+                {t.header.location}
               </div>
             </div>
           </div>
@@ -60,10 +65,10 @@ export function Header() {
 
           {/* Logo */}
           <div className="flex-1 md:flex-initial flex justify-center md:justify-start">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href={localizePath(locale, "/")} className="flex items-center space-x-2">
               <Image
                 src="/logo_1.webp"
-                alt="MoroccoHive Logo"
+                alt={t.header.logoAlt}
                 width={180}
                 height={60}
                 className="h-10 md:h-12 w-auto object-contain"
@@ -76,17 +81,20 @@ export function Header() {
           <nav className="hidden md:flex items-center justify-center flex-1 space-x-8">
             {NAV_ITEMS.map((item) => (
               <Link
-                key={item.name}
-                href={item.href}
-                className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+                key={item.key}
+                href={localizePath(locale, item.href)}
+                // Two-word translated labels ("Over ons") must not break
+                // mid-label; English keeps its original classes untouched.
+                className={`text-sm font-medium text-foreground hover:text-primary transition-colors${locale === DEFAULT_LOCALE ? "" : " whitespace-nowrap"}`}
               >
-                {item.name}
+                {t.common.nav[item.key]}
               </Link>
             ))}
           </nav>
 
-          {/* Right side: Auth/User Menu */}
-          <div className="flex-1 md:flex-initial flex items-center justify-end space-x-4">
+          {/* Right side: Language + Auth/User Menu */}
+          <div className="flex-1 md:flex-initial flex items-center justify-end space-x-2 md:space-x-4">
+            <LanguageSwitcher />
             <HeaderUserMenu />
           </div>
         </div>

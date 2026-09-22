@@ -10,6 +10,11 @@ import { ArrowLeft, Save, Plus, X, Image as ImageIcon } from "lucide-react"
 import Link from "next/link"
 import { Switch } from "@/components/ui/switch"
 import { RichTextEditor } from "@/components/rich-text-editor"
+import {
+    BLOG_TRANSLATION_FIELDS,
+    LanguageTabs,
+    type TranslationsValue,
+} from "@/components/dashboard/translations-editor"
 import { ImageUpload } from "@/components/image-upload"
 
 export default function EditBlogPostPage() {
@@ -26,6 +31,7 @@ export default function EditBlogPostPage() {
         author: "",
         tags: [] as string[],
         published: false,
+        translations: {} as TranslationsValue,
     })
 
     const [currentTag, setCurrentTag] = useState("")
@@ -41,7 +47,7 @@ export default function EditBlogPostPage() {
             })
             if (response.ok) {
                 const data = await response.json()
-                setFormData(data)
+                setFormData({ ...data, translations: data.translations ?? {} })
             }
         } catch (error) {
             console.error("Failed to fetch:", error)
@@ -115,6 +121,12 @@ export default function EditBlogPostPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+                <LanguageTabs
+                    fields={BLOG_TRANSLATION_FIELDS}
+                    value={formData.translations}
+                    onChange={(translations) => setFormData({ ...formData, translations })}
+                    source={formData}
+                >
                 <div className="bg-card border border-border rounded-lg p-6 space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="title">Post Title *</Label>
@@ -220,6 +232,7 @@ export default function EditBlogPostPage() {
                         </div>
                     </div>
                 </div>
+                </LanguageTabs>
 
                 <div className="flex gap-4">
                     <Button type="submit" disabled={saving} className="bg-primary hover:bg-primary/90 text-primary-foreground min-w-[140px]">

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
 import { checkRateLimit } from "@/lib/limiter";
+import { isLocale } from "@/lib/i18n/config"
 import { auth } from "@/lib/auth";
 
 // Validation helpers
@@ -142,6 +143,7 @@ export async function POST(request: NextRequest) {
                 phone: body.phone.trim(),
                 userId: session?.user?.id,
                 preferredPaymentMethod: body.preferredPaymentMethod,
+                locale: isLocale(body.locale) ? body.locale : null,
             },
         })
 

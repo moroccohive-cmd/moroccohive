@@ -8,6 +8,12 @@ import {
   truncate,
 } from "@/lib/seo"
 import type { Destination } from "@/lib/destinations"
+import { DEFAULT_LOCALE, LOCALES, localizePath, type Locale } from "@/lib/i18n/config"
+import { getMessages } from "@/lib/i18n/messages"
+import { fmt } from "@/lib/i18n/format"
+
+/** Absolute URL of a locale-less path in the given language. */
+const localeUrl = (path: string, locale: Locale) => absoluteUrl(localizePath(locale, path))
 
 /**
  * JSON-LD emitters.
@@ -162,7 +168,7 @@ export function OrganizationSchema() {
         name: SITE.name,
         description: SITE.description,
         publisher: orgRef,
-        inLanguage: "en",
+        inLanguage: [...LOCALES],
       },
     ],
   }
@@ -206,12 +212,22 @@ export interface Crumb {
   path?: string
 }
 
-/** Breadcrumb trail. Drives the path display under a Google result. */
-export function BreadcrumbSchema({ items }: { items: Crumb[] }) {
+/**
+ * Breadcrumb trail. Drives the path display under a Google result. Paths are
+ * locale-less; they are prefixed for `locale` here.
+ */
+export function BreadcrumbSchema({
+  items,
+  locale = DEFAULT_LOCALE,
+}: {
+  items: Crumb[]
+  locale?: Locale
+}) {
+  const home = getMessages(locale).breadcrumb.home
   const schema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    itemListElement: [{ name: "Home", path: "/" }, ...items].map(
+    itemListElement: [{ name: home, path: "/" }, ...items].map(
       (crumb, index, all) => ({
         "@type": "ListItem",
         position: index + 1,
@@ -219,7 +235,7 @@ export function BreadcrumbSchema({ items }: { items: Crumb[] }) {
         // The last crumb is the current page and takes no `item` URL.
         ...(index === all.length - 1 || !crumb.path
           ? {}
-          : { item: absoluteUrl(crumb.path) }),
+          : { item: localeUrl(crumb.path, locale) }),
       }),
     ),
   }
@@ -239,6 +255,7 @@ export interface TourSchemaProps {
   itinerary?: string[]
   highlights?: string[]
   aggregateRating?: { ratingValue: number; reviewCount: number } | null
+  locale?: Locale
   reviews?: {
     authorName: string
     rating: number
@@ -263,8 +280,9 @@ export function TourSchema({
   highlights = [],
   aggregateRating,
   reviews = [],
+  locale = DEFAULT_LOCALE,
 }: TourSchemaProps) {
-  const url = absoluteUrl(`/circuits/${slug}`)
+  const url = localeUrl(`/circuits/${slug}`, locale)
 
   const schema = {
     "@context": "https://schema.org",
@@ -273,6 +291,7 @@ export function TourSchema({
     name,
     description: truncate(description, 500),
     url,
+    inLanguage: locale,
     image: images.map((img) => absoluteUrl(img)),
     touristType: category,
     // P7D for a 7-day trip.
@@ -363,6 +382,7 @@ export interface ArticleSchemaProps {
   modifiedAt: string
   tags?: string[]
   wordCount?: number
+  locale?: Locale
 }
 
 /** BlogPosting for an article page, attributed back to the organisation. */
@@ -376,8 +396,9 @@ export function ArticleSchema({
   modifiedAt,
   tags = [],
   wordCount,
+  locale = DEFAULT_LOCALE,
 }: ArticleSchemaProps) {
-  const url = absoluteUrl(`/blog/${slug}`)
+  const url = localeUrl(`/blog/${slug}`, locale)
 
   const schema = {
     "@context": "https://schema.org",
@@ -395,7 +416,7 @@ export function ArticleSchema({
       : { "@type": "Organization", name: SITE.name, url: SITE_URL },
     publisher: orgRef,
     isPartOf: { "@id": WEBSITE_ID },
-    inLanguage: "en",
+    inLanguage: locale,
     ...(tags.length ? { keywords: tags.join(", ") } : {}),
     ...(wordCount ? { wordCount } : {}),
     speakable: {
@@ -424,19 +445,23 @@ export function ItemListSchema({
   description,
   path,
   items,
+  locale = DEFAULT_LOCALE,
 }: {
   name: string
   description: string
+  /** Locale-less path of the listing page; item paths likewise. */
   path: string
   items: ListItemInput[]
+  locale?: Locale
 }) {
   const schema = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "@id": `${absoluteUrl(path)}#collection`,
+    "@id": `${localeUrl(path, locale)}#collection`,
     name,
     description,
-    url: absoluteUrl(path),
+    url: localeUrl(path, locale),
+    inLanguage: locale,
     isPartOf: { "@id": WEBSITE_ID },
     about: orgRef,
     mainEntity: {
@@ -445,7 +470,7 @@ export function ItemListSchema({
       itemListElement: items.map((item, i) => ({
         "@type": "ListItem",
         position: i + 1,
-        url: absoluteUrl(item.path),
+        url: localeUrl(item.path, locale),
         name: item.name,
         ...(item.description
           ? { description: truncate(item.description, 200) }
@@ -466,11 +491,13 @@ export function ItemListSchema({
 export function DestinationSchema({
   destination,
   circuitCount,
+  locale = DEFAULT_LOCALE,
 }: {
   destination: Destination
   circuitCount: number
+  locale?: Locale
 }) {
-  const url = absoluteUrl(`/destinations/${destination.slug}`)
+  const url = localeUrl(`/destinations/${destination.slug}`, locale)
 
   const schema = {
     "@context": "https://schema.org",
@@ -479,6 +506,7 @@ export function DestinationSchema({
     name: destination.name,
     description: destination.summary,
     url,
+    inLanguage: locale,
     image: absoluteUrl(destination.image),
     sameAs: destination.sameAs,
     geo: {
@@ -508,7 +536,10 @@ export function DestinationSchema({
           availableAtOrFrom: orgRef,
           potentialAction: {
             "@type": "ViewAction",
-            name: `Browse ${circuitCount} tours featuring ${destination.name}`,
+            name: fmt(getMessages(locale).destination.browseAction, {
+              count: circuitCount,
+              name: destination.name,
+            }),
             target: url,
           },
         }
@@ -577,22 +608,24 @@ export function WebPageSchema({
   description,
   path,
   speakableSelectors = [".page-summary"],
+  locale = DEFAULT_LOCALE,
 }: {
   name: string
   description: string
   path: string
   speakableSelectors?: string[]
+  locale?: Locale
 }) {
   const schema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "@id": `${absoluteUrl(path)}#webpage`,
+    "@id": `${localeUrl(path, locale)}#webpage`,
     name,
     description,
-    url: absoluteUrl(path),
+    url: localeUrl(path, locale),
     isPartOf: { "@id": WEBSITE_ID },
     about: orgRef,
-    inLanguage: "en",
+    inLanguage: locale,
     speakable: {
       "@type": "SpeakableSpecification",
       cssSelector: speakableSelectors,

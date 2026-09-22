@@ -11,6 +11,11 @@ import { MobileBottomCTA } from "@/components/mobile-bottom-cta"
 import { Clock, Check } from "lucide-react"
 import Link from "next/link"
 import { useAuth } from "@/hooks/use-auth"
+import { useI18n } from "@/components/i18n/i18n-provider"
+import { fmt } from "@/lib/i18n/format"
+import type { Messages } from "@/lib/i18n/messages"
+
+export type BookingMessages = Messages["booking"]
 
 interface CircuitInfo {
     id: string
@@ -22,16 +27,18 @@ interface CircuitInfo {
     duration: number
 }
 
+// Values are stored in English with the request; labels come from messages.
 const PAYMENT_METHODS = [
-    { value: "Deposit Payment", label: "Deposit Payment" },
-    { value: "Bank Transfer / SWIFT", label: "Bank Transfer / SWIFT" },
-    { value: "Credit Cards", label: "Credit Cards (Visa, Mastercard, Amex)" },
-    { value: "PayPal", label: "PayPal" },
-    { value: "Payoneer", label: "Payoneer" },
+    { value: "Deposit Payment" },
+    { value: "Bank Transfer / SWIFT" },
+    { value: "Credit Cards" },
+    { value: "PayPal" },
+    { value: "Payoneer" },
 ]
 
-export function BookingFormSidebar({ circuit }: { circuit: CircuitInfo }) {
+export function BookingFormSidebar({ circuit, messages: t }: { circuit: CircuitInfo; messages: BookingMessages }) {
     const router = useRouter()
+    const { locale, lp } = useI18n()
     const { user } = useAuth()
     const userVerified = user?.emailVerified
 
@@ -86,21 +93,21 @@ export function BookingFormSidebar({ circuit }: { circuit: CircuitInfo }) {
         let valid = true
 
         if (!startDateStr) {
-            startErr = "Start date is required"; valid = false
+            startErr = t.errors.startRequired; valid = false
         } else if (new Date(startDateStr) < today) {
-            startErr = "Start date cannot be in the past"; valid = false
+            startErr = t.errors.startPast; valid = false
         }
 
         if (!endDateStr) {
-            endErr = "End date is required"; valid = false
+            endErr = t.errors.endRequired; valid = false
         } else {
             const end = new Date(endDateStr)
             if (end < today) {
-                endErr = "End date cannot be in the past"; valid = false
+                endErr = t.errors.endPast; valid = false
             } else if (startDateStr === endDateStr) {
-                endErr = "End date must be different from start date"; valid = false
+                endErr = t.errors.endSame; valid = false
             } else if (startDateStr && end <= new Date(startDateStr)) {
-                endErr = "End date must be after start date"; valid = false
+                endErr = t.errors.endBefore; valid = false
             }
         }
 
@@ -133,15 +140,15 @@ export function BookingFormSidebar({ circuit }: { circuit: CircuitInfo }) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
             const phoneRegex = /^[0-9]+$/
 
-            if (!booking.fullName.trim()) return setBookingError({ message: "Please enter your full name.", isServerError: false })
-            if (!nameRegex.test(booking.fullName.trim())) return setBookingError({ message: "Name can only contain letters and spaces.", isServerError: false })
-            if (booking.fullName.trim().length > 50) return setBookingError({ message: "Name is too long (max 50 characters).", isServerError: false })
-            if (!booking.email.trim()) return setBookingError({ message: "Please enter your email address.", isServerError: false })
-            if (!emailRegex.test(booking.email.trim())) return setBookingError({ message: "Please enter a valid email address.", isServerError: false })
-            if (booking.email.trim().length > 100) return setBookingError({ message: "Email is too long (max 100 characters).", isServerError: false })
-            if (!booking.phone.trim()) return setBookingError({ message: "Please enter your phone number.", isServerError: false })
-            if (!phoneRegex.test(booking.phone.trim())) return setBookingError({ message: "Phone can only contain numbers.", isServerError: false })
-            if (booking.phone.trim().length > 20) return setBookingError({ message: "Phone number is too long (max 20 digits).", isServerError: false })
+            if (!booking.fullName.trim()) return setBookingError({ message: t.errors.nameRequired, isServerError: false })
+            if (!nameRegex.test(booking.fullName.trim())) return setBookingError({ message: t.errors.nameLetters, isServerError: false })
+            if (booking.fullName.trim().length > 50) return setBookingError({ message: t.errors.nameLong, isServerError: false })
+            if (!booking.email.trim()) return setBookingError({ message: t.errors.emailRequired, isServerError: false })
+            if (!emailRegex.test(booking.email.trim())) return setBookingError({ message: t.errors.emailInvalid, isServerError: false })
+            if (booking.email.trim().length > 100) return setBookingError({ message: t.errors.emailLong, isServerError: false })
+            if (!booking.phone.trim()) return setBookingError({ message: t.errors.phoneRequired, isServerError: false })
+            if (!phoneRegex.test(booking.phone.trim())) return setBookingError({ message: t.errors.phoneDigits, isServerError: false })
+            if (booking.phone.trim().length > 20) return setBookingError({ message: t.errors.phoneLong, isServerError: false })
         }
 
         setSubmitting(true)
@@ -162,23 +169,24 @@ export function BookingFormSidebar({ circuit }: { circuit: CircuitInfo }) {
                     budget: "N/A",
                     adventureActivities: [],
                     desiredExperiences: `Booking for circuit: ${circuit.name} (${circuit.slug})`,
+                    locale,
                 }),
             })
 
             if (response.ok) {
-                router.push("/circuits/thank-you")
+                router.push(lp("/circuits/thank-you"))
                 return
             }
 
             const data = await response.json()
             const errorMsg = data.error?.toLowerCase() || ""
             if (errorMsg.includes("email") && (errorMsg.includes("send") || errorMsg.includes("failed"))) {
-                setBookingError({ message: "Your booking was saved but we couldn't send the confirmation email. Our team will contact you soon.", isServerError: true })
+                setBookingError({ message: t.errors.emailFailed, isServerError: true })
             } else {
-                setBookingError({ message: data.error || "Failed to send booking request. Please try again.", isServerError: response.status >= 500 })
+                setBookingError({ message: data.error || t.errors.failed, isServerError: response.status >= 500 })
             }
         } catch {
-            setBookingError({ message: "Unable to connect to the server. Please check your connection and try again.", isServerError: true })
+            setBookingError({ message: t.errors.network, isServerError: true })
         } finally {
             setSubmitting(false)
         }
@@ -195,26 +203,26 @@ export function BookingFormSidebar({ circuit }: { circuit: CircuitInfo }) {
 
                         <div className="relative z-10 mb-8">
                             <div className="text-center">
-                                <span className="text-muted-foreground text-sm font-medium uppercase tracking-wider">From</span>
+                                <span className="text-muted-foreground text-sm font-medium uppercase tracking-wider">{t.from}</span>
                                 <div className="flex items-baseline justify-center gap-1 mt-2">
                                     <PriceBadge price={circuit.price} originalPrice={circuit.originalPrice} from={circuit.isFrom} />
                                 </div>
                             </div>
                             <div className="mt-8 flex items-center justify-between p-4 bg-background rounded-lg">
-                                <span className="text-sm text-muted-foreground font-medium">Duration</span>
+                                <span className="text-sm text-muted-foreground font-medium">{t.duration}</span>
                                 <div className="flex items-center text-foreground font-semibold">
                                     <Clock className="w-4 h-4 mr-2 text-accent" />
-                                    {circuit.duration} Days
+                                    {fmt(t.days, { days: circuit.duration })}
                                 </div>
                             </div>
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-6">
-                            <h3 className="font-semibold text-gray-900 border-b border-gray-100 pb-2 mb-4">From ${circuit.price} / person</h3>
+                            <h3 className="font-semibold text-gray-900 border-b border-gray-100 pb-2 mb-4">{fmt(t.fromPerPerson, { price: circuit.price })}</h3>
 
                             {/* Dates */}
                             <div className="space-y-2">
-                                <Label htmlFor="travelDates" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Earliest Start Date</Label>
+                                <Label htmlFor="travelDates" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">{t.startDate}</Label>
                                 <Input
                                     id="travelDates"
                                     type="date"
@@ -230,7 +238,7 @@ export function BookingFormSidebar({ circuit }: { circuit: CircuitInfo }) {
                                 {startDateError && <p className="text-sm text-destructive">{startDateError}</p>}
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="travelDates2" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Latest End Date</Label>
+                                <Label htmlFor="travelDates2" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">{t.endDate}</Label>
                                 <Input
                                     id="travelDates2"
                                     type="date"
@@ -248,14 +256,14 @@ export function BookingFormSidebar({ circuit }: { circuit: CircuitInfo }) {
 
                             {/* Travelers */}
                             <div className="space-y-2">
-                                <label className="block text-sm font-semibold mb-3">Who will be traveling?</label>
+                                <label className="block text-sm font-semibold mb-3">{t.whoTraveling}</label>
                                 <div className="space-y-4 bg-muted/30 p-6 rounded-lg border border-border">
                                     {(["adults", "children", "infants"] as const).map((type) => (
                                         <div key={type} className="flex items-center justify-between">
                                             <div>
-                                                <div className="font-semibold text-foreground capitalize">{type}</div>
+                                                <div className="font-semibold text-foreground capitalize">{t[type]}</div>
                                                 <div className="text-sm text-muted-foreground">
-                                                    {type === "adults" ? "Above 12" : type === "children" ? "Ages 2-12" : "Under 2"}
+                                                    {type === "adults" ? t.adultsHint : type === "children" ? t.childrenHint : t.infantsHint}
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-4">
@@ -264,7 +272,7 @@ export function BookingFormSidebar({ circuit }: { circuit: CircuitInfo }) {
                                                     onClick={() => handleTravelerChange(type, -1)}
                                                     disabled={type === "adults" ? travelers.adults <= 1 : travelers[type] <= 0}
                                                     className="w-10 h-10 rounded-full border-2 border-border hover:border-primary disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-all hover:bg-primary/10"
-                                                    aria-label={`Decrease number of ${type}`}
+                                                    aria-label={fmt(t.decrease, { type: t[type].toLowerCase() })}
                                                 >
                                                     <span className="text-xl font-semibold" aria-hidden="true">−</span>
                                                 </button>
@@ -273,7 +281,7 @@ export function BookingFormSidebar({ circuit }: { circuit: CircuitInfo }) {
                                                     type="button"
                                                     onClick={() => handleTravelerChange(type, 1)}
                                                     className="w-10 h-10 rounded-full border-2 border-border hover:border-primary flex items-center justify-center transition-all hover:bg-primary/10"
-                                                    aria-label={`Increase number of ${type}`}
+                                                    aria-label={fmt(t.increase, { type: t[type].toLowerCase() })}
                                                 >
                                                     <span className="text-xl font-semibold" aria-hidden="true">+</span>
                                                 </button>
@@ -285,40 +293,40 @@ export function BookingFormSidebar({ circuit }: { circuit: CircuitInfo }) {
 
                             {/* Accommodation */}
                             <div className="space-y-2">
-                                <Label htmlFor="accommodation" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Accommodation</Label>
+                                <Label htmlFor="accommodation" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">{t.accommodation}</Label>
                                 <select
                                     id="accommodation"
                                     value={booking.accommodation}
                                     onChange={(e) => setBooking({ ...booking, accommodation: e.target.value })}
                                     className="w-full bg-gray-50 border border-gray-100 rounded-md focus:ring-orange-200 h-11 px-3 text-sm"
                                 >
-                                    <option value="Standard">Standard</option>
-                                    <option value="Comfort">Comfort</option>
-                                    <option value="Luxury">Luxury</option>
+                                    <option value="Standard">{t.accommodationLevels.Standard}</option>
+                                    <option value="Comfort">{t.accommodationLevels.Comfort}</option>
+                                    <option value="Luxury">{t.accommodationLevels.Luxury}</option>
                                 </select>
                             </div>
 
                             {/* Payment Method */}
                             {paymentMethodsEnabled && enabledPaymentMethods.length > 0 && (
                                 <div className="space-y-2">
-                                    <Label htmlFor="paymentMethod" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Preferred Payment</Label>
+                                    <Label htmlFor="paymentMethod" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">{t.preferredPayment}</Label>
                                     <select
                                         id="paymentMethod"
                                         value={booking.preferredPaymentMethod}
                                         onChange={(e) => setBooking({ ...booking, preferredPaymentMethod: e.target.value })}
                                         className="w-full bg-gray-50 border border-gray-100 rounded-md focus:ring-orange-200 h-11 px-3 text-sm"
                                     >
-                                        <option value="">Select payment method (optional)</option>
+                                        <option value="">{t.selectPayment}</option>
                                         {PAYMENT_METHODS.filter(m => enabledPaymentMethods.includes(m.value)).map((method) => (
-                                            <option key={method.value} value={method.value}>{method.label}</option>
+                                            <option key={method.value} value={method.value}>{t.paymentMethods[method.value] ?? method.value}</option>
                                         ))}
                                     </select>
                                     {booking.preferredPaymentMethod === "Deposit Payment" && (
                                         <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 text-sm space-y-1">
-                                            <p className="font-semibold text-foreground">Deposit Payment Information:</p>
+                                            <p className="font-semibold text-foreground">{t.depositTitle}</p>
                                             <ul className="list-disc list-inside text-muted-foreground space-y-1">
-                                                <li>To confirm your booking, a 20% deposit is required.</li>
-                                                <li>The remaining balance will be paid in cash upon arrival in Morocco.</li>
+                                                <li>{t.depositLine1}</li>
+                                                <li>{t.depositLine2}</li>
                                             </ul>
                                         </div>
                                     )}
@@ -342,7 +350,7 @@ export function BookingFormSidebar({ circuit }: { circuit: CircuitInfo }) {
                             ) : (
                                 <div className="space-y-3">
                                     <div className="space-y-1">
-                                        <Label className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Full Name *</Label>
+                                        <Label className="text-xs uppercase text-gray-500 font-semibold tracking-wider">{t.fullName}</Label>
                                         <Input
                                             value={booking.fullName}
                                             onChange={(e) => setBooking({ ...booking, fullName: e.target.value })}
@@ -352,7 +360,7 @@ export function BookingFormSidebar({ circuit }: { circuit: CircuitInfo }) {
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <Label className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Email *</Label>
+                                        <Label className="text-xs uppercase text-gray-500 font-semibold tracking-wider">{t.email}</Label>
                                         <Input
                                             type="email"
                                             value={booking.email}
@@ -363,7 +371,7 @@ export function BookingFormSidebar({ circuit }: { circuit: CircuitInfo }) {
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <Label className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Phone *</Label>
+                                        <Label className="text-xs uppercase text-gray-500 font-semibold tracking-wider">{t.phone}</Label>
                                         <div className="flex gap-2">
                                             <CountryCodeSelect
                                                 value={booking.countryCode}
@@ -387,8 +395,8 @@ export function BookingFormSidebar({ circuit }: { circuit: CircuitInfo }) {
                                 <div className={`px-4 py-3 rounded text-sm mb-4 ${bookingError.isServerError ? "bg-amber-500/10 text-amber-800 border border-amber-500/20" : "bg-destructive/10 text-destructive border border-destructive/20"}`}>
                                     <p>{bookingError.message}</p>
                                     {bookingError.isServerError && (
-                                        <Link href="/contact" className="inline-flex items-center gap-1 mt-2 text-sm font-medium underline underline-offset-2 hover:no-underline">
-                                            Contact Support
+                                        <Link href={lp("/contact")} className="inline-flex items-center gap-1 mt-2 text-sm font-medium underline underline-offset-2 hover:no-underline">
+                                            {t.contactSupport}
                                         </Link>
                                     )}
                                 </div>
@@ -399,10 +407,10 @@ export function BookingFormSidebar({ circuit }: { circuit: CircuitInfo }) {
                                 disabled={submitting}
                                 className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-md h-11 text-base font-medium shadow-lg shadow-gray-900/10 mt-4"
                             >
-                                {submitting ? "Sending Request..." : "Request This Trip"}
+                                {submitting ? t.submitting : t.submit}
                             </Button>
                             <p className="text-xs text-muted-foreground text-center mt-3 leading-relaxed">
-                                Request your bespoke Morocco itinerary and receive a professionally crafted, no-obligation proposal within 48 hours.
+                                {t.disclaimer}
                             </p>
                         </form>
                     </div>
@@ -410,7 +418,8 @@ export function BookingFormSidebar({ circuit }: { circuit: CircuitInfo }) {
             </div>
 
             <MobileBottomCTA
-                buttonText="Request This Tour"
+                buttonText={t.mobileCta}
+                fromLabel={t.from}
                 onButtonClick={scrollToForm}
                 price={circuit.price}
                 originalPrice={circuit.originalPrice}

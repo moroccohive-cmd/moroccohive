@@ -34,6 +34,9 @@ model Circuit {
   itineraryDetail String // Rich text/markdown for detailed itinerary
   additionalInfo  String? // Additional rich text content
   mapUrl          String? // URL to embedded map or map data
+  /// Per-language overrides: { fr: { name, description, highlights, ... }, es: {...} }.
+  /// English lives in the regular fields; a missing language falls back to it.
+  translations    Json?
   featured        Boolean    @default(false)
   active          Boolean    @default(true)
   createdAt       DateTime   @default(now())
@@ -43,17 +46,19 @@ model Circuit {
 }
 
 model BlogPost {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  slug       String   @unique
-  title      String
-  content    String // Rich Text
-  excerpt    String?
-  coverImage String?
-  author     String?
-  tags       String[]
-  published  Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug         String   @unique
+  title        String
+  content      String // Rich Text
+  excerpt      String?
+  coverImage   String?
+  author       String?
+  tags         String[]
+  /// Per-language overrides: { fr: { title, excerpt, content }, es: {...} }
+  translations Json?
+  published    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model TripRequest {
@@ -83,6 +88,7 @@ model TripRequest {
   userId                 String?
   user                   User?    @relation(fields: [userId], references: [id])
   preferredPaymentMethod String?
+  locale                 String? // Site language the request was sent from (en, fr, es)
 }
 
 model SiteSettings {
@@ -108,6 +114,7 @@ model ContactMessage {
   phone     String?
   subject   String
   message   String
+  locale    String? // Site language the message was sent from (en, fr, es)
   status    String   @default("unread") // unread, read, replied
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -148,15 +155,34 @@ model Favorite {
 
 model Review {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  circuitId      String   @db.ObjectId
-  circuit        Circuit  @relation(fields: [circuitId], references: [id], onDelete: Cascade)
+  circuitId      String?  @db.ObjectId // null = site-wide review (not tied to a tour)
+  circuit        Circuit? @relation(fields: [circuitId], references: [id], onDelete: Cascade)
   authorName     String
   authorLocation String?
   authorImage    String?
   rating         Int      @default(5) // 1-5 stars
   text           String
+  country        String? // Short country code shown in the meta line, e.g. "US"
+  displayDate    String? // Human date shown publicly, e.g. "May 2025"
+  source         String? // Where the review came from, e.g. "Trustpilot"
+  showOnHome     Boolean  @default(false)
+  order          Int      @default(0)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+}
+
+model Faq {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  question     String
+  answer       String
+  category     String? // e.g. "Booking", "Travel", "Payments"
+  /// Per-language overrides: { fr: { question, answer, category }, es: {...} }
+  translations Json?
+  showOnHome   Boolean  @default(false)
+  active       Boolean  @default(true)
+  order        Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Session {

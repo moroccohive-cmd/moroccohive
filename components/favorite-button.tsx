@@ -5,6 +5,7 @@ import { Heart, Loader2 } from "lucide-react"
 import { authClient } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { useI18n } from "@/components/i18n/i18n-provider"
 
 interface FavoriteButtonProps {
     circuitId: string
@@ -18,6 +19,7 @@ export function FavoriteButton({ circuitId, className }: FavoriteButtonProps) {
     const [loading, setLoading] = useState(true)
     const [actionLoading, setActionLoading] = useState(false)
     const router = useRouter()
+    const { common } = useI18n()
 
     useEffect(() => {
         if (session) {
@@ -91,7 +93,7 @@ export function FavoriteButton({ circuitId, className }: FavoriteButtonProps) {
         <button
             onClick={toggleFavorite}
             disabled={actionLoading}
-            aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
+            aria-label={isFavorited ? common.favorite.remove : common.favorite.add}
             aria-pressed={isFavorited}
             className={cn(
                 "inline-flex items-center justify-center p-2 rounded-full transition-all duration-300 shadow-sm",
@@ -100,7 +102,7 @@ export function FavoriteButton({ circuitId, className }: FavoriteButtonProps) {
                     : "bg-background/80 backdrop-blur-sm text-muted-foreground hover:text-destructive hover:bg-white",
                 className
             )}
-            title={isFavorited ? "Remove from favorites" : "Add to favorites"}
+            title={isFavorited ? common.favorite.remove : common.favorite.add}
         >
             <Heart className={cn("w-5 h-5", isFavorited && "fill-current")} aria-hidden="true" />
         </button>

@@ -7,8 +7,13 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { CountryCodeSelect } from "@/components/ui/country-code-select"
+import { useI18n } from "@/components/i18n/i18n-provider"
+import type { Messages } from "@/lib/i18n/messages"
 
-export function ContactForm() {
+export type ContactFormMessages = Messages["contactForm"]
+
+export function ContactForm({ messages: t }: { messages: ContactFormMessages }) {
+  const { locale } = useI18n()
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -27,23 +32,23 @@ export function ContactForm() {
     const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     const phoneRe = /^[0-9]+$/
 
-    if (!form.name.trim()) e.name = "Name is required"
-    else if (!nameRe.test(form.name.trim())) e.name = "Name can only contain letters"
-    else if (form.name.trim().length > 50) e.name = "Name is too long (max 50 characters)"
+    if (!form.name.trim()) e.name = t.errors.nameRequired
+    else if (!nameRe.test(form.name.trim())) e.name = t.errors.nameLetters
+    else if (form.name.trim().length > 50) e.name = t.errors.nameLong
 
-    if (!form.email.trim()) e.email = "Email is required"
-    else if (!emailRe.test(form.email.trim())) e.email = "Please enter a valid email"
-    else if (form.email.trim().length > 100) e.email = "Email is too long"
+    if (!form.email.trim()) e.email = t.errors.emailRequired
+    else if (!emailRe.test(form.email.trim())) e.email = t.errors.emailInvalid
+    else if (form.email.trim().length > 100) e.email = t.errors.emailLong
 
-    if (!form.phone.trim()) e.phone = "Phone is required"
-    else if (!phoneRe.test(form.phone.trim())) e.phone = "Phone can only contain numbers"
-    else if (form.phone.trim().length > 20) e.phone = "Phone number is too long"
+    if (!form.phone.trim()) e.phone = t.errors.phoneRequired
+    else if (!phoneRe.test(form.phone.trim())) e.phone = t.errors.phoneDigits
+    else if (form.phone.trim().length > 20) e.phone = t.errors.phoneLong
 
-    if (!form.subject.trim()) e.subject = "Subject is required"
-    else if (form.subject.trim().length > 200) e.subject = "Subject is too long (max 200 characters)"
+    if (!form.subject.trim()) e.subject = t.errors.subjectRequired
+    else if (form.subject.trim().length > 200) e.subject = t.errors.subjectLong
 
-    if (!form.message.trim()) e.message = "Message is required"
-    else if (form.message.trim().length > 2000) e.message = "Message is too long (max 2000 characters)"
+    if (!form.message.trim()) e.message = t.errors.messageRequired
+    else if (form.message.trim().length > 2000) e.message = t.errors.messageLong
 
     setErrors(e)
     return Object.keys(e).length === 0
@@ -60,7 +65,7 @@ export function ContactForm() {
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, phone: `${form.countryCode} ${form.phone}` }),
+        body: JSON.stringify({ ...form, phone: `${form.countryCode} ${form.phone}`, locale }),
       })
 
       if (response.ok) {
@@ -68,10 +73,10 @@ export function ContactForm() {
         setForm({ name: "", email: "", phone: "", countryCode: "+212", subject: "", message: "" })
         setTimeout(() => setSent(false), 5000)
       } else if (response.status === 429) {
-        alert("Too many requests. Please try again later.")
+        alert(t.tooMany)
       }
     } catch {
-      alert("Failed to send message.")
+      alert(t.failed)
     } finally {
       setSending(false)
     }
@@ -82,10 +87,10 @@ export function ContactForm() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="p-8 md:p-10">
-            <span className="text-accent font-medium tracking-widest text-xs uppercase block mb-4">Get in Touch</span>
-            <h2 className="text-4xl font-bold text-foreground mb-6 tracking-tight">Let&apos;s plan your dream trip</h2>
+            <span className="text-accent font-medium tracking-widest text-xs uppercase block mb-4">{t.eyebrow}</span>
+            <h2 className="text-4xl font-bold text-foreground mb-6 tracking-tight">{t.title}</h2>
             <p className="text-muted-foreground mb-12 font-light leading-relaxed">
-              Have questions or ready to start planning? Send us a message and our travel experts will get right back to you.
+              {t.intro}
             </p>
 
             <div className="space-y-8">
@@ -94,7 +99,7 @@ export function ContactForm() {
                   <Mail className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground">Email Us</h3>
+                  <h3 className="font-semibold text-foreground">{t.emailUs}</h3>
                   <p className="text-muted-foreground font-light mt-1">info@moroccohive.com</p>
                 </div>
               </div>
@@ -103,7 +108,7 @@ export function ContactForm() {
                   <Phone className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground">Call Us</h3>
+                  <h3 className="font-semibold text-foreground">{t.callUs}</h3>
                   <p className="text-muted-foreground font-light mt-1">+212 634717423</p>
                 </div>
               </div>
@@ -112,8 +117,8 @@ export function ContactForm() {
                   <MapPin className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground">Visit Us</h3>
-                  <p className="text-muted-foreground font-light mt-1">Morocco Hive, Marrakech, Morocco</p>
+                  <h3 className="font-semibold text-foreground">{t.visitUs}</h3>
+                  <p className="text-muted-foreground font-light mt-1">{t.address}</p>
                 </div>
               </div>
             </div>
@@ -125,15 +130,15 @@ export function ContactForm() {
                 <div className="w-16 h-16 bg-secondary/10 text-secondary rounded-full flex items-center justify-center mx-auto mb-6">
                   <Check className="w-8 h-8" />
                 </div>
-                <h3 className="text-2xl font-bold text-foreground mb-4">Message Sent!</h3>
+                <h3 className="text-2xl font-bold text-foreground mb-4">{t.sentTitle}</h3>
                 <p className="text-muted-foreground">
-                  Thank you for contacting us. We will get back to you shortly.
+                  {t.sentBody}
                 </p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Name</Label>
+                  <Label htmlFor="name" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">{t.name}</Label>
                   <Input
                     id="name"
                     value={form.name}
@@ -144,7 +149,7 @@ export function ContactForm() {
                   {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Email</Label>
+                  <Label htmlFor="email" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">{t.email}</Label>
                   <Input
                     id="email"
                     type="email"
@@ -156,7 +161,7 @@ export function ContactForm() {
                   {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Phone Number</Label>
+                  <Label htmlFor="phone" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">{t.phone}</Label>
                   <div className="flex gap-2">
                     <CountryCodeSelect
                       value={form.countryCode}
@@ -174,25 +179,25 @@ export function ContactForm() {
                   {errors.phone && <p className="text-sm text-destructive">{errors.phone}</p>}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="subject" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Subject</Label>
+                  <Label htmlFor="subject" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">{t.subject}</Label>
                   <Input
                     id="subject"
                     value={form.subject}
                     onChange={(e) => setForm({ ...form, subject: e.target.value })}
                     maxLength={200}
-                    placeholder="Trip Inquiry..."
+                    placeholder={t.subjectPlaceholder}
                     className={`bg-background border-input h-11 rounded-md focus:ring-ring focus:border-ring ${errors.subject ? "border-destructive" : ""}`}
                   />
                   {errors.subject && <p className="text-sm text-destructive">{errors.subject}</p>}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="message" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">Message</Label>
+                  <Label htmlFor="message" className="text-xs uppercase text-gray-500 font-semibold tracking-wider">{t.message}</Label>
                   <Textarea
                     id="message"
                     value={form.message}
                     onChange={(e) => setForm({ ...form, message: e.target.value })}
                     maxLength={2000}
-                    placeholder="Tell us about your dream trip..."
+                    placeholder={t.messagePlaceholder}
                     className={`bg-background border-input min-h-[140px] rounded-md focus:ring-ring focus:border-ring resize-none p-4 ${errors.message ? "border-destructive" : ""}`}
                   />
                   {errors.message && <p className="text-sm text-destructive">{errors.message}</p>}
@@ -202,7 +207,7 @@ export function ContactForm() {
                   disabled={sending}
                   className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-12 rounded-md text-base font-medium shadow-lg mt-2"
                 >
-                  {sending ? "Sending..." : "Send Message"}
+                  {sending ? t.sending : t.send}
                 </Button>
               </form>
             )}

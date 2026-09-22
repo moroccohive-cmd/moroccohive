@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
-import { revalidatePath } from "next/cache"
+import { revalidateLocalizedPath as revalidatePath } from "@/lib/i18n/revalidate"
 import prisma from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { checkRateLimit } from "@/lib/limiter";
+import { sanitizeTranslations } from "@/lib/i18n/content"
 
 export async function GET(request: NextRequest) {
     try {
@@ -88,6 +89,7 @@ export async function POST(request: NextRequest) {
                 itineraryDetail: body.itineraryDetail || "",
                 additionalInfo: body.additionalInfo || "",
                 mapUrl: body.mapUrl,
+                translations: sanitizeTranslations("circuit", body.translations) ?? undefined,
                 featured: body.featured || false,
                 active: body.active !== undefined ? body.active : true,
             },

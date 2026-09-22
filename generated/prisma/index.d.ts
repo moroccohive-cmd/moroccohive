@@ -1993,6 +1993,7 @@ export namespace Prisma {
     itineraryDetail: number
     additionalInfo: number
     mapUrl: number
+    translations: number
     featured: number
     active: number
     createdAt: number
@@ -2073,6 +2074,7 @@ export namespace Prisma {
     itineraryDetail?: true
     additionalInfo?: true
     mapUrl?: true
+    translations?: true
     featured?: true
     active?: true
     createdAt?: true
@@ -2186,6 +2188,7 @@ export namespace Prisma {
     itineraryDetail: string
     additionalInfo: string | null
     mapUrl: string | null
+    translations: JsonValue | null
     featured: boolean
     active: boolean
     createdAt: Date
@@ -2231,6 +2234,7 @@ export namespace Prisma {
     itineraryDetail?: boolean
     additionalInfo?: boolean
     mapUrl?: boolean
+    translations?: boolean
     featured?: boolean
     active?: boolean
     createdAt?: boolean
@@ -2262,13 +2266,14 @@ export namespace Prisma {
     itineraryDetail?: boolean
     additionalInfo?: boolean
     mapUrl?: boolean
+    translations?: boolean
     featured?: boolean
     active?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type CircuitOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "name" | "tagline" | "description" | "duration" | "category" | "price" | "originalPrice" | "isFrom" | "images" | "highlights" | "included" | "excluded" | "optional" | "itineraryGlance" | "itineraryDetail" | "additionalInfo" | "mapUrl" | "featured" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["circuit"]>
+  export type CircuitOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "name" | "tagline" | "description" | "duration" | "category" | "price" | "originalPrice" | "isFrom" | "images" | "highlights" | "included" | "excluded" | "optional" | "itineraryGlance" | "itineraryDetail" | "additionalInfo" | "mapUrl" | "translations" | "featured" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["circuit"]>
   export type CircuitInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     favorites?: boolean | Circuit$favoritesArgs<ExtArgs>
     reviews?: boolean | Circuit$reviewsArgs<ExtArgs>
@@ -2301,6 +2306,11 @@ export namespace Prisma {
       itineraryDetail: string
       additionalInfo: string | null
       mapUrl: string | null
+      /**
+       * Per-language overrides: { fr: { name, description, highlights, ... }, es: {...} }.
+       * English lives in the regular fields; a missing language falls back to it.
+       */
+      translations: Prisma.JsonValue | null
       featured: boolean
       active: boolean
       createdAt: Date
@@ -2718,6 +2728,7 @@ export namespace Prisma {
     readonly itineraryDetail: FieldRef<"Circuit", 'String'>
     readonly additionalInfo: FieldRef<"Circuit", 'String'>
     readonly mapUrl: FieldRef<"Circuit", 'String'>
+    readonly translations: FieldRef<"Circuit", 'Json'>
     readonly featured: FieldRef<"Circuit", 'Boolean'>
     readonly active: FieldRef<"Circuit", 'Boolean'>
     readonly createdAt: FieldRef<"Circuit", 'DateTime'>
@@ -3203,6 +3214,7 @@ export namespace Prisma {
     coverImage: number
     author: number
     tags: number
+    translations: number
     published: number
     createdAt: number
     updatedAt: number
@@ -3245,6 +3257,7 @@ export namespace Prisma {
     coverImage?: true
     author?: true
     tags?: true
+    translations?: true
     published?: true
     createdAt?: true
     updatedAt?: true
@@ -3332,6 +3345,7 @@ export namespace Prisma {
     coverImage: string | null
     author: string | null
     tags: string[]
+    translations: JsonValue | null
     published: boolean
     createdAt: Date
     updatedAt: Date
@@ -3363,6 +3377,7 @@ export namespace Prisma {
     coverImage?: boolean
     author?: boolean
     tags?: boolean
+    translations?: boolean
     published?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -3379,12 +3394,13 @@ export namespace Prisma {
     coverImage?: boolean
     author?: boolean
     tags?: boolean
+    translations?: boolean
     published?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type BlogPostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "title" | "content" | "excerpt" | "coverImage" | "author" | "tags" | "published" | "createdAt" | "updatedAt", ExtArgs["result"]["blogPost"]>
+  export type BlogPostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "title" | "content" | "excerpt" | "coverImage" | "author" | "tags" | "translations" | "published" | "createdAt" | "updatedAt", ExtArgs["result"]["blogPost"]>
 
   export type $BlogPostPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "BlogPost"
@@ -3398,6 +3414,10 @@ export namespace Prisma {
       coverImage: string | null
       author: string | null
       tags: string[]
+      /**
+       * Per-language overrides: { fr: { title, excerpt, content }, es: {...} }
+       */
+      translations: Prisma.JsonValue | null
       published: boolean
       createdAt: Date
       updatedAt: Date
@@ -3801,6 +3821,7 @@ export namespace Prisma {
     readonly coverImage: FieldRef<"BlogPost", 'String'>
     readonly author: FieldRef<"BlogPost", 'String'>
     readonly tags: FieldRef<"BlogPost", 'String[]'>
+    readonly translations: FieldRef<"BlogPost", 'Json'>
     readonly published: FieldRef<"BlogPost", 'Boolean'>
     readonly createdAt: FieldRef<"BlogPost", 'DateTime'>
     readonly updatedAt: FieldRef<"BlogPost", 'DateTime'>
@@ -4195,6 +4216,7 @@ export namespace Prisma {
     updatedAt: Date | null
     userId: string | null
     preferredPaymentMethod: string | null
+    locale: string | null
   }
 
   export type TripRequestMaxAggregateOutputType = {
@@ -4220,6 +4242,7 @@ export namespace Prisma {
     updatedAt: Date | null
     userId: string | null
     preferredPaymentMethod: string | null
+    locale: string | null
   }
 
   export type TripRequestCountAggregateOutputType = {
@@ -4248,6 +4271,7 @@ export namespace Prisma {
     updatedAt: number
     userId: number
     preferredPaymentMethod: number
+    locale: number
     _all: number
   }
 
@@ -4283,6 +4307,7 @@ export namespace Prisma {
     updatedAt?: true
     userId?: true
     preferredPaymentMethod?: true
+    locale?: true
   }
 
   export type TripRequestMaxAggregateInputType = {
@@ -4308,6 +4333,7 @@ export namespace Prisma {
     updatedAt?: true
     userId?: true
     preferredPaymentMethod?: true
+    locale?: true
   }
 
   export type TripRequestCountAggregateInputType = {
@@ -4336,6 +4362,7 @@ export namespace Prisma {
     updatedAt?: true
     userId?: true
     preferredPaymentMethod?: true
+    locale?: true
     _all?: true
   }
 
@@ -4451,6 +4478,7 @@ export namespace Prisma {
     updatedAt: Date
     userId: string | null
     preferredPaymentMethod: string | null
+    locale: string | null
     _count: TripRequestCountAggregateOutputType | null
     _avg: TripRequestAvgAggregateOutputType | null
     _sum: TripRequestSumAggregateOutputType | null
@@ -4498,6 +4526,7 @@ export namespace Prisma {
     updatedAt?: boolean
     userId?: boolean
     preferredPaymentMethod?: boolean
+    locale?: boolean
     user?: boolean | TripRequest$userArgs<ExtArgs>
   }, ExtArgs["result"]["tripRequest"]>
 
@@ -4529,9 +4558,10 @@ export namespace Prisma {
     updatedAt?: boolean
     userId?: boolean
     preferredPaymentMethod?: boolean
+    locale?: boolean
   }
 
-  export type TripRequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "travelStyle" | "travelDates" | "arrivalCity" | "departureCity" | "accommodation" | "budget" | "adventureActivities" | "experiences" | "importantFactors" | "desiredExperiences" | "transportation" | "importantCriteria" | "numberOfTravelers" | "travelerAges" | "extraDetails" | "fullName" | "email" | "phone" | "status" | "adminNotes" | "createdAt" | "updatedAt" | "userId" | "preferredPaymentMethod", ExtArgs["result"]["tripRequest"]>
+  export type TripRequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "travelStyle" | "travelDates" | "arrivalCity" | "departureCity" | "accommodation" | "budget" | "adventureActivities" | "experiences" | "importantFactors" | "desiredExperiences" | "transportation" | "importantCriteria" | "numberOfTravelers" | "travelerAges" | "extraDetails" | "fullName" | "email" | "phone" | "status" | "adminNotes" | "createdAt" | "updatedAt" | "userId" | "preferredPaymentMethod" | "locale", ExtArgs["result"]["tripRequest"]>
   export type TripRequestInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | TripRequest$userArgs<ExtArgs>
   }
@@ -4567,6 +4597,7 @@ export namespace Prisma {
       updatedAt: Date
       userId: string | null
       preferredPaymentMethod: string | null
+      locale: string | null
     }, ExtArgs["result"]["tripRequest"]>
     composites: {}
   }
@@ -4985,6 +5016,7 @@ export namespace Prisma {
     readonly updatedAt: FieldRef<"TripRequest", 'DateTime'>
     readonly userId: FieldRef<"TripRequest", 'String'>
     readonly preferredPaymentMethod: FieldRef<"TripRequest", 'String'>
+    readonly locale: FieldRef<"TripRequest", 'String'>
   }
     
 
@@ -6426,6 +6458,7 @@ export namespace Prisma {
     phone: string | null
     subject: string | null
     message: string | null
+    locale: string | null
     status: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -6438,6 +6471,7 @@ export namespace Prisma {
     phone: string | null
     subject: string | null
     message: string | null
+    locale: string | null
     status: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -6450,6 +6484,7 @@ export namespace Prisma {
     phone: number
     subject: number
     message: number
+    locale: number
     status: number
     createdAt: number
     updatedAt: number
@@ -6464,6 +6499,7 @@ export namespace Prisma {
     phone?: true
     subject?: true
     message?: true
+    locale?: true
     status?: true
     createdAt?: true
     updatedAt?: true
@@ -6476,6 +6512,7 @@ export namespace Prisma {
     phone?: true
     subject?: true
     message?: true
+    locale?: true
     status?: true
     createdAt?: true
     updatedAt?: true
@@ -6488,6 +6525,7 @@ export namespace Prisma {
     phone?: true
     subject?: true
     message?: true
+    locale?: true
     status?: true
     createdAt?: true
     updatedAt?: true
@@ -6573,6 +6611,7 @@ export namespace Prisma {
     phone: string | null
     subject: string
     message: string
+    locale: string | null
     status: string
     createdAt: Date
     updatedAt: Date
@@ -6602,6 +6641,7 @@ export namespace Prisma {
     phone?: boolean
     subject?: boolean
     message?: boolean
+    locale?: boolean
     status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -6616,12 +6656,13 @@ export namespace Prisma {
     phone?: boolean
     subject?: boolean
     message?: boolean
+    locale?: boolean
     status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ContactMessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "phone" | "subject" | "message" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["contactMessage"]>
+  export type ContactMessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "phone" | "subject" | "message" | "locale" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["contactMessage"]>
 
   export type $ContactMessagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "ContactMessage"
@@ -6633,6 +6674,7 @@ export namespace Prisma {
       phone: string | null
       subject: string
       message: string
+      locale: string | null
       status: string
       createdAt: Date
       updatedAt: Date
@@ -7034,6 +7076,7 @@ export namespace Prisma {
     readonly phone: FieldRef<"ContactMessage", 'String'>
     readonly subject: FieldRef<"ContactMessage", 'String'>
     readonly message: FieldRef<"ContactMessage", 'String'>
+    readonly locale: FieldRef<"ContactMessage", 'String'>
     readonly status: FieldRef<"ContactMessage", 'String'>
     readonly createdAt: FieldRef<"ContactMessage", 'DateTime'>
     readonly updatedAt: FieldRef<"ContactMessage", 'DateTime'>
@@ -10707,6 +10750,7 @@ export namespace Prisma {
     question: number
     answer: number
     category: number
+    translations: number
     showOnHome: number
     active: number
     order: number
@@ -10753,6 +10797,7 @@ export namespace Prisma {
     question?: true
     answer?: true
     category?: true
+    translations?: true
     showOnHome?: true
     active?: true
     order?: true
@@ -10852,6 +10897,7 @@ export namespace Prisma {
     question: string
     answer: string
     category: string | null
+    translations: JsonValue | null
     showOnHome: boolean
     active: boolean
     order: number
@@ -10883,6 +10929,7 @@ export namespace Prisma {
     question?: boolean
     answer?: boolean
     category?: boolean
+    translations?: boolean
     showOnHome?: boolean
     active?: boolean
     order?: boolean
@@ -10897,6 +10944,7 @@ export namespace Prisma {
     question?: boolean
     answer?: boolean
     category?: boolean
+    translations?: boolean
     showOnHome?: boolean
     active?: boolean
     order?: boolean
@@ -10904,7 +10952,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type FaqOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "question" | "answer" | "category" | "showOnHome" | "active" | "order" | "createdAt" | "updatedAt", ExtArgs["result"]["faq"]>
+  export type FaqOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "question" | "answer" | "category" | "translations" | "showOnHome" | "active" | "order" | "createdAt" | "updatedAt", ExtArgs["result"]["faq"]>
 
   export type $FaqPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Faq"
@@ -10914,6 +10962,10 @@ export namespace Prisma {
       question: string
       answer: string
       category: string | null
+      /**
+       * Per-language overrides: { fr: { question, answer, category }, es: {...} }
+       */
+      translations: Prisma.JsonValue | null
       showOnHome: boolean
       active: boolean
       order: number
@@ -11315,6 +11367,7 @@ export namespace Prisma {
     readonly question: FieldRef<"Faq", 'String'>
     readonly answer: FieldRef<"Faq", 'String'>
     readonly category: FieldRef<"Faq", 'String'>
+    readonly translations: FieldRef<"Faq", 'Json'>
     readonly showOnHome: FieldRef<"Faq", 'Boolean'>
     readonly active: FieldRef<"Faq", 'Boolean'>
     readonly order: FieldRef<"Faq", 'Int'>
@@ -14714,6 +14767,7 @@ export namespace Prisma {
     itineraryDetail: 'itineraryDetail',
     additionalInfo: 'additionalInfo',
     mapUrl: 'mapUrl',
+    translations: 'translations',
     featured: 'featured',
     active: 'active',
     createdAt: 'createdAt',
@@ -14732,6 +14786,7 @@ export namespace Prisma {
     coverImage: 'coverImage',
     author: 'author',
     tags: 'tags',
+    translations: 'translations',
     published: 'published',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -14765,7 +14820,8 @@ export namespace Prisma {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     userId: 'userId',
-    preferredPaymentMethod: 'preferredPaymentMethod'
+    preferredPaymentMethod: 'preferredPaymentMethod',
+    locale: 'locale'
   };
 
   export type TripRequestScalarFieldEnum = (typeof TripRequestScalarFieldEnum)[keyof typeof TripRequestScalarFieldEnum]
@@ -14794,6 +14850,7 @@ export namespace Prisma {
     phone: 'phone',
     subject: 'subject',
     message: 'message',
+    locale: 'locale',
     status: 'status',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -14855,6 +14912,7 @@ export namespace Prisma {
     question: 'question',
     answer: 'answer',
     category: 'category',
+    translations: 'translations',
     showOnHome: 'showOnHome',
     active: 'active',
     order: 'order',
@@ -14981,6 +15039,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -15020,6 +15085,7 @@ export namespace Prisma {
     itineraryDetail?: StringFilter<"Circuit"> | string
     additionalInfo?: StringNullableFilter<"Circuit"> | string | null
     mapUrl?: StringNullableFilter<"Circuit"> | string | null
+    translations?: JsonNullableFilter<"Circuit">
     featured?: BoolFilter<"Circuit"> | boolean
     active?: BoolFilter<"Circuit"> | boolean
     createdAt?: DateTimeFilter<"Circuit"> | Date | string
@@ -15048,6 +15114,7 @@ export namespace Prisma {
     itineraryDetail?: SortOrder
     additionalInfo?: SortOrder
     mapUrl?: SortOrder
+    translations?: SortOrder
     featured?: SortOrder
     active?: SortOrder
     createdAt?: SortOrder
@@ -15079,6 +15146,7 @@ export namespace Prisma {
     itineraryDetail?: StringFilter<"Circuit"> | string
     additionalInfo?: StringNullableFilter<"Circuit"> | string | null
     mapUrl?: StringNullableFilter<"Circuit"> | string | null
+    translations?: JsonNullableFilter<"Circuit">
     featured?: BoolFilter<"Circuit"> | boolean
     active?: BoolFilter<"Circuit"> | boolean
     createdAt?: DateTimeFilter<"Circuit"> | Date | string
@@ -15107,6 +15175,7 @@ export namespace Prisma {
     itineraryDetail?: SortOrder
     additionalInfo?: SortOrder
     mapUrl?: SortOrder
+    translations?: SortOrder
     featured?: SortOrder
     active?: SortOrder
     createdAt?: SortOrder
@@ -15141,6 +15210,7 @@ export namespace Prisma {
     itineraryDetail?: StringWithAggregatesFilter<"Circuit"> | string
     additionalInfo?: StringNullableWithAggregatesFilter<"Circuit"> | string | null
     mapUrl?: StringNullableWithAggregatesFilter<"Circuit"> | string | null
+    translations?: JsonNullableWithAggregatesFilter<"Circuit">
     featured?: BoolWithAggregatesFilter<"Circuit"> | boolean
     active?: BoolWithAggregatesFilter<"Circuit"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Circuit"> | Date | string
@@ -15159,6 +15229,7 @@ export namespace Prisma {
     coverImage?: StringNullableFilter<"BlogPost"> | string | null
     author?: StringNullableFilter<"BlogPost"> | string | null
     tags?: StringNullableListFilter<"BlogPost">
+    translations?: JsonNullableFilter<"BlogPost">
     published?: BoolFilter<"BlogPost"> | boolean
     createdAt?: DateTimeFilter<"BlogPost"> | Date | string
     updatedAt?: DateTimeFilter<"BlogPost"> | Date | string
@@ -15173,6 +15244,7 @@ export namespace Prisma {
     coverImage?: SortOrder
     author?: SortOrder
     tags?: SortOrder
+    translations?: SortOrder
     published?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -15190,6 +15262,7 @@ export namespace Prisma {
     coverImage?: StringNullableFilter<"BlogPost"> | string | null
     author?: StringNullableFilter<"BlogPost"> | string | null
     tags?: StringNullableListFilter<"BlogPost">
+    translations?: JsonNullableFilter<"BlogPost">
     published?: BoolFilter<"BlogPost"> | boolean
     createdAt?: DateTimeFilter<"BlogPost"> | Date | string
     updatedAt?: DateTimeFilter<"BlogPost"> | Date | string
@@ -15204,6 +15277,7 @@ export namespace Prisma {
     coverImage?: SortOrder
     author?: SortOrder
     tags?: SortOrder
+    translations?: SortOrder
     published?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -15224,6 +15298,7 @@ export namespace Prisma {
     coverImage?: StringNullableWithAggregatesFilter<"BlogPost"> | string | null
     author?: StringNullableWithAggregatesFilter<"BlogPost"> | string | null
     tags?: StringNullableListFilter<"BlogPost">
+    translations?: JsonNullableWithAggregatesFilter<"BlogPost">
     published?: BoolWithAggregatesFilter<"BlogPost"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"BlogPost"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"BlogPost"> | Date | string
@@ -15258,6 +15333,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"TripRequest"> | Date | string
     userId?: StringNullableFilter<"TripRequest"> | string | null
     preferredPaymentMethod?: StringNullableFilter<"TripRequest"> | string | null
+    locale?: StringNullableFilter<"TripRequest"> | string | null
     user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
 
@@ -15287,6 +15363,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     userId?: SortOrder
     preferredPaymentMethod?: SortOrder
+    locale?: SortOrder
     user?: UserOrderByWithRelationInput
   }
 
@@ -15319,6 +15396,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"TripRequest"> | Date | string
     userId?: StringNullableFilter<"TripRequest"> | string | null
     preferredPaymentMethod?: StringNullableFilter<"TripRequest"> | string | null
+    locale?: StringNullableFilter<"TripRequest"> | string | null
     user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }, "id">
 
@@ -15348,6 +15426,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     userId?: SortOrder
     preferredPaymentMethod?: SortOrder
+    locale?: SortOrder
     _count?: TripRequestCountOrderByAggregateInput
     _avg?: TripRequestAvgOrderByAggregateInput
     _max?: TripRequestMaxOrderByAggregateInput
@@ -15384,6 +15463,7 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"TripRequest"> | Date | string
     userId?: StringNullableWithAggregatesFilter<"TripRequest"> | string | null
     preferredPaymentMethod?: StringNullableWithAggregatesFilter<"TripRequest"> | string | null
+    locale?: StringNullableWithAggregatesFilter<"TripRequest"> | string | null
   }
 
   export type SiteSettingsWhereInput = {
@@ -15475,6 +15555,7 @@ export namespace Prisma {
     phone?: StringNullableFilter<"ContactMessage"> | string | null
     subject?: StringFilter<"ContactMessage"> | string
     message?: StringFilter<"ContactMessage"> | string
+    locale?: StringNullableFilter<"ContactMessage"> | string | null
     status?: StringFilter<"ContactMessage"> | string
     createdAt?: DateTimeFilter<"ContactMessage"> | Date | string
     updatedAt?: DateTimeFilter<"ContactMessage"> | Date | string
@@ -15487,6 +15568,7 @@ export namespace Prisma {
     phone?: SortOrder
     subject?: SortOrder
     message?: SortOrder
+    locale?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -15502,6 +15584,7 @@ export namespace Prisma {
     phone?: StringNullableFilter<"ContactMessage"> | string | null
     subject?: StringFilter<"ContactMessage"> | string
     message?: StringFilter<"ContactMessage"> | string
+    locale?: StringNullableFilter<"ContactMessage"> | string | null
     status?: StringFilter<"ContactMessage"> | string
     createdAt?: DateTimeFilter<"ContactMessage"> | Date | string
     updatedAt?: DateTimeFilter<"ContactMessage"> | Date | string
@@ -15514,6 +15597,7 @@ export namespace Prisma {
     phone?: SortOrder
     subject?: SortOrder
     message?: SortOrder
+    locale?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -15532,6 +15616,7 @@ export namespace Prisma {
     phone?: StringNullableWithAggregatesFilter<"ContactMessage"> | string | null
     subject?: StringWithAggregatesFilter<"ContactMessage"> | string
     message?: StringWithAggregatesFilter<"ContactMessage"> | string
+    locale?: StringNullableWithAggregatesFilter<"ContactMessage"> | string | null
     status?: StringWithAggregatesFilter<"ContactMessage"> | string
     createdAt?: DateTimeWithAggregatesFilter<"ContactMessage"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"ContactMessage"> | Date | string
@@ -15800,6 +15885,7 @@ export namespace Prisma {
     question?: StringFilter<"Faq"> | string
     answer?: StringFilter<"Faq"> | string
     category?: StringNullableFilter<"Faq"> | string | null
+    translations?: JsonNullableFilter<"Faq">
     showOnHome?: BoolFilter<"Faq"> | boolean
     active?: BoolFilter<"Faq"> | boolean
     order?: IntFilter<"Faq"> | number
@@ -15812,6 +15898,7 @@ export namespace Prisma {
     question?: SortOrder
     answer?: SortOrder
     category?: SortOrder
+    translations?: SortOrder
     showOnHome?: SortOrder
     active?: SortOrder
     order?: SortOrder
@@ -15827,6 +15914,7 @@ export namespace Prisma {
     question?: StringFilter<"Faq"> | string
     answer?: StringFilter<"Faq"> | string
     category?: StringNullableFilter<"Faq"> | string | null
+    translations?: JsonNullableFilter<"Faq">
     showOnHome?: BoolFilter<"Faq"> | boolean
     active?: BoolFilter<"Faq"> | boolean
     order?: IntFilter<"Faq"> | number
@@ -15839,6 +15927,7 @@ export namespace Prisma {
     question?: SortOrder
     answer?: SortOrder
     category?: SortOrder
+    translations?: SortOrder
     showOnHome?: SortOrder
     active?: SortOrder
     order?: SortOrder
@@ -15859,6 +15948,7 @@ export namespace Prisma {
     question?: StringWithAggregatesFilter<"Faq"> | string
     answer?: StringWithAggregatesFilter<"Faq"> | string
     category?: StringNullableWithAggregatesFilter<"Faq"> | string | null
+    translations?: JsonNullableWithAggregatesFilter<"Faq">
     showOnHome?: BoolWithAggregatesFilter<"Faq"> | boolean
     active?: BoolWithAggregatesFilter<"Faq"> | boolean
     order?: IntWithAggregatesFilter<"Faq"> | number
@@ -16108,6 +16198,7 @@ export namespace Prisma {
     itineraryDetail: string
     additionalInfo?: string | null
     mapUrl?: string | null
+    translations?: InputJsonValue | null
     featured?: boolean
     active?: boolean
     createdAt?: Date | string
@@ -16136,6 +16227,7 @@ export namespace Prisma {
     itineraryDetail: string
     additionalInfo?: string | null
     mapUrl?: string | null
+    translations?: InputJsonValue | null
     featured?: boolean
     active?: boolean
     createdAt?: Date | string
@@ -16163,6 +16255,7 @@ export namespace Prisma {
     itineraryDetail?: StringFieldUpdateOperationsInput | string
     additionalInfo?: NullableStringFieldUpdateOperationsInput | string | null
     mapUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    translations?: InputJsonValue | InputJsonValue | null
     featured?: BoolFieldUpdateOperationsInput | boolean
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16190,6 +16283,7 @@ export namespace Prisma {
     itineraryDetail?: StringFieldUpdateOperationsInput | string
     additionalInfo?: NullableStringFieldUpdateOperationsInput | string | null
     mapUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    translations?: InputJsonValue | InputJsonValue | null
     featured?: BoolFieldUpdateOperationsInput | boolean
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16218,6 +16312,7 @@ export namespace Prisma {
     itineraryDetail: string
     additionalInfo?: string | null
     mapUrl?: string | null
+    translations?: InputJsonValue | null
     featured?: boolean
     active?: boolean
     createdAt?: Date | string
@@ -16243,6 +16338,7 @@ export namespace Prisma {
     itineraryDetail?: StringFieldUpdateOperationsInput | string
     additionalInfo?: NullableStringFieldUpdateOperationsInput | string | null
     mapUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    translations?: InputJsonValue | InputJsonValue | null
     featured?: BoolFieldUpdateOperationsInput | boolean
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16268,6 +16364,7 @@ export namespace Prisma {
     itineraryDetail?: StringFieldUpdateOperationsInput | string
     additionalInfo?: NullableStringFieldUpdateOperationsInput | string | null
     mapUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    translations?: InputJsonValue | InputJsonValue | null
     featured?: BoolFieldUpdateOperationsInput | boolean
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16283,6 +16380,7 @@ export namespace Prisma {
     coverImage?: string | null
     author?: string | null
     tags?: BlogPostCreatetagsInput | string[]
+    translations?: InputJsonValue | null
     published?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -16297,6 +16395,7 @@ export namespace Prisma {
     coverImage?: string | null
     author?: string | null
     tags?: BlogPostCreatetagsInput | string[]
+    translations?: InputJsonValue | null
     published?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -16310,6 +16409,7 @@ export namespace Prisma {
     coverImage?: NullableStringFieldUpdateOperationsInput | string | null
     author?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: BlogPostUpdatetagsInput | string[]
+    translations?: InputJsonValue | InputJsonValue | null
     published?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16323,6 +16423,7 @@ export namespace Prisma {
     coverImage?: NullableStringFieldUpdateOperationsInput | string | null
     author?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: BlogPostUpdatetagsInput | string[]
+    translations?: InputJsonValue | InputJsonValue | null
     published?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16337,6 +16438,7 @@ export namespace Prisma {
     coverImage?: string | null
     author?: string | null
     tags?: BlogPostCreatetagsInput | string[]
+    translations?: InputJsonValue | null
     published?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -16350,6 +16452,7 @@ export namespace Prisma {
     coverImage?: NullableStringFieldUpdateOperationsInput | string | null
     author?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: BlogPostUpdatetagsInput | string[]
+    translations?: InputJsonValue | InputJsonValue | null
     published?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16363,6 +16466,7 @@ export namespace Prisma {
     coverImage?: NullableStringFieldUpdateOperationsInput | string | null
     author?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: BlogPostUpdatetagsInput | string[]
+    translations?: InputJsonValue | InputJsonValue | null
     published?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16393,6 +16497,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     preferredPaymentMethod?: string | null
+    locale?: string | null
     user?: UserCreateNestedOneWithoutTripRequestsInput
   }
 
@@ -16422,6 +16527,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     userId?: string | null
     preferredPaymentMethod?: string | null
+    locale?: string | null
   }
 
   export type TripRequestUpdateInput = {
@@ -16448,6 +16554,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     preferredPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    locale?: NullableStringFieldUpdateOperationsInput | string | null
     user?: UserUpdateOneWithoutTripRequestsNestedInput
   }
 
@@ -16476,6 +16583,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     preferredPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    locale?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TripRequestCreateManyInput = {
@@ -16504,6 +16612,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     userId?: string | null
     preferredPaymentMethod?: string | null
+    locale?: string | null
   }
 
   export type TripRequestUpdateManyMutationInput = {
@@ -16530,6 +16639,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     preferredPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    locale?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TripRequestUncheckedUpdateManyInput = {
@@ -16557,6 +16667,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     preferredPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    locale?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type SiteSettingsCreateInput = {
@@ -16653,6 +16764,7 @@ export namespace Prisma {
     phone?: string | null
     subject: string
     message: string
+    locale?: string | null
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -16665,6 +16777,7 @@ export namespace Prisma {
     phone?: string | null
     subject: string
     message: string
+    locale?: string | null
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -16676,6 +16789,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     subject?: StringFieldUpdateOperationsInput | string
     message?: StringFieldUpdateOperationsInput | string
+    locale?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16687,6 +16801,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     subject?: StringFieldUpdateOperationsInput | string
     message?: StringFieldUpdateOperationsInput | string
+    locale?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16699,6 +16814,7 @@ export namespace Prisma {
     phone?: string | null
     subject: string
     message: string
+    locale?: string | null
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -16710,6 +16826,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     subject?: StringFieldUpdateOperationsInput | string
     message?: StringFieldUpdateOperationsInput | string
+    locale?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16721,6 +16838,7 @@ export namespace Prisma {
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     subject?: StringFieldUpdateOperationsInput | string
     message?: StringFieldUpdateOperationsInput | string
+    locale?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17005,6 +17123,7 @@ export namespace Prisma {
     question: string
     answer: string
     category?: string | null
+    translations?: InputJsonValue | null
     showOnHome?: boolean
     active?: boolean
     order?: number
@@ -17017,6 +17136,7 @@ export namespace Prisma {
     question: string
     answer: string
     category?: string | null
+    translations?: InputJsonValue | null
     showOnHome?: boolean
     active?: boolean
     order?: number
@@ -17028,6 +17148,7 @@ export namespace Prisma {
     question?: StringFieldUpdateOperationsInput | string
     answer?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    translations?: InputJsonValue | InputJsonValue | null
     showOnHome?: BoolFieldUpdateOperationsInput | boolean
     active?: BoolFieldUpdateOperationsInput | boolean
     order?: IntFieldUpdateOperationsInput | number
@@ -17039,6 +17160,7 @@ export namespace Prisma {
     question?: StringFieldUpdateOperationsInput | string
     answer?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    translations?: InputJsonValue | InputJsonValue | null
     showOnHome?: BoolFieldUpdateOperationsInput | boolean
     active?: BoolFieldUpdateOperationsInput | boolean
     order?: IntFieldUpdateOperationsInput | number
@@ -17051,6 +17173,7 @@ export namespace Prisma {
     question: string
     answer: string
     category?: string | null
+    translations?: InputJsonValue | null
     showOnHome?: boolean
     active?: boolean
     order?: number
@@ -17062,6 +17185,7 @@ export namespace Prisma {
     question?: StringFieldUpdateOperationsInput | string
     answer?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    translations?: InputJsonValue | InputJsonValue | null
     showOnHome?: BoolFieldUpdateOperationsInput | boolean
     active?: BoolFieldUpdateOperationsInput | boolean
     order?: IntFieldUpdateOperationsInput | number
@@ -17073,6 +17197,7 @@ export namespace Prisma {
     question?: StringFieldUpdateOperationsInput | string
     answer?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    translations?: InputJsonValue | InputJsonValue | null
     showOnHome?: BoolFieldUpdateOperationsInput | boolean
     active?: BoolFieldUpdateOperationsInput | boolean
     order?: IntFieldUpdateOperationsInput | number
@@ -17395,6 +17520,18 @@ export namespace Prisma {
     hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
     isEmpty?: boolean
   }
+  export type JsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    isSet?: boolean
+  }
 
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -17447,6 +17584,7 @@ export namespace Prisma {
     itineraryDetail?: SortOrder
     additionalInfo?: SortOrder
     mapUrl?: SortOrder
+    translations?: SortOrder
     featured?: SortOrder
     active?: SortOrder
     createdAt?: SortOrder
@@ -17598,6 +17736,21 @@ export namespace Prisma {
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
   }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
+    isSet?: boolean
+  }
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -17622,6 +17775,7 @@ export namespace Prisma {
     coverImage?: SortOrder
     author?: SortOrder
     tags?: SortOrder
+    translations?: SortOrder
     published?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -17684,6 +17838,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     userId?: SortOrder
     preferredPaymentMethod?: SortOrder
+    locale?: SortOrder
   }
 
   export type TripRequestAvgOrderByAggregateInput = {
@@ -17713,6 +17868,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     userId?: SortOrder
     preferredPaymentMethod?: SortOrder
+    locale?: SortOrder
   }
 
   export type TripRequestMinOrderByAggregateInput = {
@@ -17738,6 +17894,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     userId?: SortOrder
     preferredPaymentMethod?: SortOrder
+    locale?: SortOrder
   }
 
   export type TripRequestSumOrderByAggregateInput = {
@@ -17796,6 +17953,7 @@ export namespace Prisma {
     phone?: SortOrder
     subject?: SortOrder
     message?: SortOrder
+    locale?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -17808,6 +17966,7 @@ export namespace Prisma {
     phone?: SortOrder
     subject?: SortOrder
     message?: SortOrder
+    locale?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -17820,6 +17979,7 @@ export namespace Prisma {
     phone?: SortOrder
     subject?: SortOrder
     message?: SortOrder
+    locale?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -18007,6 +18167,7 @@ export namespace Prisma {
     question?: SortOrder
     answer?: SortOrder
     category?: SortOrder
+    translations?: SortOrder
     showOnHome?: SortOrder
     active?: SortOrder
     order?: SortOrder
@@ -18867,6 +19028,18 @@ export namespace Prisma {
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
   }
+  export type NestedJsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    isSet?: boolean
+  }
 
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -19233,6 +19406,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     preferredPaymentMethod?: string | null
+    locale?: string | null
   }
 
   export type TripRequestUncheckedCreateWithoutUserInput = {
@@ -19260,6 +19434,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     preferredPaymentMethod?: string | null
+    locale?: string | null
   }
 
   export type TripRequestCreateOrConnectWithoutUserInput = {
@@ -19397,6 +19572,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"TripRequest"> | Date | string
     userId?: StringNullableFilter<"TripRequest"> | string | null
     preferredPaymentMethod?: StringNullableFilter<"TripRequest"> | string | null
+    locale?: StringNullableFilter<"TripRequest"> | string | null
   }
 
   export type UserCreateWithoutFavoritesInput = {
@@ -19460,6 +19636,7 @@ export namespace Prisma {
     itineraryDetail: string
     additionalInfo?: string | null
     mapUrl?: string | null
+    translations?: InputJsonValue | null
     featured?: boolean
     active?: boolean
     createdAt?: Date | string
@@ -19487,6 +19664,7 @@ export namespace Prisma {
     itineraryDetail: string
     additionalInfo?: string | null
     mapUrl?: string | null
+    translations?: InputJsonValue | null
     featured?: boolean
     active?: boolean
     createdAt?: Date | string
@@ -19574,6 +19752,7 @@ export namespace Prisma {
     itineraryDetail?: StringFieldUpdateOperationsInput | string
     additionalInfo?: NullableStringFieldUpdateOperationsInput | string | null
     mapUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    translations?: InputJsonValue | InputJsonValue | null
     featured?: BoolFieldUpdateOperationsInput | boolean
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19600,6 +19779,7 @@ export namespace Prisma {
     itineraryDetail?: StringFieldUpdateOperationsInput | string
     additionalInfo?: NullableStringFieldUpdateOperationsInput | string | null
     mapUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    translations?: InputJsonValue | InputJsonValue | null
     featured?: BoolFieldUpdateOperationsInput | boolean
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19627,6 +19807,7 @@ export namespace Prisma {
     itineraryDetail: string
     additionalInfo?: string | null
     mapUrl?: string | null
+    translations?: InputJsonValue | null
     featured?: boolean
     active?: boolean
     createdAt?: Date | string
@@ -19654,6 +19835,7 @@ export namespace Prisma {
     itineraryDetail: string
     additionalInfo?: string | null
     mapUrl?: string | null
+    translations?: InputJsonValue | null
     featured?: boolean
     active?: boolean
     createdAt?: Date | string
@@ -19696,6 +19878,7 @@ export namespace Prisma {
     itineraryDetail?: StringFieldUpdateOperationsInput | string
     additionalInfo?: NullableStringFieldUpdateOperationsInput | string | null
     mapUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    translations?: InputJsonValue | InputJsonValue | null
     featured?: BoolFieldUpdateOperationsInput | boolean
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19722,6 +19905,7 @@ export namespace Prisma {
     itineraryDetail?: StringFieldUpdateOperationsInput | string
     additionalInfo?: NullableStringFieldUpdateOperationsInput | string | null
     mapUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    translations?: InputJsonValue | InputJsonValue | null
     featured?: BoolFieldUpdateOperationsInput | boolean
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20039,6 +20223,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     preferredPaymentMethod?: string | null
+    locale?: string | null
   }
 
   export type SessionUpdateWithoutUserInput = {
@@ -20149,6 +20334,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     preferredPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    locale?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TripRequestUncheckedUpdateWithoutUserInput = {
@@ -20175,6 +20361,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     preferredPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    locale?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TripRequestUncheckedUpdateManyWithoutUserInput = {
@@ -20201,6 +20388,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     preferredPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    locale?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
 

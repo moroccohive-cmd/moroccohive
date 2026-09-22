@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next"
 import { SITE_URL } from "@/lib/seo"
+import { PREFIXED_LOCALES } from "@/lib/i18n/config"
 
 /**
  * Paths that must never be indexed by anything. Auth flows, the admin
@@ -19,6 +20,11 @@ const PRIVATE_PATHS = [
     "/uploads/",
     "/circuits/thank-you",
     "/plan-trip/thank-you",
+    // Translated copies of the post-conversion pages.
+    ...PREFIXED_LOCALES.flatMap((locale) => [
+        `/${locale}/circuits/thank-you`,
+        `/${locale}/plan-trip/thank-you`,
+    ]),
 ]
 
 /**
@@ -60,7 +66,13 @@ export default function robots(): MetadataRoute.Robots {
             },
             {
                 userAgent: "Googlebot",
-                allow: ["/", "/blog/", "/circuits/", "/destinations/"],
+                allow: [
+                    "/",
+                    "/blog/",
+                    "/circuits/",
+                    "/destinations/",
+                    ...PREFIXED_LOCALES.map((locale) => `/${locale}/`),
+                ],
                 disallow: PRIVATE_PATHS,
             },
             // Image indexing for tour photography.

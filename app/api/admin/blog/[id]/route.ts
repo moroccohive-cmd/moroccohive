@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { checkRateLimit } from "@/lib/limiter";
+import { sanitizeTranslations } from "@/lib/i18n/content"
 
 export async function GET(
     request: NextRequest,
@@ -54,6 +55,9 @@ export async function PATCH(
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { id: _id, createdAt, updatedAt, ...updateData } = body
+        if ("translations" in updateData) {
+            updateData.translations = sanitizeTranslations("blog", updateData.translations) ?? {}
+        }
 
         const blog = await prisma.blogPost.update({
             where: { id },

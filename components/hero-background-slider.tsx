@@ -32,7 +32,14 @@ const SLIDES = [
 
 const SLIDE_DURATION = 2500
 
-export function HeroBackgroundSlider() {
+export function HeroBackgroundSlider({
+  alts,
+  showLabel = "Show background image {n}",
+}: {
+  /** Translated alt text, one per slide, in slide order. */
+  alts?: string[]
+  showLabel?: string
+} = {}) {
   const [current, setCurrent] = useState(0)
 
   const next = useCallback(() => setCurrent((c) => (c + 1) % SLIDES.length), [])
@@ -50,7 +57,7 @@ export function HeroBackgroundSlider() {
           <Image
             key={slide.src}
             src={slide.src}
-            alt={slide.alt}
+            alt={alts?.[i] ?? slide.alt}
             fill
             sizes="100vw"
             priority={i === 0}
@@ -73,7 +80,7 @@ export function HeroBackgroundSlider() {
             key={i}
             type="button"
             onClick={() => setCurrent(i)}
-            aria-label={`Show background image ${i + 1}`}
+            aria-label={showLabel.replace("{n}", String(i + 1))}
             aria-current={current === i}
             className="group flex h-6 items-center justify-center px-2.5"
           >

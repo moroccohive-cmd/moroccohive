@@ -7,6 +7,7 @@ import "./globals.css"
 import dynamic from "next/dynamic"
 import { OrganizationSchema } from "@/components/structured-data"
 import { SITE, SITE_URL } from "@/lib/seo"
+import { Html } from "@/components/i18n/html"
 
 const WhatsAppButton = dynamic(() =>
   import("@/components/whatsapp-button").then((m) => m.WhatsAppButton),
@@ -77,7 +78,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <Html>
       <head>
         <OrganizationSchema />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
@@ -99,6 +100,6 @@ export default function RootLayout({
         <WhatsAppButton />
         <Toaster />
       </body>
-    </html>
+    </Html>
   )
 }

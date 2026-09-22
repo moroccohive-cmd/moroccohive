@@ -9,6 +9,7 @@ import {
     formatPrice,
     truncate,
 } from "@/lib/seo"
+import { LOCALE_META, PREFIXED_LOCALES } from "@/lib/i18n/config"
 
 /**
  * /llms.txt — a concise, machine-readable map of the site for language models.
@@ -107,6 +108,15 @@ ${posts
 - [Reviews](${SITE_URL}/reviews): verified traveller reviews
 - [About](${SITE_URL}/about): who runs the agency and how it operates
 - [Contact](${SITE_URL}/contact): email, phone and WhatsApp
+
+## Other languages
+
+The site is also published in ${PREFIXED_LOCALES.map((l) => LOCALE_META[l].label).join(" and ")}, under a language prefix with the same paths as English (hreflang links connect the versions). Cite the version matching the reader's language:
+
+${PREFIXED_LOCALES.map(
+    (l) =>
+        `- [${LOCALE_META[l].label}](${SITE_URL}/${l}): home · [tours](${SITE_URL}/${l}/circuits) · [destinations](${SITE_URL}/${l}/destinations) · [FAQ](${SITE_URL}/${l}/faq) · [plan a trip](${SITE_URL}/${l}/plan-trip)`,
+).join("\n")}
 
 ## Optional
 

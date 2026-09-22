@@ -1,4 +1,11 @@
 import type { Metadata } from "next"
+import {
+    DEFAULT_LOCALE,
+    LOCALES,
+    LOCALE_META,
+    localizePath,
+    type Locale,
+} from "@/lib/i18n/config"
 
 /**
  * Single source of truth for every URL, identity and geographic signal the site
@@ -113,10 +120,42 @@ export function truncate(text: string, max = 155): string {
     return `${clean.slice(0, clean.lastIndexOf(" ", max - 1)).trim()}…`
 }
 
+/**
+ * hreflang + canonical for a page that exists in several languages.
+ *
+ * `path` is always the locale-less path ("/circuits/x"). `available` lists the
+ * languages that genuinely have this page translated; a locale outside that
+ * list is an untranslated fallback, so it canonicalises to the English original
+ * and advertises no alternates rather than competing with it.
+ */
+export function localeAlternates(
+    path: string,
+    locale: Locale = DEFAULT_LOCALE,
+    available: readonly Locale[] = LOCALES,
+): NonNullable<Metadata["alternates"]> {
+    if (!available.includes(locale)) {
+        return { canonical: absoluteUrl(localizePath(DEFAULT_LOCALE, path)) }
+    }
+    const canonical = absoluteUrl(localizePath(locale, path))
+    if (available.length < 2) return { canonical }
+
+    const languages: Record<string, string> = {}
+    for (const l of LOCALES) {
+        if (available.includes(l)) languages[l] = absoluteUrl(localizePath(l, path))
+    }
+    languages["x-default"] = absoluteUrl(localizePath(DEFAULT_LOCALE, path))
+    return { canonical, languages }
+}
+
 interface BuildMetadataOptions {
     title: string
     description: string
+    /** Locale-less site path; the locale prefix is added here. */
     path: string
+    /** Language of the page being rendered. Defaults to English. */
+    locale?: Locale
+    /** Languages this page is actually translated into. Defaults to all. */
+    locales?: readonly Locale[]
     images?: string[]
     type?: "website" | "article"
     publishedTime?: string
@@ -142,8 +181,14 @@ export function buildMetadata({
     authors,
     tags,
     noIndex = false,
+    locale = DEFAULT_LOCALE,
+    locales = LOCALES,
 }: BuildMetadataOptions): Metadata {
-    const url = absoluteUrl(path)
+    const alternates = localeAlternates(path, locale, locales)
+    const url = alternates.canonical as string
+    const alternateLocale = locales
+        .filter((l) => l !== locale)
+        .map((l) => LOCALE_META[l].ogLocale)
     const ogImages = (images?.length ? images : [SITE.image]).map((src) => ({
         url: absoluteUrl(src),
         width: 1200,
@@ -154,7 +199,7 @@ export function buildMetadata({
     return {
         title,
         description,
-        alternates: { canonical: url },
+        alternates,
         ...(noIndex ? { robots: { index: false, follow: false } } : {}),
         openGraph: {
             title,
@@ -162,7 +207,8 @@ export function buildMetadata({
             url,
             siteName: SITE.name,
             type,
-            locale: "en_US",
+            locale: LOCALE_META[locale].ogLocale,
+            ...(alternateLocale.length && locales.includes(locale) ? { alternateLocale } : {}),
             images: ogImages,
             ...(type === "article"
                 ? {

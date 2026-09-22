@@ -134,6 +134,7 @@ exports.Prisma.CircuitScalarFieldEnum = {
   itineraryDetail: 'itineraryDetail',
   additionalInfo: 'additionalInfo',
   mapUrl: 'mapUrl',
+  translations: 'translations',
   featured: 'featured',
   active: 'active',
   createdAt: 'createdAt',
@@ -149,6 +150,7 @@ exports.Prisma.BlogPostScalarFieldEnum = {
   coverImage: 'coverImage',
   author: 'author',
   tags: 'tags',
+  translations: 'translations',
   published: 'published',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -179,7 +181,8 @@ exports.Prisma.TripRequestScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId',
-  preferredPaymentMethod: 'preferredPaymentMethod'
+  preferredPaymentMethod: 'preferredPaymentMethod',
+  locale: 'locale'
 };
 
 exports.Prisma.SiteSettingsScalarFieldEnum = {
@@ -202,6 +205,7 @@ exports.Prisma.ContactMessageScalarFieldEnum = {
   phone: 'phone',
   subject: 'subject',
   message: 'message',
+  locale: 'locale',
   status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -251,6 +255,7 @@ exports.Prisma.FaqScalarFieldEnum = {
   question: 'question',
   answer: 'answer',
   category: 'category',
+  translations: 'translations',
   showOnHome: 'showOnHome',
   active: 'active',
   order: 'order',

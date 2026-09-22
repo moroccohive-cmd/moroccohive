@@ -1,11 +1,37 @@
 import Link from "next/link"
 import { ReviewAvatar } from "@/components/review-avatar"
 import type { PublicReview } from "@/lib/site-content"
+import { DEFAULT_LOCALE, LOCALE_META, localizePath, type Locale } from "@/lib/i18n/config"
+import { fmt } from "@/lib/i18n/format"
+
+/** UI strings for review cards; English unless a translation is passed in. */
+export interface ReviewCardLabels {
+    readFull: string
+    readFullAria: string
+    tour: string
+    stars: string
+}
+
+export const DEFAULT_REVIEW_LABELS: ReviewCardLabels = {
+    readFull: "Read full review",
+    readFullAria: "Read the full review from {name}",
+    tour: "Tour:",
+    stars: "{rating} out of 5 stars",
+}
 
 /**
  * Trustpilot-style rating: one filled green tile per star.
  */
-export function TrustStars({ rating, size = 20 }: { rating: number; size?: number }) {
+export function TrustStars({
+    rating,
+    size = 20,
+    label = DEFAULT_REVIEW_LABELS.stars,
+}: {
+    rating: number
+    size?: number
+    /** "{rating} out of 5 stars", translated. */
+    label?: string
+}) {
     const filled = Math.max(0, Math.min(5, Math.round(rating)))
 
     return (
@@ -14,7 +40,7 @@ export function TrustStars({ rating, size = 20 }: { rating: number; size?: numbe
             role="img"
             // Tiles round to whole stars, but the label states the real rating -
             // otherwise 4.8 is announced as "5 out of 5".
-            aria-label={`${Number(rating.toFixed(1))} out of 5 stars`}
+            aria-label={fmt(label, { rating: Number(rating.toFixed(1)) })}
         >
             {Array.from({ length: 5 }).map((_, i) => (
                 <span
@@ -35,11 +61,11 @@ export function TrustStars({ rating, size = 20 }: { rating: number; size?: numbe
 }
 
 /** Builds the "US · May 2025" meta line, skipping whichever half is missing. */
-function metaLine(review: PublicReview) {
+function metaLine(review: PublicReview, locale: Locale) {
     const place = review.country?.trim() || review.authorLocation?.trim()
     const date =
         review.displayDate?.trim() ||
-        new Date(review.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })
+        new Date(review.createdAt).toLocaleDateString(LOCALE_META[locale].intl, { month: "long", year: "numeric" })
 
     return [place, date].filter(Boolean).join(" · ")
 }
@@ -50,13 +76,21 @@ interface ReviewCardProps {
     clamp?: boolean
     /** Renders a "Read full review" button - pair with `clamp`. */
     onReadMore?: () => void
+    locale?: Locale
+    labels?: ReviewCardLabels
 }
 
-export function ReviewCard({ review, clamp = false, onReadMore }: ReviewCardProps) {
+export function ReviewCard({
+    review,
+    clamp = false,
+    onReadMore,
+    locale = DEFAULT_LOCALE,
+    labels = DEFAULT_REVIEW_LABELS,
+}: ReviewCardProps) {
     return (
         <figure className="flex h-full flex-col rounded-xl border border-border/70 bg-card p-7 shadow-[0_1px_2px_rgb(0,0,0,0.03)] transition-shadow hover:shadow-[0_4px_24px_rgb(0,0,0,0.06)]">
             <div className="mb-5">
-                <TrustStars rating={review.rating} size={18} />
+                <TrustStars rating={review.rating} size={18} label={labels.stars} />
             </div>
 
             <blockquote
@@ -69,10 +103,10 @@ export function ReviewCard({ review, clamp = false, onReadMore }: ReviewCardProp
                 <button
                     type="button"
                     onClick={onReadMore}
-                    aria-label={`Read the full review from ${review.authorName}`}
+                    aria-label={fmt(labels.readFullAria, { name: review.authorName })}
                     className="mt-3 self-start text-sm font-medium text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 rounded-sm"
                 >
-                    Read full review
+                    {labels.readFull}
                 </button>
             )}
 
@@ -85,7 +119,7 @@ export function ReviewCard({ review, clamp = false, onReadMore }: ReviewCardProp
                             {review.authorName}
                         </p>
                         <p className="mt-0.5 text-xs text-muted-foreground">
-                            {metaLine(review)}
+                            {metaLine(review, locale)}
                             {review.source ? ` · ${review.source}` : ""}
                         </p>
                     </div>
@@ -93,9 +127,9 @@ export function ReviewCard({ review, clamp = false, onReadMore }: ReviewCardProp
 
                 {review.circuit && (
                     <p className="mt-4 text-xs text-muted-foreground">
-                        Tour:{" "}
+                        {labels.tour}{" "}
                         <Link
-                            href={`/circuits/${review.circuit.slug}`}
+                            href={localizePath(locale, `/circuits/${review.circuit.slug}`)}
                             className="font-medium text-accent hover:underline"
                         >
                             {review.circuit.name}

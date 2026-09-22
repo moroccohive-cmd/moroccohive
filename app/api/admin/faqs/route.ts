@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
-import { revalidatePath } from "next/cache"
+import { revalidateLocalizedPath as revalidatePath } from "@/lib/i18n/revalidate"
 import prisma from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { checkRateLimit } from "@/lib/limiter"
+import { sanitizeTranslations } from "@/lib/i18n/content"
 
 async function requireAdmin() {
     const session = await auth.api.getSession({ headers: await headers() })
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
 
     try {
         const body = await request.json()
-        const { question, answer, category, showOnHome, active, order } = body
+        const { question, answer, category, showOnHome, active, order, translations } = body
 
         if (!question?.trim() || !answer?.trim()) {
             return NextResponse.json({ error: "question and answer are required" }, { status: 400 })
@@ -53,6 +54,7 @@ export async function POST(request: NextRequest) {
                 showOnHome: Boolean(showOnHome),
                 active: active === undefined ? true : Boolean(active),
                 order: Number.isFinite(Number(order)) ? Number(order) : 0,
+                translations: sanitizeTranslations("faq", translations) ?? undefined,
             },
         })
 

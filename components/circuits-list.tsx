@@ -6,6 +6,14 @@ import Image from "next/image"
 import { ArrowRight, X, Check, ChevronDown } from "lucide-react"
 import { FavoriteButton } from "@/components/favorite-button"
 import { Button } from "@/components/ui/button"
+import { useI18n } from "@/components/i18n/i18n-provider"
+import { fmt, labelFor } from "@/lib/i18n/format"
+import type { Messages } from "@/lib/i18n/messages"
+
+export interface CircuitsListMessages {
+    list: Messages["circuitsList"]
+    categories: Record<string, string>
+}
 
 interface Circuit {
     id: string
@@ -27,38 +35,22 @@ type TourTypeFilter = "all" | "Luxury & Grand Tours" | "Desert & Sahara" | "Impe
 type PriceFilter = "all" | "under-1500" | "1500-2000" | "2000-2500" | "2500+"
 type SortOption = "default" | "price-asc" | "price-desc" | "duration-asc" | "duration-desc"
 
-const DURATION_OPTIONS: { value: DurationFilter; label: string }[] = [
-    { value: "all", label: "All Durations" },
-    { value: "5", label: "5 Days" },
-    { value: "6-7", label: "6-7 Days" },
-    { value: "8-9", label: "8-9 Days" },
-    { value: "10-13", label: "10-13 Days" },
+// Filter values stay in English — they are matched against the English
+// category stored on each circuit. Only the labels are translated.
+const DURATION_VALUES: DurationFilter[] = ["all", "5", "6-7", "8-9", "10-13"]
+
+const TOUR_TYPE_VALUES: TourTypeFilter[] = [
+    "all",
+    "Luxury & Grand Tours",
+    "Desert & Sahara",
+    "Imperial Cities",
+    "Honeymoon & Couples",
+    "Family with Kids",
 ]
 
-const TOUR_TYPE_OPTIONS: { value: TourTypeFilter; label: string }[] = [
-    { value: "all", label: "All Types" },
-    { value: "Luxury & Grand Tours", label: "Luxury & Grand Tours" },
-    { value: "Desert & Sahara", label: "Desert & Sahara" },
-    { value: "Imperial Cities", label: "Imperial Cities" },
-    { value: "Honeymoon & Couples", label: "Honeymoon & Couples" },
-    { value: "Family with Kids", label: "Family with Kids" },
-]
+const PRICE_VALUES: PriceFilter[] = ["all", "under-1500", "1500-2000", "2000-2500", "2500+"]
 
-const PRICE_OPTIONS: { value: PriceFilter; label: string }[] = [
-    { value: "all", label: "All Prices" },
-    { value: "under-1500", label: "Under $1,500" },
-    { value: "1500-2000", label: "$1,500 – $2,000" },
-    { value: "2000-2500", label: "$2,000 – $2,500" },
-    { value: "2500+", label: "$2,500+" },
-]
-
-const SORT_LABELS: Record<SortOption, string> = {
-    default: "Featured",
-    "price-asc": "Price: Low to High",
-    "price-desc": "Price: High to Low",
-    "duration-asc": "Duration: Short to Long",
-    "duration-desc": "Duration: Long to Short",
-}
+const SORT_VALUES: SortOption[] = ["default", "price-asc", "price-desc", "duration-asc", "duration-desc"]
 
 function matchesDuration(days: number, filter: DurationFilter): boolean {
     if (filter === "all") return true
@@ -119,7 +111,12 @@ function FilterCheckbox<T extends string>({
     )
 }
 
-function CircuitsListContent({ circuits }: { circuits: Circuit[] }) {
+function CircuitsListContent({ circuits, messages }: { circuits: Circuit[]; messages: CircuitsListMessages }) {
+    const { lp } = useI18n()
+    const t = messages.list
+    const durationOptions = DURATION_VALUES.map((value) => ({ value, label: t.durations[value] }))
+    const tourTypeOptions = TOUR_TYPE_VALUES.map((value) => ({ value, label: t.types[value] }))
+    const priceOptions = PRICE_VALUES.map((value) => ({ value, label: t.prices[value] }))
     const [duration, setDuration] = useState<DurationFilter>("all")
     const [tourType, setTourType] = useState<TourTypeFilter>("all")
     const [price, setPrice] = useState<PriceFilter>("all")
@@ -162,10 +159,10 @@ function CircuitsListContent({ circuits }: { circuits: Circuit[] }) {
                     {/* 1. Trip Duration */}
                     <div className="space-y-3">
                         <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">
-                            Trip Duration
+                            {t.tripDuration}
                         </p>
                         <FilterCheckbox
-                            options={DURATION_OPTIONS}
+                            options={durationOptions}
                             value={duration}
                             onChange={setDuration}
                         />
@@ -174,10 +171,10 @@ function CircuitsListContent({ circuits }: { circuits: Circuit[] }) {
                     {/* 2. Tour Type */}
                     <div className="space-y-3">
                         <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">
-                            Tour Type
+                            {t.tourType}
                         </p>
                         <FilterCheckbox
-                            options={TOUR_TYPE_OPTIONS}
+                            options={tourTypeOptions}
                             value={tourType}
                             onChange={setTourType}
                         />
@@ -186,10 +183,10 @@ function CircuitsListContent({ circuits }: { circuits: Circuit[] }) {
                     {/* 3. Price Range */}
                     <div className="space-y-3">
                         <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">
-                            Price Range
+                            {t.priceRange}
                         </p>
                         <FilterCheckbox
-                            options={PRICE_OPTIONS}
+                            options={priceOptions}
                             value={price}
                             onChange={setPrice}
                         />
@@ -202,11 +199,11 @@ function CircuitsListContent({ circuits }: { circuits: Circuit[] }) {
                     <div className="flex items-center gap-3">
                         <span className="block w-[3px] h-5 rounded-full bg-orange-400 flex-shrink-0" />
                         <p className="text-sm text-gray-500">
-                            Showing{" "}
+                            {t.showingBefore}{" "}
                             <span className="font-semibold text-gray-800">{filtered.length}</span>
-                            {" "}of{" "}
+                            {" "}{t.showingOf}{" "}
                             <span className="font-semibold text-gray-800">{circuits.length}</span>{" "}
-                            tours
+                            {t.showingAfter}
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
@@ -215,11 +212,11 @@ function CircuitsListContent({ circuits }: { circuits: Circuit[] }) {
                             <select
                                 value={sort}
                                 onChange={(e) => setSort(e.target.value as SortOption)}
-                                aria-label="Sort tours"
+                                aria-label={t.sortAria}
                                 className="h-9 rounded-lg border border-gray-200 bg-gray-50/60 px-3 pr-8 text-sm font-medium text-gray-700 appearance-none focus:outline-none focus:ring-2 focus:ring-orange-400/40 focus:border-orange-400 transition-all cursor-pointer"
                             >
-                                {(Object.keys(SORT_LABELS) as SortOption[]).map((key) => (
-                                    <option key={key} value={key}>{SORT_LABELS[key]}</option>
+                                {SORT_VALUES.map((key) => (
+                                    <option key={key} value={key}>{t.sort[key]}</option>
                                 ))}
                             </select>
                             <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" aria-hidden="true" />
@@ -233,7 +230,7 @@ function CircuitsListContent({ circuits }: { circuits: Circuit[] }) {
                                 className="text-orange-500 hover:text-orange-600 hover:bg-orange-50 gap-1.5"
                             >
                                 <X className="h-3.5 w-3.5" aria-hidden="true" />
-                                Clear filters
+                                {t.clear}
                             </Button>
                         )}
                     </div>
@@ -244,8 +241,8 @@ function CircuitsListContent({ circuits }: { circuits: Circuit[] }) {
                 <div className="text-center py-20 bg-white rounded-md shadow-sm border border-gray-100">
                     <p className="text-gray-400">
                         {circuits.length === 0
-                            ? "No journeys available at the moment."
-                            : "No tours match your filters."}
+                            ? t.emptyAll
+                            : t.emptyFiltered}
                     </p>
                     {circuits.length > 0 && hasActiveFilters && (
                         <Button
@@ -255,7 +252,7 @@ function CircuitsListContent({ circuits }: { circuits: Circuit[] }) {
                             onClick={resetFilters}
                             className="mt-4"
                         >
-                            Clear filters
+                            {t.clear}
                         </Button>
                     )}
                 </div>
@@ -264,23 +261,23 @@ function CircuitsListContent({ circuits }: { circuits: Circuit[] }) {
                     {filtered.map((circuit) => (
                         <Link
                             key={circuit.id}
-                            href={`/circuits/${circuit.slug}`}
+                            href={lp(`/circuits/${circuit.slug}`)}
                             className="group block"
-                            aria-label={`View tour: ${circuit.name} - ${circuit.duration} days from $${circuit.price}`}
+                            aria-label={fmt(t.cardAria, { name: circuit.name, days: circuit.duration, price: circuit.price })}
                         >
                             <article className="bg-white rounded-md overflow-hidden shadow-[0_2px_20px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-500 h-full flex flex-col transform hover:-translate-y-1">
                                 <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
                                     {circuit.images[0] ? (
                                         <Image
                                             src={circuit.images[0]}
-                                            alt={`${circuit.name} – ${circuit.duration}-day Morocco tour`}
+                                            alt={fmt(t.imageAlt, { name: circuit.name, days: circuit.duration })}
                                             fill
                                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                             className="object-cover transform group-hover:scale-110 transition-transform duration-700"
                                         />
                                     ) : (
                                         <div className="flex items-center justify-center h-full text-gray-300 bg-gray-50">
-                                            <span className="text-sm">No Image</span>
+                                            <span className="text-sm">{t.noImage}</span>
                                         </div>
                                     )}
                                     <div className="absolute top-4 right-4 z-10">
@@ -288,7 +285,7 @@ function CircuitsListContent({ circuits }: { circuits: Circuit[] }) {
                                     </div>
                                     <div className="absolute top-4 left-4">
                                         <span className="inline-block px-3 py-1 rounded-md bg-white/95 text-xs font-semibold text-gray-700 uppercase tracking-wide shadow-sm border border-gray-100">
-                                            {circuit.category}
+                                            {labelFor(messages.categories, circuit.category)}
                                         </span>
                                     </div>
                                 </div>
@@ -296,11 +293,11 @@ function CircuitsListContent({ circuits }: { circuits: Circuit[] }) {
                                 <div className="p-8 flex flex-col flex-1">
                                     <div className="mb-4">
                                         <div className="flex items-center justify-between text-xs font-medium text-gray-400 uppercase tracking-widest mb-2">
-                                            <span>{circuit.duration} Days</span>
+                                            <span>{fmt(t.days, { days: circuit.duration })}</span>
                                             <div className="flex flex-col items-end">
                                                 <p className="text-xl text-foreground font-bold">
                                                     ${circuit.price}{" "}
-                                                    <span className="text-muted-foreground text-sm font-medium">/ person</span>
+                                                    <span className="text-muted-foreground text-sm font-medium">{t.perPerson}</span>
                                                 </p>
                                                 {circuit.originalPrice != null && (
                                                     <span className="text-sm text-muted-foreground line-through">${circuit.originalPrice}</span>
@@ -317,7 +314,7 @@ function CircuitsListContent({ circuits }: { circuits: Circuit[] }) {
                                     </p>
 
                                     <div className="flex items-center text-gray-900 font-medium text-sm group-hover:translate-x-2 transition-transform duration-300">
-                                        View Itinerary <ArrowRight className="ml-2 h-4 w-4 text-orange-400" aria-hidden="true" />
+                                        {t.viewItinerary} <ArrowRight className="ml-2 h-4 w-4 text-orange-400" aria-hidden="true" />
                                     </div>
                                 </div>
                             </article>
@@ -329,10 +326,10 @@ function CircuitsListContent({ circuits }: { circuits: Circuit[] }) {
     )
 }
 
-export function CircuitsList({ circuits }: { circuits: Circuit[] }) {
+export function CircuitsList({ circuits, messages }: { circuits: Circuit[]; messages: CircuitsListMessages }) {
     return (
         <Suspense fallback={<div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-10 h-64 animate-pulse" />}>
-            <CircuitsListContent circuits={circuits} />
+            <CircuitsListContent circuits={circuits} messages={messages} />
         </Suspense>
     )
 }

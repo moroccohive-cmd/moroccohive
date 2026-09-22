@@ -11,6 +11,11 @@ import Link from "next/link"
 import { ImageUpload } from "@/components/image-upload"
 import { Switch } from "@/components/ui/switch"
 import { RichTextEditor } from "@/components/rich-text-editor"
+import {
+    CIRCUIT_TRANSLATION_FIELDS,
+    LanguageTabs,
+    type TranslationsValue,
+} from "@/components/dashboard/translations-editor"
 
 export default function AddCircuitPage() {
     const router = useRouter()
@@ -36,6 +41,7 @@ export default function AddCircuitPage() {
         mapUrl: "",
         featured: false,
         active: true,
+        translations: {} as TranslationsValue,
     })
 
     const [currentHighlight, setCurrentHighlight] = useState("")
@@ -108,6 +114,12 @@ export default function AddCircuitPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+                <LanguageTabs
+                    fields={CIRCUIT_TRANSLATION_FIELDS}
+                    value={formData.translations}
+                    onChange={(translations) => setFormData({ ...formData, translations })}
+                    source={formData}
+                >
                 {/* Basic Information */}
                 <div className="bg-card border border-border rounded-lg p-6 space-y-4">
                     <h2 className="text-lg font-semibold text-foreground">Basic Information</h2>
@@ -435,6 +447,7 @@ export default function AddCircuitPage() {
                     </div>
                 </div>
 
+
                 {/* Settings */}
                 <div className="bg-card border border-border rounded-lg p-6 space-y-4">
                     <h2 className="text-lg font-semibold text-foreground">Settings</h2>
@@ -467,6 +480,7 @@ export default function AddCircuitPage() {
                         </div>
                     </div>
                 </div>
+                </LanguageTabs>
 
                 {/* Submit */}
                 <div className="flex gap-4">

@@ -18,6 +18,14 @@ const nextConfig: NextConfig = {
     experimental: {
         optimizePackageImports: ['lucide-react', '@radix-ui/react-dialog', '@radix-ui/react-select', '@radix-ui/react-tabs', '@radix-ui/react-slider'],
     },
+    // English is served at unprefixed URLs. /en/... would be a duplicate of
+    // every page, so it permanently redirects to the canonical English URL.
+    async redirects() {
+        return [
+            { source: "/en", destination: "/", permanent: true },
+            { source: "/en/:path*", destination: "/:path*", permanent: true },
+        ];
+    },
     async headers() {
         return [
             // robots.txt only asks crawlers not to fetch these — a URL linked from

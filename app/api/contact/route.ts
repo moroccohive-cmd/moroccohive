@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
 import { checkRateLimit } from "@/lib/limiter";
+import { isLocale } from "@/lib/i18n/config"
 
 // Validation helpers
 const NAME_REGEX = /^[a-zA-Z\s]+$/
@@ -82,6 +83,7 @@ export async function POST(request: NextRequest) {
                 phone: phone.trim(),
                 subject: subject?.trim() || "",
                 message: trimmedMessage,
+                locale: isLocale(body.locale) ? body.locale : null,
                 status: "new",
             },
         })

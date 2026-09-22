@@ -10,6 +10,11 @@ import { ArrowLeft, Save, Plus, X, Image as ImageIcon } from "lucide-react"
 import Link from "next/link"
 import { Switch } from "@/components/ui/switch"
 import { RichTextEditor } from "@/components/rich-text-editor"
+import {
+    BLOG_TRANSLATION_FIELDS,
+    LanguageTabs,
+    type TranslationsValue,
+} from "@/components/dashboard/translations-editor"
 import { ImageUpload } from "@/components/image-upload"
 
 export default function NewBlogPostPage() {
@@ -24,6 +29,7 @@ export default function NewBlogPostPage() {
         author: "Admin",
         tags: [] as string[],
         published: false,
+        translations: {} as TranslationsValue,
     })
 
     const [currentTag, setCurrentTag] = useState("")
@@ -85,6 +91,12 @@ export default function NewBlogPostPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+                <LanguageTabs
+                    fields={BLOG_TRANSLATION_FIELDS}
+                    value={formData.translations}
+                    onChange={(translations) => setFormData({ ...formData, translations })}
+                    source={formData}
+                >
                 <div className="bg-card border border-border rounded-lg p-6 space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="title">Post Title *</Label>
@@ -192,6 +204,7 @@ export default function NewBlogPostPage() {
                         </div>
                     </div>
                 </div>
+                </LanguageTabs>
 
                 <div className="flex gap-4">
                     <Button type="submit" disabled={saving} className="bg-primary hover:bg-primary/90 text-primary-foreground min-w-[140px]">

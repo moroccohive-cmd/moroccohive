@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
-import { revalidatePath } from "next/cache"
+import { revalidateLocalizedPath as revalidatePath } from "@/lib/i18n/revalidate"
 import prisma from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { checkRateLimit } from "@/lib/limiter";
+import { sanitizeTranslations } from "@/lib/i18n/content"
 
 export async function GET(
     request: NextRequest,
@@ -56,6 +57,9 @@ export async function PATCH(
         // Remove immutable fields
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { id: _id, createdAt, updatedAt, ...updateData } = body
+        if ("translations" in updateData) {
+            updateData.translations = sanitizeTranslations("circuit", updateData.translations) ?? {}
+        }
 
         const circuit = await prisma.circuit.update({
             where: { id },

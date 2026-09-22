@@ -1,14 +1,22 @@
 "use client"
 
 import { usePathname } from "next/navigation"
+import { splitLocale } from "@/lib/i18n/config"
+import { common as en } from "@/lib/i18n/messages/common/en"
+import { common as fr } from "@/lib/i18n/messages/common/fr"
+import { common as nl } from "@/lib/i18n/messages/common/nl"
+
+// Rendered by the root layout, outside the per-language provider, so the
+// label is picked from the URL instead. These are three short strings.
+const LABELS = { en: en.whatsapp, fr: fr.whatsapp, nl: nl.whatsapp }
 
 export function WhatsAppButton() {
-    const pathname = usePathname()
+    const { locale, path } = splitLocale(usePathname() || "/")
     const whatsappNumber = "212681134299"
     const whatsappLink = `https://wa.me/${whatsappNumber}`
 
     // Hide on mobile for blog and circuits pages (where we have the bottom CTA)
-    const shouldHideOnMobile = pathname?.startsWith('/blog') || pathname?.startsWith('/circuits')
+    const shouldHideOnMobile = path.startsWith('/blog') || path.startsWith('/circuits')
 
     return (
         <a
@@ -16,7 +24,7 @@ export function WhatsAppButton() {
             target="_blank"
             rel="noopener noreferrer"
             className={`fixed bottom-6 right-6 z-50! items-center justify-center w-12 h-12 bg-[#25D366] hover:bg-[#20BA5A] text-white rounded-full shadow-lg transition-all duration-200 hover:scale-110 ${shouldHideOnMobile ? 'hidden md:flex' : 'flex'}`}
-            aria-label="Contact us on WhatsApp"
+            aria-label={LABELS[locale]}
         >
             <svg fill="#ffffff" width="26px" height="26px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
                 <title>whatsapp</title>

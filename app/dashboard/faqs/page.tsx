@@ -7,6 +7,13 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { HelpCircle, Plus, Trash, Search, Pencil, Home, EyeOff } from "lucide-react"
+import {
+    FAQ_TRANSLATION_FIELDS,
+    LanguageTabs,
+    type TranslationsValue,
+} from "@/components/dashboard/translations-editor"
+import { LOCALE_META, PREFIXED_LOCALES } from "@/lib/i18n/config"
+import { availableLocales } from "@/lib/i18n/content"
 
 interface Faq {
     id: string
@@ -17,6 +24,7 @@ interface Faq {
     active: boolean
     order: number
     createdAt: string
+    translations?: TranslationsValue | null
 }
 
 const EMPTY_FORM = {
@@ -26,6 +34,7 @@ const EMPTY_FORM = {
     showOnHome: false,
     active: true,
     order: 0,
+    translations: {} as TranslationsValue,
 }
 
 type FormState = typeof EMPTY_FORM
@@ -74,6 +83,7 @@ export default function FaqsPage() {
             showOnHome: faq.showOnHome,
             active: faq.active,
             order: faq.order,
+            translations: faq.translations ?? {},
         })
         setError(null)
         setShowForm(true)
@@ -189,6 +199,12 @@ export default function FaqsPage() {
                         </div>
                     )}
                     <form onSubmit={handleSubmit} className="space-y-4">
+                        <LanguageTabs
+                            fields={FAQ_TRANSLATION_FIELDS}
+                            value={formData.translations}
+                            onChange={(translations) => setFormData({ ...formData, translations })}
+                            source={formData}
+                        >
                         <div className="space-y-1">
                             <Label>Question *</Label>
                             <Input
@@ -279,6 +295,7 @@ export default function FaqsPage() {
                                 </div>
                             </div>
                         </div>
+                        </LanguageTabs>
 
                         <div className="flex gap-3 justify-end">
                             <Button type="button" variant="outline" onClick={closeForm}>
@@ -326,6 +343,15 @@ export default function FaqsPage() {
                                 <div className="min-w-0 flex-1">
                                     <div className="flex flex-wrap items-center gap-2 mb-2">
                                         <span className="font-semibold text-foreground">{faq.question}</span>
+                                        {PREFIXED_LOCALES.filter((l) => availableLocales("faq", faq.translations).includes(l)).map((l) => (
+                                            <span
+                                                key={l}
+                                                title={`Translated into ${LOCALE_META[l].label}`}
+                                                className="rounded bg-green-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-green-700"
+                                            >
+                                                {LOCALE_META[l].short}
+                                            </span>
+                                        ))}
                                         {faq.category && (
                                             <span className="text-xs bg-secondary/50 text-secondary-foreground px-2 py-0.5 rounded-full font-medium">
                                                 {faq.category}

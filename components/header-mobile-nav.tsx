@@ -4,27 +4,29 @@ import { useState } from "react"
 import Link from "next/link"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useI18n } from "@/components/i18n/i18n-provider"
 
 const NAV_ITEMS = [
-  { name: "Home", href: "/" },
-  { name: "Trip Ideas", href: "/circuits" },
-  { name: "Destinations", href: "/destinations" },
-  { name: "Plan Your Trip", href: "/plan-trip" },
-  { name: "Blog", href: "/blog" },
-  { name: "Guest Reviews", href: "/reviews" },
-  { name: "FAQ", href: "/faq" },
-  { name: "About", href: "/about" },
-  { name: "Contact", href: "/contact" },
-]
+  { key: "home", href: "/" },
+  { key: "tripIdeas", href: "/circuits" },
+  { key: "destinations", href: "/destinations" },
+  { key: "planTrip", href: "/plan-trip" },
+  { key: "blog", href: "/blog" },
+  { key: "reviews", href: "/reviews" },
+  { key: "faq", href: "/faq" },
+  { key: "about", href: "/about" },
+  { key: "contact", href: "/contact" },
+] as const
 
 export function HeaderMobileNav() {
   const [open, setOpen] = useState(false)
+  const { common, lp } = useI18n()
 
   return (
     <>
       <button
         type="button"
-        aria-label={open ? "Close menu" : "Open menu"}
+        aria-label={open ? common.menu.close : common.menu.open}
         aria-expanded={open}
         aria-controls="mobile-menu"
         className="inline-flex items-center justify-center rounded-md p-2 text-foreground hover:bg-accent/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
@@ -38,17 +40,17 @@ export function HeaderMobileNav() {
           <div className="px-2 pt-2 pb-3 space-y-1">
             {NAV_ITEMS.map((item) => (
               <Link
-                key={item.name}
-                href={item.href}
+                key={item.key}
+                href={lp(item.href)}
                 className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-accent/10 hover:text-primary"
                 onClick={() => setOpen(false)}
               >
-                {item.name}
+                {common.nav[item.key]}
               </Link>
             ))}
-            <Link href="/plan-trip" className="block px-3 py-2" onClick={() => setOpen(false)}>
+            <Link href={lp("/plan-trip")} className="block px-3 py-2" onClick={() => setOpen(false)}>
               <Button size="sm" className="w-full bg-accent hover:bg-accent/90">
-                Start Planning
+                {common.menu.startPlanning}
               </Button>
             </Link>
           </div>

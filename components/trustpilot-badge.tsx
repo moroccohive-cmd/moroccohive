@@ -3,16 +3,18 @@ import Image from "next/image"
 
 interface TrustpilotBadgeProps {
   variant?: "light" | "dark"
+  /** Accessible name; pass the translated string on non-English pages. */
+  label?: string
 }
 
-export function TrustpilotBadge({ variant = "dark" }: TrustpilotBadgeProps) {
+export function TrustpilotBadge({ variant = "dark", label = "See our reviews on Trustpilot" }: TrustpilotBadgeProps) {
   return (
     <Link
       href="https://www.trustpilot.com/review/moroccohive.com"
       target="_blank"
       rel="noopener noreferrer"
       className="inline-flex items-center"
-      aria-label="See our reviews on Trustpilot"
+      aria-label={label}
     >
       <Image
         src="/trustpilot.webp"

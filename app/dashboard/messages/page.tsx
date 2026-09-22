@@ -1,5 +1,6 @@
 "use client"
 
+import { LocaleBadge } from "@/components/dashboard/locale-badge"
 import { useEffect, useState } from "react"
 import { Mail, Search, Eye, Trash, Phone } from "lucide-react"
 import { refreshAdminNotifications } from "@/hooks/use-admin-notifications"
@@ -13,6 +14,7 @@ interface ContactMessage {
     message: string
     status: string
     createdAt: string
+    locale?: string | null
 }
 
 /** The form writes "new"; the schema default is "unread". Both mean unhandled. */
@@ -185,6 +187,7 @@ export default function MessagesPage() {
                                             <h3 className={isUnread(message.status) ? "font-semibold text-foreground" : "font-medium text-muted-foreground"}>
                                                 {message.name}
                                             </h3>
+                                            <LocaleBadge locale={message.locale} />
                                             {isUnread(message.status) && (
                                                 <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full bg-destructive text-white">
                                                     New

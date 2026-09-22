@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
-import { revalidatePath } from "next/cache"
+import { revalidateLocalizedPath as revalidatePath } from "@/lib/i18n/revalidate"
 import prisma from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { checkRateLimit } from "@/lib/limiter"
+import { sanitizeTranslations } from "@/lib/i18n/content"
 
 async function requireAdmin() {
     const session = await auth.api.getSession({ headers: await headers() })
@@ -47,6 +48,9 @@ export async function PATCH(
         if (body.category !== undefined) data.category = body.category?.trim() || null
         if (body.showOnHome !== undefined) data.showOnHome = Boolean(body.showOnHome)
         if (body.active !== undefined) data.active = Boolean(body.active)
+        if (body.translations !== undefined) {
+            data.translations = sanitizeTranslations("faq", body.translations) ?? {}
+        }
         if (body.order !== undefined && Number.isFinite(Number(body.order))) {
             data.order = Number(body.order)
         }

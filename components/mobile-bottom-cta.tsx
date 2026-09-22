@@ -11,6 +11,8 @@ interface MobileBottomCTAProps {
     price?: number
     originalPrice?: number
     isFrom?: boolean
+    /** Label above a "from" price; translated on non-English pages. */
+    fromLabel?: string
     className?: string
 }
 
@@ -23,6 +25,7 @@ export function MobileBottomCTA({
     price,
     originalPrice,
     isFrom,
+    fromLabel = "From",
     className
 }: MobileBottomCTAProps) {
     // Only render if we have a button action (href or onClick)
@@ -37,7 +40,7 @@ export function MobileBottomCTA({
                 <div className="flex flex-col">
                     {(price !== undefined) ? (
                         <div className="flex flex-col">
-                            {isFrom && <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">From</span>}
+                            {isFrom && <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">{fromLabel}</span>}
                             <div className="flex items-baseline gap-2">
                                 <span className="text-xl font-bold text-primary">
                                     {price.toLocaleString()}$

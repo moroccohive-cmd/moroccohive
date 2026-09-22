@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useI18n } from "@/components/i18n/i18n-provider"
 
 interface PriceBadgeProps {
     price: number | null | undefined
@@ -15,10 +16,11 @@ function formatPrice(n?: number | null) {
 }
 
 export function PriceBadge({ price, originalPrice, from }: PriceBadgeProps) {
+    const { common } = useI18n()
     return (
         <div className="flex flex-col">
             <div className="flex flex-col items-baseline">
-                <span className="text-2xl font-bold">${formatPrice(price ?? 0)} <span className="text-muted-foreground font-medium">/ person</span></span>
+                <span className="text-2xl font-bold">${formatPrice(price ?? 0)} <span className="text-muted-foreground font-medium">{common.price.perPerson}</span></span>
                 {originalPrice != null && (
                     <span className="text-sm text-muted-foreground line-through">${formatPrice(originalPrice)}</span>
                 )}

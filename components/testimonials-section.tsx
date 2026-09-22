@@ -4,7 +4,14 @@ import Link from "next/link"
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { ReviewAvatar } from "@/components/review-avatar"
-import { ReviewCard, TrustStars } from "@/components/review-card"
+import {
+    DEFAULT_REVIEW_LABELS,
+    ReviewCard,
+    TrustStars,
+    type ReviewCardLabels,
+} from "@/components/review-card"
+import { useI18n } from "@/components/i18n/i18n-provider"
+import { LOCALE_META } from "@/lib/i18n/config"
 import {
     Dialog,
     DialogContent,
@@ -14,14 +21,35 @@ import {
 } from "@/components/ui/dialog"
 import type { PublicReview } from "@/lib/site-content"
 
+export interface TestimonialsMessages {
+    eyebrow: string
+    title: string
+    note: string
+    readAll: string
+    readAllAria: string
+    previous: string
+    next: string
+    rail: string
+}
+
+const DEFAULT_MESSAGES: TestimonialsMessages = {
+    eyebrow: "Guest Stories",
+    title: "What Our Travelers Say",
+    note: "Excerpts from public Trustpilot reviews of tours our guides led, quoted with permission.",
+    readAll: "Read All Reviews",
+    readAllAria: "Read all traveler reviews",
+    previous: "Previous reviews",
+    next: "Next reviews",
+    rail: "Traveler reviews",
+}
+
 interface TestimonialsSectionProps {
     reviews: PublicReview[]
     /** Attribution line under the heading. Pass an empty string to hide it. */
     note?: string
+    messages?: TestimonialsMessages
+    cardLabels?: ReviewCardLabels
 }
-
-const DEFAULT_NOTE =
-    "Excerpts from public Trustpilot reviews of tours our guides led, quoted with permission."
 
 /** Matches the `gap-5` between cards, so one click advances by exactly one card. */
 const CARD_GAP = 20
@@ -35,7 +63,13 @@ const AUTOPLAY_MS = 5000
  */
 const FIRST_ADVANCE_MS = 1200
 
-export function TestimonialsSection({ reviews, note = DEFAULT_NOTE }: TestimonialsSectionProps) {
+export function TestimonialsSection({
+    reviews,
+    messages: t = DEFAULT_MESSAGES,
+    note = t.note,
+    cardLabels = DEFAULT_REVIEW_LABELS,
+}: TestimonialsSectionProps) {
+    const { locale, lp } = useI18n()
     const railRef = useRef<HTMLDivElement>(null)
     const sectionRef = useRef<HTMLElement>(null)
     const [atStart, setAtStart] = useState(true)
@@ -153,10 +187,10 @@ export function TestimonialsSection({ reviews, note = DEFAULT_NOTE }: Testimonia
                 <div className="mb-12 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
                     <div className="space-y-3">
                         <span className="text-xs font-medium uppercase tracking-widest text-accent">
-                            Guest Stories
+                            {t.eyebrow}
                         </span>
                         <h2 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-                            What Our Travelers Say
+                            {t.title}
                         </h2>
                         {note ? (
                             <p className="max-w-2xl text-sm text-muted-foreground">{note}</p>
@@ -165,11 +199,11 @@ export function TestimonialsSection({ reviews, note = DEFAULT_NOTE }: Testimonia
 
                     <div className="flex items-center gap-6">
                         <Link
-                            href="/reviews"
+                            href={lp("/reviews")}
                             className="group flex items-center text-sm font-medium text-accent hover:text-accent/90"
-                            aria-label="Read all traveler reviews"
+                            aria-label={t.readAllAria}
                         >
-                            Read All Reviews
+                            {t.readAll}
                             <ArrowRight
                                 className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1"
                                 aria-hidden="true"
@@ -182,7 +216,7 @@ export function TestimonialsSection({ reviews, note = DEFAULT_NOTE }: Testimonia
                                     type="button"
                                     onClick={() => stepByCard(-1)}
                                     disabled={atStart}
-                                    aria-label="Previous reviews"
+                                    aria-label={t.previous}
                                     aria-controls="testimonials-rail"
                                     className="flex h-10 w-10 items-center justify-center rounded-full border border-border/70 bg-card text-foreground transition hover:border-accent hover:text-accent disabled:pointer-events-none disabled:opacity-40"
                                 >
@@ -192,7 +226,7 @@ export function TestimonialsSection({ reviews, note = DEFAULT_NOTE }: Testimonia
                                     type="button"
                                     onClick={() => stepByCard(1)}
                                     disabled={atEnd}
-                                    aria-label="Next reviews"
+                                    aria-label={t.next}
                                     aria-controls="testimonials-rail"
                                     className="flex h-10 w-10 items-center justify-center rounded-full border border-border/70 bg-card text-foreground transition hover:border-accent hover:text-accent disabled:pointer-events-none disabled:opacity-40"
                                 >
@@ -209,7 +243,7 @@ export function TestimonialsSection({ reviews, note = DEFAULT_NOTE }: Testimonia
                 ref={railRef}
                 id="testimonials-rail"
                 role="group"
-                aria-label="Traveler reviews"
+                aria-label={t.rail}
                 tabIndex={0}
                 className="overflow-x-auto pb-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                 // Only a real cursor pauses: touch fires emulated pointerenter
@@ -239,6 +273,8 @@ export function TestimonialsSection({ reviews, note = DEFAULT_NOTE }: Testimonia
                                 review={review}
                                 clamp
                                 onReadMore={() => setOpenReview(review)}
+                                locale={locale}
+                                labels={cardLabels}
                             />
                         </li>
                     ))}
@@ -263,7 +299,7 @@ export function TestimonialsSection({ reviews, note = DEFAULT_NOTE }: Testimonia
                                             openReview.authorLocation?.trim(),
                                         openReview.displayDate?.trim() ||
                                             new Date(openReview.createdAt).toLocaleDateString(
-                                                "en-US",
+                                                LOCALE_META[locale].intl,
                                                 { month: "long", year: "numeric" }
                                             ),
                                         openReview.source,
@@ -273,7 +309,7 @@ export function TestimonialsSection({ reviews, note = DEFAULT_NOTE }: Testimonia
                                 </DialogDescription>
                             </DialogHeader>
 
-                            <TrustStars rating={openReview.rating} size={18} />
+                            <TrustStars rating={openReview.rating} size={18} label={cardLabels.stars} />
 
                             <blockquote className="whitespace-pre-wrap text-[15px] leading-[1.75] text-foreground">
                                 {openReview.text}
@@ -281,9 +317,9 @@ export function TestimonialsSection({ reviews, note = DEFAULT_NOTE }: Testimonia
 
                             {openReview.circuit && (
                                 <p className="text-xs text-muted-foreground">
-                                    Tour:{" "}
+                                    {cardLabels.tour}{" "}
                                     <Link
-                                        href={`/circuits/${openReview.circuit.slug}`}
+                                        href={lp(`/circuits/${openReview.circuit.slug}`)}
                                         className="font-medium text-accent hover:underline"
                                     >
                                         {openReview.circuit.name}
