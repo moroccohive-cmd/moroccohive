@@ -54,11 +54,20 @@ model BlogPost {
   coverImage String?
   author     String?
   tags       String[]
-  /// Per-language overrides: { fr: { title, excerpt, content }, nl: {...} }
+  /// SEO overrides; fall back to the title and excerpt when empty
+  metaTitle       String?
+  metaDescription String?
+  faqs       BlogFaq[]
+  /// Per-language overrides: { fr: { title, excerpt, content, metaTitle, metaDescription, faqs }, nl: {...} }
   translations Json?
   published  Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+type BlogFaq {
+  question String
+  answer   String
 }
 
 model TripRequest {
@@ -95,7 +104,7 @@ model SiteSettings {
   id                    String   @id @default(auto()) @map("_id") @db.ObjectId
   paymentMethodsEnabled Boolean  @default(true)
   paymentMethodOptions  String[] @default(["Cash on arrival", "Bank transfer", "Credit card", "PayPal"])
-  enabledPaymentMethods String[] @default(["Deposit Payment", "Bank Transfer / SWIFT", "Credit Cards", "PayPal", "Payoneer"])
+  enabledPaymentMethods String[] @default(["Deposit Payment", "Bank Transfer / SWIFT", "Credit Cards", "PayPal", "Payoneer", "Wise", "Mercury"])
   
   // Budget Configuration
   budgetType            String   @default("dropdown") // "dropdown" or "slider"

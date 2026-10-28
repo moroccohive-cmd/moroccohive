@@ -7,7 +7,8 @@ import Link from "next/link"
 import Image from "next/image"
 import prisma from "@/lib/prisma"
 import { MobileBottomCTA } from "@/components/mobile-bottom-cta"
-import { ArticleSchema, BreadcrumbSchema } from "@/components/structured-data"
+import { ArticleSchema, BreadcrumbSchema, FAQSchema } from "@/components/structured-data"
+import { FAQItem } from "@/components/faq-item"
 import { buildMetadata, truncate } from "@/lib/seo"
 import { localizePath, type Locale } from "@/lib/i18n/config"
 import { getMessages } from "@/lib/i18n/messages"
@@ -41,8 +42,9 @@ export async function blogPostMetadata(slug: string, locale: Locale): Promise<Me
         : null
 
     return buildMetadata({
-        title: post.title,
-        description: truncate(post.excerpt || post.content, 155),
+        title: post.metaTitle || post.title,
+        absoluteTitle: !!post.metaTitle,
+        description: post.metaDescription || truncate(post.excerpt || post.content, 155),
         path: `/blog/${post.slug}`,
         images: ogImage ? [ogImage] : undefined,
         type: "article",
@@ -162,6 +164,17 @@ export async function BlogPostView({ slug, locale }: { slug: string; locale: Loc
                         dangerouslySetInnerHTML={{ __html: renderHTML(post.content) }}
                     />
 
+                    {post.faqs?.length > 0 && (
+                        <section className="mt-16" aria-labelledby="blog-faq-title">
+                            <h2 id="blog-faq-title" className="text-3xl font-bold mb-6">{t.faqTitle}</h2>
+                            <div className="space-y-4">
+                                {post.faqs.map((faq, idx) => (
+                                    <FAQItem key={idx} question={faq.question} answer={faq.answer} />
+                                ))}
+                            </div>
+                        </section>
+                    )}
+
                     {/* Tags */}
                     {post.tags && post.tags.length > 0 && (
                         <div className="mt-16 flex flex-wrap gap-2 pt-8 border-t border-border">
@@ -201,6 +214,7 @@ export async function BlogPostView({ slug, locale }: { slug: string; locale: Loc
                 tags={post.tags}
                 wordCount={post.content.split(/\s+/).filter(Boolean).length}
             />
+            <FAQSchema items={(post.faqs ?? []).map((f) => ({ q: f.question, a: f.answer }))} />
 
             <Footer locale={locale} />
         </main>

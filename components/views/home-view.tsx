@@ -141,12 +141,12 @@ export async function HomeView({ locale }: { locale: Locale }) {
         <section className="relative h-[85vh] flex items-center justify-center overflow-hidden">
           <HeroBackgroundSlider alts={t.heroSlider.alts} showLabel={t.heroSlider.show} />
 
-          <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
-            <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight leading-[1.1] mb-6">
+          <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
+            <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight leading-[1.1] mb-6 text-balance">
               {h.heroTitle}
             </h1>
 
-            <p className="text-base md:text-2xl text-white/90 font-light leading-relaxed max-w-2xl mx-auto mb-6 md:mb-10">
+            <p className="text-base md:text-2xl text-white/90 font-light leading-relaxed max-w-3xl mx-auto mb-6 md:mb-10 text-balance">
               {h.heroSubtitle}
             </p>
 

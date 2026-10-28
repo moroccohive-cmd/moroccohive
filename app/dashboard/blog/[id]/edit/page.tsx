@@ -16,6 +16,7 @@ import {
     type TranslationsValue,
 } from "@/components/dashboard/translations-editor"
 import { ImageUpload } from "@/components/image-upload"
+import { FaqListEditor, type FaqValue } from "@/components/dashboard/faq-list-editor"
 
 export default function EditBlogPostPage() {
     const router = useRouter()
@@ -30,6 +31,9 @@ export default function EditBlogPostPage() {
         coverImage: "",
         author: "",
         tags: [] as string[],
+        metaTitle: "",
+        metaDescription: "",
+        faqs: [] as FaqValue[],
         published: false,
         translations: {} as TranslationsValue,
     })
@@ -47,7 +51,13 @@ export default function EditBlogPostPage() {
             })
             if (response.ok) {
                 const data = await response.json()
-                setFormData({ ...data, translations: data.translations ?? {} })
+                setFormData({
+                    ...data,
+                    metaTitle: data.metaTitle ?? "",
+                    metaDescription: data.metaDescription ?? "",
+                    faqs: data.faqs ?? [],
+                    translations: data.translations ?? {},
+                })
             }
         } catch (error) {
             console.error("Failed to fetch:", error)
@@ -179,6 +189,56 @@ export default function EditBlogPostPage() {
                         value={formData.content}
                         onChange={(val) => setFormData({ ...formData, content: val })}
                         placeholder="Start writing your story..."
+                    />
+                </div>
+
+                <div className="bg-card border border-border rounded-lg p-6 space-y-4">
+                    <div>
+                        <Label>SEO</Label>
+                        <p className="text-sm text-muted-foreground mt-1">Leave empty to use the post title and excerpt.</p>
+                    </div>
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                            <Label htmlFor="metaTitle">Meta Title</Label>
+                            <span className={`text-xs ${(formData.metaTitle || "").length > 60 ? "text-amber-600" : "text-muted-foreground"}`}>
+                                {(formData.metaTitle || "").length}/60
+                            </span>
+                        </div>
+                        <Input
+                            id="metaTitle"
+                            value={formData.metaTitle || ""}
+                            onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
+                            placeholder={formData.title || "Shown in search results and browser tabs"}
+                            className="bg-background border-input"
+                        />
+                        <p className="text-xs text-muted-foreground">Used exactly as written - the &quot;| Morocco Hive&quot; suffix is not added.</p>
+                    </div>
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                            <Label htmlFor="metaDescription">Meta Description</Label>
+                            <span className={`text-xs ${(formData.metaDescription || "").length > 160 ? "text-amber-600" : "text-muted-foreground"}`}>
+                                {(formData.metaDescription || "").length}/160
+                            </span>
+                        </div>
+                        <Textarea
+                            id="metaDescription"
+                            value={formData.metaDescription || ""}
+                            onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
+                            placeholder={formData.excerpt || "The summary shown under the title in search results"}
+                            rows={3}
+                            className="bg-background border-input resize-none"
+                        />
+                    </div>
+                </div>
+
+                <div className="bg-card border border-border rounded-lg p-6 space-y-4">
+                    <div>
+                        <Label>FAQs</Label>
+                        <p className="text-sm text-muted-foreground mt-1">Shown at the end of the post and marked up as an FAQ for search engines.</p>
+                    </div>
+                    <FaqListEditor
+                        value={formData.faqs}
+                        onChange={(faqs) => setFormData({ ...formData, faqs })}
                     />
                 </div>
 

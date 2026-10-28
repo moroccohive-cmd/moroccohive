@@ -144,20 +144,19 @@ export const en = {
 
     heroSlider: {
         alts: [
-            "Luxury Sahara desert camp at sunset with a camel caravan on the dunes - private tour by MoroccoHive",
-            "Marrakech - the Koutoubia Mosque minaret with the snow-capped Atlas Mountains behind it",
-            "Chefchaouen - the blue-washed houses of the medina climbing the Rif mountainside",
-            "Fes - the Chouara tannery dye pits in the heart of the old medina",
             "Ait Ben Haddou - the fortified earthen ksar on the edge of the Sahara",
-            "Essaouira - the seafront ramparts of the old town above the Atlantic",
+            "Volubilis - the Roman basilica arches and Triumphal Arch near Meknes",
+            "Casablanca - the Hassan II Mosque and its 210-metre minaret on the Atlantic shore",
+            "Merzouga - a camel caravan crossing the golden Erg Chebbi dunes",
+            "Fes - the Chouara tannery dye pits in the heart of the old medina",
         ],
         show: "Show background image {n}",
     },
 
     home: {
-        heroTitle: "Private Morocco Tours Built by a Local Who Actually Lives Here",
+        heroTitle: "Discover Morocco Through a Local's Eyes",
         heroSubtitle:
-            "100% customizable private tours. Expert local guides. No group tours. From Sahara camps to medina walks — designed exactly how you want it.",
+            "No crowds, no fixed schedules. Just a trip designed around what you love.",
         bookCta: "Book a Private Tour",
         viewToursCta: "View Our Tours",
         travelersGuided: "200+ Travelers Guided",
@@ -246,7 +245,7 @@ export const en = {
             {
                 role: "Professional Driver & Tour Guide",
                 description:
-                    "Hello, my name is Abdellatif Iggui, and I have been a driver and tour guide in Morocco for over 7 years. I've led more than 210 trips across the country, from Casablanca and Marrakech to the Atlas Mountains and the Sahara. I know the roads, the timing, and the stops that most itineraries miss. Every route I drive is one I know well.",
+                    "Hello, my name is Abdellatif Iggui, and I have been a driver and tour guide in Morocco for over 10 years. I've led more than 200 trips across the country, from Casablanca and Marrakech to the Atlas Mountains and the Sahara. I know the roads, the timing, and the stops that most itineraries miss. Every route I drive is one I know well.",
             },
         ],
         readMore: "Read More",
@@ -469,6 +468,8 @@ export const en = {
             "Credit Cards": "Credit Cards (Visa, Mastercard, Amex)",
             PayPal: "PayPal",
             Payoneer: "Payoneer",
+            Wise: "Wise",
+            Mercury: "Mercury",
         } as Record<string, string>,
         depositTitle: "Deposit Payment Information:",
         depositLine1: "To confirm your booking, a 20% deposit is required.",
@@ -568,6 +569,7 @@ export const en = {
         mobileDescription: "Chat with a local specialist",
         mobileButton: "Get Started",
         englishOnly: "",
+        faqTitle: "Frequently Asked Questions",
     },
 
     faq: {

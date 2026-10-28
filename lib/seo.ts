@@ -30,7 +30,7 @@ export const SITE = {
     foundingLocation: "Marrakech, Morocco",
     priceRange: "$$-$$$",
     currenciesAccepted: "USD, EUR, MAD",
-    paymentAccepted: "Cash, Credit Card, Bank Transfer, PayPal",
+    paymentAccepted: "Cash, Credit Card, Bank Transfer, PayPal, Payoneer, Wise, Mercury",
     languages: ["English", "French", "Arabic", "Spanish"],
     twitter: "@moroccohive",
 } as const
@@ -163,6 +163,8 @@ interface BuildMetadataOptions {
     authors?: string[]
     tags?: string[]
     noIndex?: boolean
+    /** Use the title as-is, without the site-wide "| Morocco Hive" suffix. */
+    absoluteTitle?: boolean
 }
 
 /**
@@ -181,6 +183,7 @@ export function buildMetadata({
     authors,
     tags,
     noIndex = false,
+    absoluteTitle = false,
     locale = DEFAULT_LOCALE,
     locales = LOCALES,
 }: BuildMetadataOptions): Metadata {
@@ -197,7 +200,7 @@ export function buildMetadata({
     }))
 
     return {
-        title,
+        title: absoluteTitle ? { absolute: title } : title,
         description,
         alternates,
         ...(noIndex ? { robots: { index: false, follow: false } } : {}),

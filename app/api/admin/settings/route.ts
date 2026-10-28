@@ -28,7 +28,7 @@ export async function GET() {
                 data: {
                     paymentMethodsEnabled: true,
                     paymentMethodOptions: ["Cash on arrival", "Bank transfer", "Credit card", "PayPal"],
-                    enabledPaymentMethods: ["Deposit Payment", "Bank Transfer / SWIFT", "Credit Cards", "PayPal", "Payoneer"],
+                    enabledPaymentMethods: ["Deposit Payment", "Bank Transfer / SWIFT", "Credit Cards", "PayPal", "Payoneer", "Wise", "Mercury"],
                     budgetType: "dropdown",
                     budgetDropdownOptions: ["$500-$1000", "$1000-$2000", "$2000-$3500", "$3500+"],
                     budgetMin: 500,
@@ -97,7 +97,7 @@ export async function PATCH(request: NextRequest) {
                 data: {
                     paymentMethodsEnabled: paymentMethodsEnabled ?? true,
                     paymentMethodOptions: paymentMethodOptions ?? ["Cash on arrival", "Bank transfer", "Credit card", "PayPal"],
-                    enabledPaymentMethods: enabledPaymentMethods ?? ["Deposit Payment", "Bank Transfer / SWIFT", "Credit Cards", "PayPal", "Payoneer"],
+                    enabledPaymentMethods: enabledPaymentMethods ?? ["Deposit Payment", "Bank Transfer / SWIFT", "Credit Cards", "PayPal", "Payoneer", "Wise", "Mercury"],
                     budgetType: budgetType ?? "dropdown",
                     budgetDropdownOptions: budgetDropdownOptions ?? ["$500-$1000", "$1000-$2000", "$2000-$3500", "$3500+"],
                     budgetMin: budgetMin ?? 500,

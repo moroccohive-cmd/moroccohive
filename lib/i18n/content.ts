@@ -28,7 +28,7 @@ export const TRANSLATABLE_FIELDS = {
         "itineraryDetail",
         "additionalInfo",
     ],
-    blog: ["title", "excerpt", "content"],
+    blog: ["title", "excerpt", "content", "metaTitle", "metaDescription", "faqs"],
     faq: ["question", "answer", "category"],
 } as const
 
@@ -40,8 +40,45 @@ export const REQUIRED_FIELDS = {
 
 export type ContentKind = keyof typeof TRANSLATABLE_FIELDS
 
-type TranslationValue = string | string[]
+export type FaqValue = { question: string; answer: string }
+type TranslationValue = string | string[] | FaqValue[]
 type TranslationEntry = Record<string, TranslationValue>
+
+/**
+ * Fields holding question/answer pairs. A translation lines up with the
+ * English list by position, and each half falls back to English on its own.
+ */
+const FAQ_FIELDS = new Set<string>(["faqs"])
+
+function faqPart(item: unknown, key: keyof FaqValue): string {
+    if (!item || typeof item !== "object") return ""
+    const value = (item as Record<string, unknown>)[key]
+    return typeof value === "string" ? value.trim() : ""
+}
+
+/** English FAQ list from the admin API: complete pairs only, trimmed. */
+export function sanitizeFaqs(input: unknown): FaqValue[] {
+    if (!Array.isArray(input)) return []
+    return input
+        .map((item) => ({ question: faqPart(item, "question"), answer: faqPart(item, "answer") }))
+        .filter((faq) => faq.question && faq.answer)
+}
+
+/** Translated FAQ list: positions kept (empties included) so it stays aligned with English. */
+function cleanFaqTranslation(input: unknown): FaqValue[] | undefined {
+    if (!Array.isArray(input)) return undefined
+    const items = input.map((item) => ({ question: faqPart(item, "question"), answer: faqPart(item, "answer") }))
+    return items.some((faq) => faq.question || faq.answer) ? items : undefined
+}
+
+function mergeFaqs(english: unknown, translated: unknown): FaqValue[] | undefined {
+    const items = cleanFaqTranslation(translated)
+    if (!items || !Array.isArray(english)) return undefined
+    return english.map((faq, i) => ({
+        question: items[i]?.question || faqPart(faq, "question"),
+        answer: items[i]?.answer || faqPart(faq, "answer"),
+    }))
+}
 
 function entryFor(translations: unknown, locale: Locale): TranslationEntry | null {
     if (!translations || typeof translations !== "object") return null
@@ -77,6 +114,11 @@ export function localizeRecord<T extends object>(
 
     const data = { ...record } as Record<string, unknown>
     for (const field of TRANSLATABLE_FIELDS[kind]) {
+        if (FAQ_FIELDS.has(field)) {
+            const faqs = mergeFaqs(data[field], entry[field])
+            if (faqs) data[field] = faqs
+            continue
+        }
         const translated = cleanValue(entry[field], Array.isArray(data[field]))
         // Anything missing, empty or of the wrong shape keeps the English value.
         if (translated !== undefined) data[field] = translated
@@ -114,7 +156,10 @@ export function sanitizeTranslations(kind: ContentKind, input: unknown): Record<
         const entry: TranslationEntry = {}
         for (const field of TRANSLATABLE_FIELDS[kind]) {
             const value = (raw as Record<string, unknown>)[field]
-            if (typeof value === "string" && value.trim()) {
+            if (FAQ_FIELDS.has(field)) {
+                const faqs = cleanFaqTranslation(value)
+                if (faqs) entry[field] = faqs
+            } else if (typeof value === "string" && value.trim()) {
                 entry[field] = value.trim()
             } else if (Array.isArray(value)) {
                 const items = value.filter((v): v is string => typeof v === "string" && v.trim().length > 0).map((v) => v.trim())

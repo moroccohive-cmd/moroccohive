@@ -86,6 +86,8 @@ export function CircuitDetailClient({ circuit, reviews }: Props) {
         { value: "Credit Cards", label: "Credit Cards (Visa, Mastercard, Amex)" },
         { value: "PayPal", label: "PayPal" },
         { value: "Payoneer", label: "Payoneer" },
+        { value: "Wise", label: "Wise" },
+        { value: "Mercury", label: "Mercury" },
     ]
     const [paymentMethodsEnabled, setPaymentMethodsEnabled] = useState(true)
     const [enabledPaymentMethods, setEnabledPaymentMethods] = useState<string[]>(PAYMENT_METHODS.map(m => m.value))

@@ -150,6 +150,8 @@ exports.Prisma.BlogPostScalarFieldEnum = {
   coverImage: 'coverImage',
   author: 'author',
   tags: 'tags',
+  metaTitle: 'metaTitle',
+  metaDescription: 'metaDescription',
   translations: 'translations',
   published: 'published',
   createdAt: 'createdAt',

@@ -6,16 +6,17 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { RichTextEditor } from "@/components/rich-text-editor"
+import { FaqTranslationEditor, type FaqValue } from "@/components/dashboard/faq-list-editor"
 import { DEFAULT_LOCALE, LOCALES, LOCALE_META, type Locale } from "@/lib/i18n/config"
 
-export type TranslationValue = string | string[]
+export type TranslationValue = string | string[] | FaqValue[]
 export type TranslationsValue = Partial<Record<Locale, Record<string, TranslationValue>>>
 
 export interface TranslationField {
     key: string
     label: string
-    /** list = one item per line; rich = the markdown editor used elsewhere. */
-    type: "text" | "textarea" | "list" | "rich"
+    /** list = one item per line; rich = the markdown editor used elsewhere; faqs = question/answer pairs. */
+    type: "text" | "textarea" | "list" | "rich" | "faqs"
     /** Needed before the language version is published and indexed. */
     required?: boolean
 }
@@ -34,11 +35,14 @@ interface LanguageTabsProps {
 }
 
 function asText(value: unknown): string {
-    if (Array.isArray(value)) return value.join("\n")
+    if (Array.isArray(value)) return value.filter((v) => typeof v === "string").join("\n")
     return typeof value === "string" ? value : ""
 }
 
 function isFilled(value: unknown): boolean {
+    if (Array.isArray(value) && value.some((v) => v && typeof v === "object")) {
+        return value.some((v) => v && typeof v === "object" && (isFilled(v.question) || isFilled(v.answer)))
+    }
     return asText(value).trim().length > 0
 }
 
@@ -171,6 +175,14 @@ export function LanguageTabs({ fields, value, onChange, source, children }: Lang
                                             placeholder={english.slice(0, 200) || "Translation..."}
                                         />
                                     )}
+                                    {field.type === "faqs" && (
+                                        <FaqTranslationEditor
+                                            idPrefix={id}
+                                            english={source[field.key]}
+                                            value={current}
+                                            onChange={(val) => setField(active, field.key, val)}
+                                        />
+                                    )}
                                     {english && !isFilled(current) && (
                                         <p className="text-xs text-muted-foreground">Empty — the English text is shown.</p>
                                     )}
@@ -201,6 +213,9 @@ export const BLOG_TRANSLATION_FIELDS: TranslationField[] = [
     { key: "title", label: "Title", type: "text", required: true },
     { key: "excerpt", label: "Excerpt", type: "textarea" },
     { key: "content", label: "Content", type: "rich", required: true },
+    { key: "metaTitle", label: "Meta title", type: "text" },
+    { key: "metaDescription", label: "Meta description", type: "textarea" },
+    { key: "faqs", label: "FAQs", type: "faqs" },
 ]
 
 export const FAQ_TRANSLATION_FIELDS: TranslationField[] = [

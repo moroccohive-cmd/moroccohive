@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { checkRateLimit } from "@/lib/limiter";
-import { sanitizeTranslations } from "@/lib/i18n/content"
+import { sanitizeFaqs, sanitizeTranslations } from "@/lib/i18n/content"
 
 export async function GET(
     request: NextRequest,
@@ -57,6 +57,9 @@ export async function PATCH(
         const { id: _id, createdAt, updatedAt, ...updateData } = body
         if ("translations" in updateData) {
             updateData.translations = sanitizeTranslations("blog", updateData.translations) ?? {}
+        }
+        if ("faqs" in updateData) {
+            updateData.faqs = sanitizeFaqs(updateData.faqs)
         }
 
         const blog = await prisma.blogPost.update({

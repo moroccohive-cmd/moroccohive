@@ -151,20 +151,19 @@ export const nl: Messages = {
 
     heroSlider: {
         alts: [
-            "Luxe woestijnkamp in de Sahara bij zonsondergang met een kamelenkaravaan op de duinen - privé rondreis van MoroccoHive",
-            "Marrakech - de minaret van de Koutoubia-moskee met het besneeuwde Atlasgebergte op de achtergrond",
-            "Chefchaouen - de blauw geverfde huizen van de medina tegen de berghelling van het Rif",
-            "Fez - de verfkuipen van de Chouara-looierij in het hart van de oude medina",
             "Aït Ben Haddou - de versterkte lemen ksar aan de rand van de Sahara",
-            "Essaouira - de stadsmuren van de oude stad boven de Atlantische Oceaan",
+            "Volubilis - de Romeinse bogen van de basiliek en de triomfboog bij Meknes",
+            "Casablanca - de Hassan II-moskee met haar minaret van 210 meter aan de Atlantische kust",
+            "Merzouga - een kamelenkaravaan door de gouden duinen van Erg Chebbi",
+            "Fez - de verfkuipen van de Chouara-looierij in het hart van de oude medina",
         ],
         show: "Achtergrondafbeelding {n} tonen",
     },
 
     home: {
-        heroTitle: "Privé rondreizen door Marokko, samengesteld door een local die hier echt woont",
+        heroTitle: "Ontdek Marokko door de ogen van een local",
         heroSubtitle:
-            "100% aanpasbare privé rondreizen. Deskundige lokale gidsen. Geen groepsreizen. Van woestijnkampen in de Sahara tot wandelingen door de medina — precies zoals jij het wilt.",
+            "Geen drukte, geen vaste schema's. Gewoon een reis die draait om wat jij mooi vindt.",
         bookCta: "Boek een privé rondreis",
         viewToursCta: "Bekijk onze rondreizen",
         travelersGuided: "200+ reizigers begeleid",
@@ -253,7 +252,7 @@ export const nl: Messages = {
             {
                 role: "Professionele chauffeur & reisgids",
                 description:
-                    "Hallo, mijn naam is Abdellatif Iggui en ik ben al ruim 7 jaar chauffeur en reisgids in Marokko. Ik heb meer dan 210 reizen door het land geleid, van Casablanca en Marrakech tot het Atlasgebergte en de Sahara. Ik ken de wegen, de beste tijden en de stops die de meeste reisroutes overslaan. Elke route die ik rijd, ken ik op mijn duimpje.",
+                    "Hallo, mijn naam is Abdellatif Iggui en ik ben al ruim 10 jaar chauffeur en reisgids in Marokko. Ik heb meer dan 200 reizen door het land geleid, van Casablanca en Marrakech tot het Atlasgebergte en de Sahara. Ik ken de wegen, de beste tijden en de stops die de meeste reisroutes overslaan. Elke route die ik rijd, ken ik op mijn duimpje.",
             },
         ],
         readMore: "Lees meer",
@@ -477,6 +476,8 @@ export const nl: Messages = {
             "Credit Cards": "Creditcards (Visa, Mastercard, Amex)",
             PayPal: "PayPal",
             Payoneer: "Payoneer",
+            Wise: "Wise",
+            Mercury: "Mercury",
         },
         depositTitle: "Informatie over de aanbetaling:",
         depositLine1: "Om je boeking te bevestigen, vragen we een aanbetaling van 20%.",
@@ -576,6 +577,7 @@ export const nl: Messages = {
         mobileDescription: "Chat met een lokale specialist",
         mobileButton: "Aan de slag",
         englishOnly: "Dit artikel is nog niet vertaald en wordt in de Engelse versie getoond.",
+        faqTitle: "Veelgestelde vragen",
     },
 
     faq: {

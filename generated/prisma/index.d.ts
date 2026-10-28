@@ -14,6 +14,11 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
 
 
 /**
+ * Model BlogFaq
+ * 
+ */
+export type BlogFaq = $Result.DefaultSelection<Prisma.$BlogFaqPayload>
+/**
  * Model Circuit
  * 
  */
@@ -1910,6 +1915,69 @@ export namespace Prisma {
    */
 
   /**
+   * Model BlogFaq
+   */
+
+
+
+
+
+  export type BlogFaqSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    question?: boolean
+    answer?: boolean
+  }, ExtArgs["result"]["blogFaq"]>
+
+
+
+  export type BlogFaqSelectScalar = {
+    question?: boolean
+    answer?: boolean
+  }
+
+  export type BlogFaqOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"question" | "answer", ExtArgs["result"]["blogFaq"]>
+
+  export type $BlogFaqPayload = {
+    name: "BlogFaq"
+    objects: {}
+    scalars: {
+      question: string
+      answer: string
+    }
+    composites: {}
+  }
+
+  type BlogFaqGetPayload<S extends boolean | null | undefined | BlogFaqDefaultArgs> = $Result.GetResult<Prisma.$BlogFaqPayload, S>
+
+
+
+
+
+  /**
+   * Fields of the BlogFaq model
+   */
+  interface BlogFaqFieldRefs {
+    readonly question: FieldRef<"BlogFaq", 'String'>
+    readonly answer: FieldRef<"BlogFaq", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * BlogFaq without action
+   */
+  export type BlogFaqDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlogFaq
+     */
+    select?: BlogFaqSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BlogFaq
+     */
+    omit?: BlogFaqOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Model Circuit
    */
 
@@ -2307,7 +2375,7 @@ export namespace Prisma {
       additionalInfo: string | null
       mapUrl: string | null
       /**
-       * Per-language overrides: { fr: { name, description, highlights, ... }, es: {...} }.
+       * Per-language overrides: { fr: { name, description, highlights, ... }, nl: {...} }.
        * English lives in the regular fields; a missing language falls back to it.
        */
       translations: Prisma.JsonValue | null
@@ -3187,6 +3255,8 @@ export namespace Prisma {
     excerpt: string | null
     coverImage: string | null
     author: string | null
+    metaTitle: string | null
+    metaDescription: string | null
     published: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -3200,6 +3270,8 @@ export namespace Prisma {
     excerpt: string | null
     coverImage: string | null
     author: string | null
+    metaTitle: string | null
+    metaDescription: string | null
     published: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -3214,6 +3286,8 @@ export namespace Prisma {
     coverImage: number
     author: number
     tags: number
+    metaTitle: number
+    metaDescription: number
     translations: number
     published: number
     createdAt: number
@@ -3230,6 +3304,8 @@ export namespace Prisma {
     excerpt?: true
     coverImage?: true
     author?: true
+    metaTitle?: true
+    metaDescription?: true
     published?: true
     createdAt?: true
     updatedAt?: true
@@ -3243,6 +3319,8 @@ export namespace Prisma {
     excerpt?: true
     coverImage?: true
     author?: true
+    metaTitle?: true
+    metaDescription?: true
     published?: true
     createdAt?: true
     updatedAt?: true
@@ -3257,6 +3335,8 @@ export namespace Prisma {
     coverImage?: true
     author?: true
     tags?: true
+    metaTitle?: true
+    metaDescription?: true
     translations?: true
     published?: true
     createdAt?: true
@@ -3345,6 +3425,8 @@ export namespace Prisma {
     coverImage: string | null
     author: string | null
     tags: string[]
+    metaTitle: string | null
+    metaDescription: string | null
     translations: JsonValue | null
     published: boolean
     createdAt: Date
@@ -3377,6 +3459,9 @@ export namespace Prisma {
     coverImage?: boolean
     author?: boolean
     tags?: boolean
+    metaTitle?: boolean
+    metaDescription?: boolean
+    faqs?: boolean | BlogFaqDefaultArgs<ExtArgs>
     translations?: boolean
     published?: boolean
     createdAt?: boolean
@@ -3394,13 +3479,16 @@ export namespace Prisma {
     coverImage?: boolean
     author?: boolean
     tags?: boolean
+    metaTitle?: boolean
+    metaDescription?: boolean
     translations?: boolean
     published?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type BlogPostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "title" | "content" | "excerpt" | "coverImage" | "author" | "tags" | "translations" | "published" | "createdAt" | "updatedAt", ExtArgs["result"]["blogPost"]>
+  export type BlogPostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "title" | "content" | "excerpt" | "coverImage" | "author" | "tags" | "metaTitle" | "metaDescription" | "faqs" | "translations" | "published" | "createdAt" | "updatedAt", ExtArgs["result"]["blogPost"]>
+  export type BlogPostInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $BlogPostPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "BlogPost"
@@ -3415,14 +3503,21 @@ export namespace Prisma {
       author: string | null
       tags: string[]
       /**
-       * Per-language overrides: { fr: { title, excerpt, content }, es: {...} }
+       * SEO overrides; fall back to the title and excerpt when empty
+       */
+      metaTitle: string | null
+      metaDescription: string | null
+      /**
+       * Per-language overrides: { fr: { title, excerpt, content, metaTitle, metaDescription, faqs }, nl: {...} }
        */
       translations: Prisma.JsonValue | null
       published: boolean
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["blogPost"]>
-    composites: {}
+    composites: {
+      faqs: Prisma.$BlogFaqPayload[]
+    }
   }
 
   type BlogPostGetPayload<S extends boolean | null | undefined | BlogPostDefaultArgs> = $Result.GetResult<Prisma.$BlogPostPayload, S>
@@ -3821,6 +3916,8 @@ export namespace Prisma {
     readonly coverImage: FieldRef<"BlogPost", 'String'>
     readonly author: FieldRef<"BlogPost", 'String'>
     readonly tags: FieldRef<"BlogPost", 'String[]'>
+    readonly metaTitle: FieldRef<"BlogPost", 'String'>
+    readonly metaDescription: FieldRef<"BlogPost", 'String'>
     readonly translations: FieldRef<"BlogPost", 'Json'>
     readonly published: FieldRef<"BlogPost", 'Boolean'>
     readonly createdAt: FieldRef<"BlogPost", 'DateTime'>
@@ -3842,6 +3939,10 @@ export namespace Prisma {
      */
     omit?: BlogPostOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlogPostInclude<ExtArgs> | null
+    /**
      * Filter, which BlogPost to fetch.
      */
     where: BlogPostWhereUniqueInput
@@ -3860,6 +3961,10 @@ export namespace Prisma {
      */
     omit?: BlogPostOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlogPostInclude<ExtArgs> | null
+    /**
      * Filter, which BlogPost to fetch.
      */
     where: BlogPostWhereUniqueInput
@@ -3877,6 +3982,10 @@ export namespace Prisma {
      * Omit specific fields from the BlogPost
      */
     omit?: BlogPostOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlogPostInclude<ExtArgs> | null
     /**
      * Filter, which BlogPost to fetch.
      */
@@ -3926,6 +4035,10 @@ export namespace Prisma {
      */
     omit?: BlogPostOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlogPostInclude<ExtArgs> | null
+    /**
      * Filter, which BlogPost to fetch.
      */
     where?: BlogPostWhereInput
@@ -3974,6 +4087,10 @@ export namespace Prisma {
      */
     omit?: BlogPostOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlogPostInclude<ExtArgs> | null
+    /**
      * Filter, which BlogPosts to fetch.
      */
     where?: BlogPostWhereInput
@@ -4017,6 +4134,10 @@ export namespace Prisma {
      */
     omit?: BlogPostOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlogPostInclude<ExtArgs> | null
+    /**
      * The data needed to create a BlogPost.
      */
     data: XOR<BlogPostCreateInput, BlogPostUncheckedCreateInput>
@@ -4044,6 +4165,10 @@ export namespace Prisma {
      * Omit specific fields from the BlogPost
      */
     omit?: BlogPostOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlogPostInclude<ExtArgs> | null
     /**
      * The data needed to update a BlogPost.
      */
@@ -4085,6 +4210,10 @@ export namespace Prisma {
      */
     omit?: BlogPostOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlogPostInclude<ExtArgs> | null
+    /**
      * The filter to search for the BlogPost to update in case it exists.
      */
     where: BlogPostWhereUniqueInput
@@ -4110,6 +4239,10 @@ export namespace Prisma {
      * Omit specific fields from the BlogPost
      */
     omit?: BlogPostOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlogPostInclude<ExtArgs> | null
     /**
      * Filter which BlogPost to delete.
      */
@@ -4170,6 +4303,10 @@ export namespace Prisma {
      * Omit specific fields from the BlogPost
      */
     omit?: BlogPostOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlogPostInclude<ExtArgs> | null
   }
 
 
@@ -10963,7 +11100,7 @@ export namespace Prisma {
       answer: string
       category: string | null
       /**
-       * Per-language overrides: { fr: { question, answer, category }, es: {...} }
+       * Per-language overrides: { fr: { question, answer, category }, nl: {...} }
        */
       translations: Prisma.JsonValue | null
       showOnHome: boolean
@@ -14786,6 +14923,8 @@ export namespace Prisma {
     coverImage: 'coverImage',
     author: 'author',
     tags: 'tags',
+    metaTitle: 'metaTitle',
+    metaDescription: 'metaDescription',
     translations: 'translations',
     published: 'published',
     createdAt: 'createdAt',
@@ -15229,6 +15368,9 @@ export namespace Prisma {
     coverImage?: StringNullableFilter<"BlogPost"> | string | null
     author?: StringNullableFilter<"BlogPost"> | string | null
     tags?: StringNullableListFilter<"BlogPost">
+    metaTitle?: StringNullableFilter<"BlogPost"> | string | null
+    metaDescription?: StringNullableFilter<"BlogPost"> | string | null
+    faqs?: BlogFaqCompositeListFilter | BlogFaqObjectEqualityInput[]
     translations?: JsonNullableFilter<"BlogPost">
     published?: BoolFilter<"BlogPost"> | boolean
     createdAt?: DateTimeFilter<"BlogPost"> | Date | string
@@ -15244,6 +15386,9 @@ export namespace Prisma {
     coverImage?: SortOrder
     author?: SortOrder
     tags?: SortOrder
+    metaTitle?: SortOrder
+    metaDescription?: SortOrder
+    faqs?: BlogFaqOrderByCompositeAggregateInput
     translations?: SortOrder
     published?: SortOrder
     createdAt?: SortOrder
@@ -15262,6 +15407,9 @@ export namespace Prisma {
     coverImage?: StringNullableFilter<"BlogPost"> | string | null
     author?: StringNullableFilter<"BlogPost"> | string | null
     tags?: StringNullableListFilter<"BlogPost">
+    metaTitle?: StringNullableFilter<"BlogPost"> | string | null
+    metaDescription?: StringNullableFilter<"BlogPost"> | string | null
+    faqs?: BlogFaqCompositeListFilter | BlogFaqObjectEqualityInput[]
     translations?: JsonNullableFilter<"BlogPost">
     published?: BoolFilter<"BlogPost"> | boolean
     createdAt?: DateTimeFilter<"BlogPost"> | Date | string
@@ -15277,6 +15425,8 @@ export namespace Prisma {
     coverImage?: SortOrder
     author?: SortOrder
     tags?: SortOrder
+    metaTitle?: SortOrder
+    metaDescription?: SortOrder
     translations?: SortOrder
     published?: SortOrder
     createdAt?: SortOrder
@@ -15298,6 +15448,8 @@ export namespace Prisma {
     coverImage?: StringNullableWithAggregatesFilter<"BlogPost"> | string | null
     author?: StringNullableWithAggregatesFilter<"BlogPost"> | string | null
     tags?: StringNullableListFilter<"BlogPost">
+    metaTitle?: StringNullableWithAggregatesFilter<"BlogPost"> | string | null
+    metaDescription?: StringNullableWithAggregatesFilter<"BlogPost"> | string | null
     translations?: JsonNullableWithAggregatesFilter<"BlogPost">
     published?: BoolWithAggregatesFilter<"BlogPost"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"BlogPost"> | Date | string
@@ -16380,6 +16532,9 @@ export namespace Prisma {
     coverImage?: string | null
     author?: string | null
     tags?: BlogPostCreatetagsInput | string[]
+    metaTitle?: string | null
+    metaDescription?: string | null
+    faqs?: XOR<BlogFaqListCreateEnvelopeInput, BlogFaqCreateInput> | BlogFaqCreateInput[]
     translations?: InputJsonValue | null
     published?: boolean
     createdAt?: Date | string
@@ -16395,6 +16550,9 @@ export namespace Prisma {
     coverImage?: string | null
     author?: string | null
     tags?: BlogPostCreatetagsInput | string[]
+    metaTitle?: string | null
+    metaDescription?: string | null
+    faqs?: XOR<BlogFaqListCreateEnvelopeInput, BlogFaqCreateInput> | BlogFaqCreateInput[]
     translations?: InputJsonValue | null
     published?: boolean
     createdAt?: Date | string
@@ -16409,6 +16567,9 @@ export namespace Prisma {
     coverImage?: NullableStringFieldUpdateOperationsInput | string | null
     author?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: BlogPostUpdatetagsInput | string[]
+    metaTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    metaDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    faqs?: XOR<BlogFaqListUpdateEnvelopeInput, BlogFaqCreateInput> | BlogFaqCreateInput[]
     translations?: InputJsonValue | InputJsonValue | null
     published?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16423,6 +16584,9 @@ export namespace Prisma {
     coverImage?: NullableStringFieldUpdateOperationsInput | string | null
     author?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: BlogPostUpdatetagsInput | string[]
+    metaTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    metaDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    faqs?: XOR<BlogFaqListUpdateEnvelopeInput, BlogFaqCreateInput> | BlogFaqCreateInput[]
     translations?: InputJsonValue | InputJsonValue | null
     published?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16438,6 +16602,9 @@ export namespace Prisma {
     coverImage?: string | null
     author?: string | null
     tags?: BlogPostCreatetagsInput | string[]
+    metaTitle?: string | null
+    metaDescription?: string | null
+    faqs?: XOR<BlogFaqListCreateEnvelopeInput, BlogFaqCreateInput> | BlogFaqCreateInput[]
     translations?: InputJsonValue | null
     published?: boolean
     createdAt?: Date | string
@@ -16452,6 +16619,9 @@ export namespace Prisma {
     coverImage?: NullableStringFieldUpdateOperationsInput | string | null
     author?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: BlogPostUpdatetagsInput | string[]
+    metaTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    metaDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    faqs?: XOR<BlogFaqListUpdateEnvelopeInput, BlogFaqCreateInput> | BlogFaqCreateInput[]
     translations?: InputJsonValue | InputJsonValue | null
     published?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16466,6 +16636,9 @@ export namespace Prisma {
     coverImage?: NullableStringFieldUpdateOperationsInput | string | null
     author?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: BlogPostUpdatetagsInput | string[]
+    metaTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    metaDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    faqs?: XOR<BlogFaqListUpdateEnvelopeInput, BlogFaqCreateInput> | BlogFaqCreateInput[]
     translations?: InputJsonValue | InputJsonValue | null
     published?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17766,6 +17939,24 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type BlogFaqCompositeListFilter = {
+    equals?: BlogFaqObjectEqualityInput[]
+    every?: BlogFaqWhereInput
+    some?: BlogFaqWhereInput
+    none?: BlogFaqWhereInput
+    isEmpty?: boolean
+    isSet?: boolean
+  }
+
+  export type BlogFaqObjectEqualityInput = {
+    question: string
+    answer: string
+  }
+
+  export type BlogFaqOrderByCompositeAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type BlogPostCountOrderByAggregateInput = {
     id?: SortOrder
     slug?: SortOrder
@@ -17775,6 +17966,8 @@ export namespace Prisma {
     coverImage?: SortOrder
     author?: SortOrder
     tags?: SortOrder
+    metaTitle?: SortOrder
+    metaDescription?: SortOrder
     translations?: SortOrder
     published?: SortOrder
     createdAt?: SortOrder
@@ -17789,6 +17982,8 @@ export namespace Prisma {
     excerpt?: SortOrder
     coverImage?: SortOrder
     author?: SortOrder
+    metaTitle?: SortOrder
+    metaDescription?: SortOrder
     published?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -17802,6 +17997,8 @@ export namespace Prisma {
     excerpt?: SortOrder
     coverImage?: SortOrder
     author?: SortOrder
+    metaTitle?: SortOrder
+    metaDescription?: SortOrder
     published?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -18526,9 +18723,25 @@ export namespace Prisma {
     set: string[]
   }
 
+  export type BlogFaqListCreateEnvelopeInput = {
+    set?: BlogFaqCreateInput | BlogFaqCreateInput[]
+  }
+
+  export type BlogFaqCreateInput = {
+    question: string
+    answer: string
+  }
+
   export type BlogPostUpdatetagsInput = {
     set?: string[]
     push?: string | string[]
+  }
+
+  export type BlogFaqListUpdateEnvelopeInput = {
+    set?: BlogFaqCreateInput | BlogFaqCreateInput[]
+    push?: BlogFaqCreateInput | BlogFaqCreateInput[]
+    updateMany?: BlogFaqUpdateManyInput
+    deleteMany?: BlogFaqDeleteManyInput
   }
 
   export type TripRequestCreateadventureActivitiesInput = {
@@ -19055,6 +19268,14 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type BlogFaqWhereInput = {
+    AND?: BlogFaqWhereInput | BlogFaqWhereInput[]
+    OR?: BlogFaqWhereInput[]
+    NOT?: BlogFaqWhereInput | BlogFaqWhereInput[]
+    question?: StringFilter<"BlogFaq"> | string
+    answer?: StringFilter<"BlogFaq"> | string
+  }
+
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -19204,6 +19425,15 @@ export namespace Prisma {
     order?: IntFilter<"Review"> | number
     createdAt?: DateTimeFilter<"Review"> | Date | string
     updatedAt?: DateTimeFilter<"Review"> | Date | string
+  }
+
+  export type BlogFaqUpdateManyInput = {
+    where: BlogFaqWhereInput
+    data: BlogFaqUpdateInput
+  }
+
+  export type BlogFaqDeleteManyInput = {
+    where: BlogFaqWhereInput
   }
 
   export type UserCreateWithoutTripRequestsInput = {
@@ -20165,6 +20395,11 @@ export namespace Prisma {
     order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BlogFaqUpdateInput = {
+    question?: StringFieldUpdateOperationsInput | string
+    answer?: StringFieldUpdateOperationsInput | string
   }
 
   export type SessionCreateManyUserInput = {

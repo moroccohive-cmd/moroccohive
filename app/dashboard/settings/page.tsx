@@ -87,6 +87,8 @@ export default function SettingsPage() {
         { value: "Credit Cards", label: "Credit Cards (Visa, Mastercard, Amex)" },
         { value: "PayPal", label: "PayPal" },
         { value: "Payoneer", label: "Payoneer" },
+        { value: "Wise", label: "Wise" },
+        { value: "Mercury", label: "Mercury" },
     ]
 
     const togglePaymentMethod = (methodValue: string) => {

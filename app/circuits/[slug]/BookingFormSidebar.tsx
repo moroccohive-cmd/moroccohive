@@ -34,6 +34,8 @@ const PAYMENT_METHODS = [
     { value: "Credit Cards" },
     { value: "PayPal" },
     { value: "Payoneer" },
+    { value: "Wise" },
+    { value: "Mercury" },
 ]
 
 export function BookingFormSidebar({ circuit, messages: t }: { circuit: CircuitInfo; messages: BookingMessages }) {

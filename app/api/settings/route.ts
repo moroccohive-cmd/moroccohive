@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma"
 import { checkRateLimit } from "@/lib/limiter"
 
 // Default payment methods
-const DEFAULT_PAYMENT_METHODS = ["Deposit Payment", "Bank Transfer / SWIFT", "Credit Cards", "PayPal", "Payoneer"]
+const DEFAULT_PAYMENT_METHODS = ["Deposit Payment", "Bank Transfer / SWIFT", "Credit Cards", "PayPal", "Payoneer", "Wise", "Mercury"]
 
 // Public GET: Fetch payment method settings for forms
 export async function GET() {

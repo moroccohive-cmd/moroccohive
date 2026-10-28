@@ -153,20 +153,19 @@ export const fr: Messages = {
 
     heroSlider: {
         alts: [
-            "Bivouac de luxe dans le Sahara au coucher du soleil avec une caravane de dromadaires sur les dunes - circuit privé MoroccoHive",
-            "Marrakech - le minaret de la Koutoubia avec les sommets enneigés de l'Atlas en arrière-plan",
-            "Chefchaouen - les maisons bleues de la médina accrochées aux flancs du Rif",
-            "Fès - les cuves de teinture de la tannerie Chouara au cœur de la vieille médina",
             "Aït-Ben-Haddou - le ksar fortifié en terre aux portes du Sahara",
-            "Essaouira - les remparts de la vieille ville face à l'Atlantique",
+            "Volubilis - les arcades de la basilique romaine et l'arc de triomphe près de Meknès",
+            "Casablanca - la mosquée Hassan II et son minaret de 210 mètres au bord de l'Atlantique",
+            "Merzouga - une caravane de dromadaires dans les dunes dorées de l'Erg Chebbi",
+            "Fès - les cuves de teinture de la tannerie Chouara au cœur de la vieille médina",
         ],
         show: "Afficher l'image de fond {n}",
     },
 
     home: {
-        heroTitle: "Des circuits privés au Maroc conçus par un local qui vit vraiment ici",
+        heroTitle: "Découvrez le Maroc à travers les yeux d'un local",
         heroSubtitle:
-            "Circuits privés 100 % personnalisables. Guides locaux experts. Aucun voyage en groupe. Des bivouacs du Sahara aux balades dans les médinas : un voyage conçu exactement comme vous le souhaitez.",
+            "Pas de foule, pas d'horaires imposés. Juste un voyage conçu autour de ce que vous aimez.",
         bookCta: "Réserver un circuit privé",
         viewToursCta: "Voir nos circuits",
         travelersGuided: "Plus de 200 voyageurs guidés",
@@ -255,7 +254,7 @@ export const fr: Messages = {
             {
                 role: "Chauffeur professionnel et guide",
                 description:
-                    "Bonjour, je m'appelle Abdellatif Iggui et je suis chauffeur et guide au Maroc depuis plus de 7 ans. J'ai mené plus de 210 voyages à travers le pays, de Casablanca et Marrakech jusqu'à l'Atlas et au Sahara. Je connais les routes, les bons horaires et les étapes que la plupart des itinéraires oublient. Chaque route que j'emprunte, je la connais parfaitement.",
+                    "Bonjour, je m'appelle Abdellatif Iggui et je suis chauffeur et guide au Maroc depuis plus de 10 ans. J'ai mené plus de 200 voyages à travers le pays, de Casablanca et Marrakech jusqu'à l'Atlas et au Sahara. Je connais les routes, les bons horaires et les étapes que la plupart des itinéraires oublient. Chaque route que j'emprunte, je la connais parfaitement.",
             },
         ],
         readMore: "En savoir plus",
@@ -480,6 +479,8 @@ export const fr: Messages = {
             "Credit Cards": "Cartes bancaires (Visa, Mastercard, Amex)",
             PayPal: "PayPal",
             Payoneer: "Payoneer",
+            Wise: "Wise",
+            Mercury: "Mercury",
         },
         depositTitle: "Informations sur l'acompte :",
         depositLine1: "Pour confirmer votre réservation, un acompte de 20 % est demandé.",
@@ -579,6 +580,7 @@ export const fr: Messages = {
         mobileDescription: "Échangez avec un spécialiste local",
         mobileButton: "Commencer",
         englishOnly: "Cet article n'est pas encore traduit : il est présenté dans sa version anglaise.",
+        faqTitle: "Questions fréquentes",
     },
 
     faq: {

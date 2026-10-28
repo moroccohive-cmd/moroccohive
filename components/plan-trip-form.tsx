@@ -116,6 +116,8 @@ export function PlanTripForm({ messages: t, payment }: { messages: PlanTripMessa
         { value: "Credit Cards", icon: "/credit-card-icon.svg" },
         { value: "PayPal", icon: "/paypal-icon.svg" },
         { value: "Payoneer", icon: "/payoneer-icon.svg" },
+        { value: "Wise", icon: "/wise-icon.svg" },
+        { value: "Mercury", icon: "/mercury-icon.svg" },
     ].map((m) => ({ ...m, label: payment.paymentMethods[m.value] ?? m.value }))
     const [paymentMethodsEnabled, setPaymentMethodsEnabled] = useState(true)
     const [enabledPaymentMethods, setEnabledPaymentMethods] = useState<string[]>(PAYMENT_METHODS.map(m => m.value))
