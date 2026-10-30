@@ -144,11 +144,12 @@ export const en = {
 
     heroSlider: {
         alts: [
+            "Merzouga - a camel caravan crossing the golden Erg Chebbi dunes",
             "Ait Ben Haddou - the fortified earthen ksar on the edge of the Sahara",
             "Volubilis - the Roman basilica arches and Triumphal Arch near Meknes",
             "Casablanca - the Hassan II Mosque and its 210-metre minaret on the Atlantic shore",
-            "Merzouga - a camel caravan crossing the golden Erg Chebbi dunes",
             "Fes - the Chouara tannery dye pits in the heart of the old medina",
+            "Chefchaouen - the blue-washed square of the Blue City beneath the Rif Mountains",
         ],
         show: "Show background image {n}",
     },
@@ -463,9 +464,8 @@ export const en = {
         preferredPayment: "Preferred Payment",
         selectPayment: "Select payment method (optional)",
         paymentMethods: {
-            "Deposit Payment": "Deposit Payment",
-            "Bank Transfer / SWIFT": "Bank Transfer / SWIFT",
-            "Credit Cards": "Credit Cards (Visa, Mastercard, Amex)",
+            "Deposit Payment": "Deposit Payment (Wise / Mercury)",
+            "Credit Cards": "Credit Cards (Visa, Mastercard, American Express)",
             PayPal: "PayPal",
             Payoneer: "Payoneer",
             Wise: "Wise",

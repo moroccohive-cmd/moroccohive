@@ -58,7 +58,7 @@ export const SITE_SAME_AS = [
 
 /** Aggregate rating shown in Organization schema. Keep in sync with Trustpilot. */
 export const SITE_RATING = {
-    ratingValue: "4.8",
+    ratingValue: "4.9",
     reviewCount: "200",
     bestRating: "5",
     worstRating: "1",

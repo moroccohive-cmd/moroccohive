@@ -151,11 +151,12 @@ export const nl: Messages = {
 
     heroSlider: {
         alts: [
+            "Merzouga - een kamelenkaravaan door de gouden duinen van Erg Chebbi",
             "Aït Ben Haddou - de versterkte lemen ksar aan de rand van de Sahara",
             "Volubilis - de Romeinse bogen van de basiliek en de triomfboog bij Meknes",
             "Casablanca - de Hassan II-moskee met haar minaret van 210 meter aan de Atlantische kust",
-            "Merzouga - een kamelenkaravaan door de gouden duinen van Erg Chebbi",
             "Fez - de verfkuipen van de Chouara-looierij in het hart van de oude medina",
+            "Chefchaouen - het blauwe plein van de Blauwe Stad aan de voet van het Rifgebergte",
         ],
         show: "Achtergrondafbeelding {n} tonen",
     },
@@ -471,9 +472,8 @@ export const nl: Messages = {
         preferredPayment: "Voorkeursbetaling",
         selectPayment: "Kies een betaalmethode (optioneel)",
         paymentMethods: {
-            "Deposit Payment": "Aanbetaling",
-            "Bank Transfer / SWIFT": "Bankoverschrijving / SWIFT",
-            "Credit Cards": "Creditcards (Visa, Mastercard, Amex)",
+            "Deposit Payment": "Aanbetaling (Wise / Mercury)",
+            "Credit Cards": "Creditcards (Visa, Mastercard, American Express)",
             PayPal: "PayPal",
             Payoneer: "Payoneer",
             Wise: "Wise",

@@ -1,0 +1,48 @@
+{
+  "mode": "Built-in image_gen",
+  "description": "AI-enhanced versions of the six current hero photographs. Originals retained in public.",
+  "images": [
+    {
+      "name": "ait-ben-haddou",
+      "file": "morocco-ait-ben-haddou-kasbah.jpg",
+      "prompt": "Use case: lighting-weather. Input image 1 is the edit target. Enhance this existing photograph for the MoroccoHive travel website hero slider. Deliver a high-resolution photorealistic editorial restoration, ideally 2560px wide, maintaining original landscape aspect ratio and framing. Improve fine detail and clarity, clean JPEG artifacts, balance dynamic range and apply subtle consistent professional travel color grading. Change only image quality, tonal balance and lighting refinement; preserve exact place, perspective, geometry, objects and composition. Keep authentic imperfections. No added or removed architecture, people or objects, no invented scenery, no text, watermarks, collage, artificial HDR, crunchy sharpening or plastic smoothing. Ait Ben Haddou earthen kasbah. Gently recover harsh rock highlights, refine weathered terracotta and palm detail, warm natural earth tones.",
+      "source": "C:\\Users\\PC\\.codex\\generated_images\\01a18c32-f2ce-77b0-9b27-2238b7bcf8e1\\exec-e4f2d4e9-80bc-4b49-a082-b893f0db23c4.png",
+      "output": "public/hero/ait-ben-haddou-enhanced.webp"
+    },
+    {
+      "name": "volubilis",
+      "file": "morocco-volubilis-roman-ruins.jpg",
+      "prompt": "Use case: lighting-weather. Input image 1 is the edit target. Enhance this existing photograph for the MoroccoHive travel website hero slider. Deliver a high-resolution photorealistic editorial restoration, ideally 2560px wide, maintaining original landscape aspect ratio and framing. Improve fine detail and clarity, clean JPEG artifacts, balance dynamic range and apply subtle consistent professional travel color grading. Change only image quality, tonal balance and lighting refinement; preserve exact place, perspective, geometry, objects and composition. Keep authentic imperfections. No added or removed architecture, people or objects, no invented scenery, no text, watermarks, collage, artificial HDR, crunchy sharpening or plastic smoothing. Volubilis Roman columns. Preserve exactly these ruined columns and their arrangement. Recover limestone texture, refine natural blue sky and cloud detail, reduce harsh midday glare.",
+      "source": "C:\\Users\\PC\\.codex\\generated_images\\01a18c32-f2ce-77b0-9b27-2238b7bcf8e1\\exec-9fea5d06-f1d1-4cc3-b56d-5ddea18e7958.png",
+      "output": "public/hero/volubilis-enhanced.webp"
+    },
+    {
+      "name": "casablanca",
+      "file": "morocco-casablanca-hassan-ii-mosque-atlantic.jpg",
+      "prompt": "Use case: lighting-weather. Input image 1 is the edit target. Enhance this existing photograph for the MoroccoHive travel website hero slider. Deliver a high-resolution photorealistic editorial restoration, ideally 2560px wide, maintaining original landscape aspect ratio and framing. Improve fine detail and clarity, clean JPEG artifacts, balance dynamic range and apply subtle consistent professional travel color grading. Change only image quality, tonal balance and lighting refinement; preserve exact place, perspective, geometry, objects and composition. Keep authentic imperfections. No added or removed architecture, people or objects, no invented scenery, no text, watermarks, collage, artificial HDR, crunchy sharpening or plastic smoothing. Hassan II Mosque at sunset. Preserve exactly the minaret, facade and architectural geometry. Lift muddy shadows, reveal carved stone and green tile texture, retain subtle peach sunset and sunstar without exaggerated glow.",
+      "source": "C:\\Users\\PC\\.codex\\generated_images\\01a18c32-f2ce-77b0-9b27-2238b7bcf8e1\\exec-b2a9d331-dbcc-4917-9259-0866c721c485.png",
+      "output": "public/hero/casablanca-enhanced.webp"
+    },
+    {
+      "name": "merzouga",
+      "file": "morocco-sahara-desert-camel-trek.jpg",
+      "prompt": "Use case: lighting-weather. Input image 1 is the edit target. Enhance this existing photograph for the MoroccoHive travel website hero slider. Deliver a high-resolution photorealistic editorial restoration, ideally 2560px wide, maintaining original landscape aspect ratio and framing. Improve fine detail and clarity, clean JPEG artifacts, balance dynamic range and apply subtle consistent professional travel color grading. Change only image quality, tonal balance and lighting refinement; preserve exact place, perspective, geometry, objects and composition. Keep authentic imperfections. No added or removed architecture, people or objects, no invented scenery, no text, watermarks, collage, artificial HDR, crunchy sharpening or plastic smoothing. Merzouga camel caravan. Preserve people, camels, positions, number and anatomy. Recover bright sky and rider highlights, substantially soften distracting colored lens flare, refine sand ripples and warm golden dune shadows without oversaturation.",
+      "source": "C:\\Users\\PC\\.codex\\generated_images\\01a18c32-f2ce-77b0-9b27-2238b7bcf8e1\\exec-4bdc9cef-079f-4c8a-ad99-6acf1c25c83b.png",
+      "output": "public/hero/merzouga-enhanced.webp"
+    },
+    {
+      "name": "fes",
+      "file": "morocco-fes-tannery-medina.jpg",
+      "prompt": "Use case: lighting-weather. Input image 1 is the edit target. Enhance this existing photograph for the MoroccoHive travel website hero slider. Deliver a high-resolution photorealistic editorial restoration, ideally 2560px wide, maintaining original landscape aspect ratio and framing. Improve fine detail and clarity, clean JPEG artifacts, balance dynamic range and apply subtle consistent professional travel color grading. Change only image quality, tonal balance and lighting refinement; preserve exact place, perspective, geometry, objects and composition. Keep authentic imperfections. No added or removed architecture, people or objects, no invented scenery, no text, watermarks, collage, artificial HDR, crunchy sharpening or plastic smoothing. Fes Chouara tannery. Preserve all real vats and buildings, figures and their arrangement. Balance washed-out highlights, refine plaster and leather vat textures, natural earthy colors, clear subtle atmospheric depth.",
+      "source": "C:\\Users\\PC\\.codex\\generated_images\\01a18c32-f2ce-77b0-9b27-2238b7bcf8e1\\exec-bb54d936-1b81-4823-8f1c-1a1bed549b7d.png",
+      "output": "public/hero/fes-enhanced.webp"
+    },
+    {
+      "name": "chefchaouen",
+      "file": "morocco-chefchaouen-blue-city.jpg",
+      "prompt": "Use case: lighting-weather. Input image 1 is the edit target. Enhance this existing photograph for the MoroccoHive travel website hero slider. Deliver a high-resolution photorealistic editorial restoration, ideally 2560px wide, maintaining original landscape aspect ratio and framing. Improve fine detail and clarity, clean JPEG artifacts, balance dynamic range and apply subtle consistent professional travel color grading. Change only image quality, tonal balance and lighting refinement; preserve exact place, perspective, geometry, objects and composition. Keep authentic imperfections. No added or removed architecture, people or objects, no invented scenery, no text, watermarks, collage, artificial HDR, crunchy sharpening or plastic smoothing. Chefchaouen blue square. Preserve buildings, fountain, mountain, people and composition. Recover bright paving detail, refine textured blue walls with sophisticated restrained blues, natural mountain greens and clear sky.",
+      "source": "C:\\Users\\PC\\.codex\\generated_images\\01a18c32-f2ce-77b0-9b27-2238b7bcf8e1\\exec-cf0304d0-5e4d-48fc-826b-c5818b34846a.png",
+      "output": "public/hero/chefchaouen-enhanced.webp"
+    }
+  ]
+}

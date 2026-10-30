@@ -112,7 +112,6 @@ export function PlanTripForm({ messages: t, payment }: { messages: PlanTripMessa
     // Hardcoded payment method options with icons
     const PAYMENT_METHODS = [
         { value: "Deposit Payment", icon: "/deposit-payment-icon.png" },
-        { value: "Bank Transfer / SWIFT", icon: "/bank-transfer-icon.svg" },
         { value: "Credit Cards", icon: "/credit-card-icon.svg" },
         { value: "PayPal", icon: "/paypal-icon.svg" },
         { value: "Payoneer", icon: "/payoneer-icon.svg" },

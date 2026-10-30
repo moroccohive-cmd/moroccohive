@@ -3,26 +3,37 @@
 import { useState, useEffect, useCallback } from "react"
 import Image from "next/image"
 
+// The first slide is the LCP image, so it is the lightest one (~110 KB on a phone).
 const SLIDES = [
   {
-    src: "/morocco-ait-ben-haddou-ksar-tour.jpg",
-    alt: "Ait Ben Haddou - the fortified earthen ksar on the edge of the Sahara",
-  },
-  {
-    src: "/morocco-volubilis-roman-ruins-tour.jpg",
-    alt: "Volubilis - the Roman basilica arches and Triumphal Arch near Meknes",
-  },
-  {
-    src: "/morocco-casablanca-hassan-ii-mosque.jpg",
-    alt: "Casablanca - the Hassan II Mosque and its 210-metre minaret on the Atlantic shore",
-  },
-  {
-    src: "/morocco-merzouga-camel-trek-sahara.jpg",
+    src: "/hero/merzouga-enhanced.webp",
+    position: "68% 50%",
     alt: "Merzouga - a camel caravan crossing the golden Erg Chebbi dunes",
   },
   {
-    src: "/morocco-fes-chouara-tannery-medina.jpg",
+    src: "/hero/ait-ben-haddou-enhanced.webp",
+    position: "55% 50%",
+    alt: "Ait Ben Haddou - the fortified earthen ksar on the edge of the Sahara",
+  },
+  {
+    src: "/hero/volubilis-enhanced.webp",
+    position: "42% 35%",
+    alt: "Volubilis - the Roman basilica arches and Triumphal Arch near Meknes",
+  },
+  {
+    src: "/hero/casablanca-enhanced.webp",
+    position: "44% 10%",
+    alt: "Casablanca - the Hassan II Mosque and its 210-metre minaret on the Atlantic shore",
+  },
+  {
+    src: "/hero/fes-enhanced.webp",
+    position: "40% 60%",
     alt: "Fes - the Chouara tannery dye pits in the heart of the old medina",
+  },
+  {
+    src: "/hero/chefchaouen-enhanced.webp",
+    position: "57% 50%",
+    alt: "Chefchaouen - the blue-washed square of the Blue City beneath the Rif Mountains",
   },
 ]
 
@@ -37,35 +48,80 @@ export function HeroBackgroundSlider({
   showLabel?: string
 } = {}) {
   const [current, setCurrent] = useState(0)
+  // Only the first slide is in the initial HTML; the rest mount once the page
+  // has finished loading so they don't compete with it for bandwidth (LCP).
+  const [deferredMounted, setDeferredMounted] = useState(false)
+  const [loaded, setLoaded] = useState<boolean[]>(() => SLIDES.map(() => false))
 
-  const next = useCallback(() => setCurrent((c) => (c + 1) % SLIDES.length), [])
+  const markLoaded = useCallback(
+    (i: number) => setLoaded((prev) => (prev[i] ? prev : prev.map((v, j) => (j === i ? true : v)))),
+    []
+  )
 
   useEffect(() => {
+    const mount = () => {
+      if ("requestIdleCallback" in window) window.requestIdleCallback(() => setDeferredMounted(true), { timeout: 2000 })
+      else setTimeout(() => setDeferredMounted(true), 200)
+    }
+    if (document.readyState === "complete") mount()
+    else {
+      window.addEventListener("load", mount, { once: true })
+      return () => window.removeEventListener("load", mount)
+    }
+  }, [])
+
+  // Advance only onto a slide that has finished downloading, so a slow
+  // connection never fades to a blank frame.
+  const next = useCallback(
+    () =>
+      setCurrent((c) => {
+        const n = (c + 1) % SLIDES.length
+        return loaded[n] ? n : c
+      }),
+    [loaded]
+  )
+
+  useEffect(() => {
+    if (!deferredMounted) return
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
     const timer = setInterval(next, SLIDE_DURATION)
     return () => clearInterval(timer)
-  }, [next])
+  }, [next, deferredMounted])
 
   return (
     <>
       <div className="absolute inset-0 z-0 overflow-hidden">
-        {SLIDES.map((slide, i) => (
+        {SLIDES.map((slide, i) => {
+          if (i !== 0 && !deferredMounted) return null
+          return (
           <Image
             key={slide.src}
             src={slide.src}
             alt={alts?.[i] ?? slide.alt}
             fill
-            sizes="100vw"
+            sizes="(max-aspect-ratio: 3/2) 140vh, 100vw"
             priority={i === 0}
             loading="eager"
             fetchPriority={i === 0 ? "high" : "low"}
+            // Native load rather than next/image's onLoad, which waits on img.decode()
+            // and can stall for off-screen (opacity-0) images in some browsers.
+            ref={(img) => {
+              if (!img) return
+              if (img.complete && img.naturalWidth) markLoaded(i)
+              else img.addEventListener("load", () => markLoaded(i), { once: true })
+            }}
             aria-hidden={i !== current}
-            style={{ animationPlayState: current === i ? "running" : "paused" }}
+            style={{
+              objectPosition: slide.position,
+              transformOrigin: slide.position,
+              animationPlayState: current === i ? "running" : "paused",
+            }}
             className={`object-cover transition-opacity duration-1000 ease-in-out ${
               i % 2 === 0 ? "hero-pan-in" : "hero-pan-out"
-            } ${current === i ? "opacity-100" : "opacity-0"}`}
+            } ${current === i && (i === 0 || loaded[i]) ? "opacity-100" : "opacity-0"}`}
           />
-        ))}
+          )
+        })}
         <div className="absolute inset-0 bg-black/50" />
       </div>
 
@@ -75,7 +131,7 @@ export function HeroBackgroundSlider({
           <button
             key={i}
             type="button"
-            onClick={() => setCurrent(i)}
+            onClick={() => (i === 0 || loaded[i]) && setCurrent(i)}
             aria-label={showLabel.replace("{n}", String(i + 1))}
             aria-current={current === i}
             className="group flex h-6 items-center justify-center px-2.5"

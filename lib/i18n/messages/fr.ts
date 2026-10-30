@@ -153,11 +153,12 @@ export const fr: Messages = {
 
     heroSlider: {
         alts: [
+            "Merzouga - une caravane de dromadaires dans les dunes dorées de l'Erg Chebbi",
             "Aït-Ben-Haddou - le ksar fortifié en terre aux portes du Sahara",
             "Volubilis - les arcades de la basilique romaine et l'arc de triomphe près de Meknès",
             "Casablanca - la mosquée Hassan II et son minaret de 210 mètres au bord de l'Atlantique",
-            "Merzouga - une caravane de dromadaires dans les dunes dorées de l'Erg Chebbi",
             "Fès - les cuves de teinture de la tannerie Chouara au cœur de la vieille médina",
+            "Chefchaouen - la place bleue de la Ville bleue au pied des montagnes du Rif",
         ],
         show: "Afficher l'image de fond {n}",
     },
@@ -474,9 +475,8 @@ export const fr: Messages = {
         preferredPayment: "Paiement préféré",
         selectPayment: "Choisir un mode de paiement (facultatif)",
         paymentMethods: {
-            "Deposit Payment": "Paiement d'un acompte",
-            "Bank Transfer / SWIFT": "Virement bancaire / SWIFT",
-            "Credit Cards": "Cartes bancaires (Visa, Mastercard, Amex)",
+            "Deposit Payment": "Paiement d'un acompte (Wise / Mercury)",
+            "Credit Cards": "Cartes bancaires (Visa, Mastercard, American Express)",
             PayPal: "PayPal",
             Payoneer: "Payoneer",
             Wise: "Wise",

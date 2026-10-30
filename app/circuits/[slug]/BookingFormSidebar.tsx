@@ -30,7 +30,6 @@ interface CircuitInfo {
 // Values are stored in English with the request; labels come from messages.
 const PAYMENT_METHODS = [
     { value: "Deposit Payment" },
-    { value: "Bank Transfer / SWIFT" },
     { value: "Credit Cards" },
     { value: "PayPal" },
     { value: "Payoneer" },

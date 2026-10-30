@@ -81,9 +81,8 @@ export function CircuitDetailClient({ circuit, reviews }: Props) {
 
     // Hardcoded payment method options with icons
     const PAYMENT_METHODS = [
-        { value: "Deposit Payment", label: "Deposit Payment" },
-        { value: "Bank Transfer / SWIFT", label: "Bank Transfer / SWIFT" },
-        { value: "Credit Cards", label: "Credit Cards (Visa, Mastercard, Amex)" },
+        { value: "Deposit Payment", label: "Deposit Payment (Wise / Mercury)" },
+        { value: "Credit Cards", label: "Credit Cards (Visa, Mastercard, American Express)" },
         { value: "PayPal", label: "PayPal" },
         { value: "Payoneer", label: "Payoneer" },
         { value: "Wise", label: "Wise" },
