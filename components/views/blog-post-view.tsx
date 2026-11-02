@@ -14,6 +14,7 @@ import { localizePath, type Locale } from "@/lib/i18n/config"
 import { getMessages } from "@/lib/i18n/messages"
 import { formatDate } from "@/lib/i18n/format"
 import { localizeRecord } from "@/lib/i18n/content"
+import { renderTables } from "@/lib/markdown"
 
 async function getBlogPost(slug: string) {
     try {
@@ -59,7 +60,7 @@ export async function blogPostMetadata(slug: string, locale: Locale): Promise<Me
 }
 
 function renderHTML(content: string): string {
-    return content
+    return renderTables(content, "lg")
         .replace(/\[CTA\]\s*title:\s*([\s\S]*?)\s*description:\s*([\s\S]*?)\s*button_text:\s*([\s\S]*?)\s*button_link:\s*([\s\S]*?)\s*\[\/CTA\]/g,
             (match, title, desc, btnText, btnLink) => {
                 return `<div class='not-prose bg-muted/30 border border-border rounded-lg p-8 my-8'><h3 class='text-2xl font-bold mb-3 text-foreground'>${title.trim()}</h3><p class='text-muted-foreground mb-6 text-lg'>${desc.trim()}</p><a href='${btnLink.trim()}' class='inline-block bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-8 py-4 rounded-md transition-colors text-lg no-underline'>${btnText.trim()}</a></div>`

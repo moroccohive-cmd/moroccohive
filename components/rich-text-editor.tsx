@@ -17,9 +17,11 @@ import {
     EyeOff,
     Image,
     ImageIcon,
-    MessageSquarePlus
+    MessageSquarePlus,
+    Table
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { renderTables } from "@/lib/markdown"
 import { ImageUpload } from "./image-upload"
 import { CTADialog } from "./cta-dialog"
 
@@ -103,6 +105,9 @@ export function RichTextEditor({ value, onChange, placeholder = "Enter descripti
             case "cta":
                 setShowCTADialog(true)
                 return
+            case "table":
+                insertTable()
+                return
         }
 
         onChange(newText)
@@ -114,7 +119,7 @@ export function RichTextEditor({ value, onChange, placeholder = "Enter descripti
     }
 
     const renderPreview = (text: string) => {
-        return text
+        return renderTables(text)
             .replace(/\[CTA\]\s*title:\s*([\s\S]*?)\s*description:\s*([\s\S]*?)\s*button_text:\s*([\s\S]*?)\s*button_link:\s*([\s\S]*?)\s*\[\/CTA\]/g,
                 (match, title, desc, btnText, btnLink) => {
                     return `<div class='not-prose bg-muted/30 border border-border rounded-lg p-6 my-6'><h3 class='text-xl font-bold mb-2 text-foreground'>${title.trim()}</h3><p class='text-muted-foreground mb-4'>${desc.trim()}</p><a href='${btnLink.trim()}' class='inline-block bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-6 py-3 rounded-md transition-colors no-underline'>${btnText.trim()}</a></div>`
@@ -174,6 +179,34 @@ export function RichTextEditor({ value, onChange, placeholder = "Enter descripti
         const newText = value.substring(0, start) + ctaMarkdown + value.substring(end)
 
         onChange(newText)
+    }
+
+    const insertTable = () => {
+        const textarea = document.querySelector("textarea[data-rich-editor]") as HTMLTextAreaElement
+        if (!textarea) return
+
+        const size = prompt("Table size (columns x rows):", "3x3")
+        if (!size) return
+        const match = size.match(/^\s*(\d+)\s*[x×*,]\s*(\d+)\s*$/i)
+        if (!match) return
+        const cols = Math.min(Math.max(parseInt(match[1], 10), 1), 10)
+        const rows = Math.min(Math.max(parseInt(match[2], 10), 1), 50)
+
+        const row = (cells: string[]) => `| ${cells.join(" | ")} |`
+        const header = row(Array.from({ length: cols }, (_, i) => `Header ${i + 1}`))
+        const separator = row(Array.from({ length: cols }, () => "---"))
+        const body = Array.from({ length: rows }, () => row(Array.from({ length: cols }, () => "Cell")))
+        const tableMarkdown = `\n\n${[header, separator, ...body].join("\n")}\n\n`
+
+        const start = textarea.selectionStart
+        const end = textarea.selectionEnd
+        onChange(value.substring(0, start) + tableMarkdown + value.substring(end))
+        setTimeout(() => {
+            textarea.focus()
+            // Select "Header 1" so the user can start typing right away
+            const headerStart = start + 4
+            textarea.setSelectionRange(headerStart, headerStart + "Header 1".length)
+        }, 0)
     }
 
     return (
@@ -307,6 +340,16 @@ export function RichTextEditor({ value, onChange, placeholder = "Enter descripti
                         >
                             <Quote className="w-4 h-4" />
                         </Button>
+                        <Button
+                            type="button"
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => applyFormat("table")}
+                            title="Insert Table"
+                            className="h-8 w-8 p-0 hover:bg-primary/10"
+                        >
+                            <Table className="w-4 h-4" />
+                        </Button>
                     </div>
 
                     {/* Code and Links */}
@@ -413,6 +456,7 @@ export function RichTextEditor({ value, onChange, placeholder = "Enter descripti
                     <div><code className="bg-muted px-1 rounded">`code`</code> - Inline code</div>
                     <div><code className="bg-muted px-1 rounded">[text](url)</code> - Link</div>
                     <div><code className="bg-muted px-1 rounded">&gt; quote</code> - Blockquote</div>
+                    <div className="col-span-2"><code className="bg-muted px-1 rounded">| a | b |</code> then <code className="bg-muted px-1 rounded">| --- | :---: |</code> - Table (use <code className="bg-muted px-1 rounded">:</code> to align columns)</div>
                     <div className="col-span-2"><code className="bg-muted px-1 rounded">CTA button</code> - Click CTA button in toolbar</div>
                 </div>
             </div>
