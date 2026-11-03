@@ -21,8 +21,9 @@ const SLIDES = [
     alt: "Volubilis - the Roman basilica arches and Triumphal Arch near Meknes",
   },
   {
-    src: "/hero/casablanca-enhanced.webp",
-    position: "44% 10%",
+    // Wider composition leaves room around the minaret during the hero zoom.
+    src: "/hero/casablanca-wide.webp",
+    position: "48% 58%",
     alt: "Casablanca - the Hassan II Mosque and its 210-metre minaret on the Atlantic shore",
   },
   {

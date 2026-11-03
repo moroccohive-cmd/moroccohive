@@ -21,7 +21,15 @@
       "file": "morocco-casablanca-hassan-ii-mosque-atlantic.jpg",
       "prompt": "Use case: lighting-weather. Input image 1 is the edit target. Enhance this existing photograph for the MoroccoHive travel website hero slider. Deliver a high-resolution photorealistic editorial restoration, ideally 2560px wide, maintaining original landscape aspect ratio and framing. Improve fine detail and clarity, clean JPEG artifacts, balance dynamic range and apply subtle consistent professional travel color grading. Change only image quality, tonal balance and lighting refinement; preserve exact place, perspective, geometry, objects and composition. Keep authentic imperfections. No added or removed architecture, people or objects, no invented scenery, no text, watermarks, collage, artificial HDR, crunchy sharpening or plastic smoothing. Hassan II Mosque at sunset. Preserve exactly the minaret, facade and architectural geometry. Lift muddy shadows, reveal carved stone and green tile texture, retain subtle peach sunset and sunstar without exaggerated glow.",
       "source": "C:\\Users\\PC\\.codex\\generated_images\\01a18c32-f2ce-77b0-9b27-2238b7bcf8e1\\exec-b2a9d331-dbcc-4917-9259-0866c721c485.png",
-      "output": "public/hero/casablanca-enhanced.webp"
+      "output": "public/hero/casablanca-enhanced.webp",
+      "heroVariant": {
+        "output": "public/hero/casablanca-wide.webp",
+        "mode": "Built-in image_gen, reference-guided generation",
+        "reference": "public/hero/casablanca-enhanced.webp",
+        "description": "AI-generated wider sunset interpretation of Hassan II Mosque, with the full minaret, open courtyard and extra sky for responsive hero crops and zoom.",
+        "source": "C:/Users/PC/.codex/generated_images/01a1a14d-d532-7271-9f7f-1b9cb7f65f1b/exec-d185bf74-f82e-4f99-9cab-775e760aa332.png",
+        "objectPosition": "48% 58%"
+      }
     },
     {
       "name": "merzouga",
