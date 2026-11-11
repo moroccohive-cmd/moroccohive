@@ -2,11 +2,12 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowLeft, Check, X, Plus, Info, Star, Languages } from "lucide-react"
+import { ArrowLeft, Check, X, Plus, Info, Star, Languages, Expand } from "lucide-react"
 import prisma from "@/lib/prisma"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { FavoriteButton } from "@/components/favorite-button"
+import { ImageLightbox } from "@/components/image-lightbox"
 import { BookingFormSidebar } from "@/app/circuits/[slug]/BookingFormSidebar"
 import { BreadcrumbSchema, TourSchema } from "@/components/structured-data"
 import { bestSummary, buildMetadata, truncate } from "@/lib/seo"
@@ -123,9 +124,22 @@ export async function CircuitDetailView({ slug, locale }: { slug: string; locale
         <div className="min-h-screen bg-background flex flex-col font-sans selection:bg-accent selection:text-accent-foreground">
             <Header locale={locale} />
 
-            <main className="flex-1">
-                {/* Hero */}
-                <section className="relative h-[65vh] w-full">
+            <ImageLightbox
+                className="flex-1"
+                gallery={images}
+                labels={{
+                    title: fmt(t.lightbox.title, { name: circuit.name }),
+                    close: t.lightbox.close,
+                    previous: t.lightbox.previous,
+                    next: t.lightbox.next,
+                }}
+            >
+            <main>
+                {/* Hero — clicking anywhere except links/buttons opens the photo viewer */}
+                <section
+                    className={`relative h-[65vh] w-full ${images[0] ? "cursor-zoom-in" : ""}`}
+                    data-lightbox={images[0] || undefined}
+                >
                     {images[0] ? (
                         <Image
                             src={images[0]}
@@ -142,6 +156,17 @@ export async function CircuitDetailView({ slug, locale }: { slug: string; locale
                         </div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+
+                    {images[0] && (
+                        <button
+                            type="button"
+                            data-lightbox-open={images[0]}
+                            className="absolute top-4 right-4 z-10 inline-flex items-center gap-2 rounded-md border border-white/20 bg-black/40 px-3 py-2 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-black/60 cursor-pointer"
+                        >
+                            <Expand className="h-4 w-4" aria-hidden="true" />
+                            {images.length > 1 ? fmt(t.lightbox.viewPhotos, { n: images.length }) : t.lightbox.viewFullscreen}
+                        </button>
+                    )}
 
                     <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
                         <div className="max-w-7xl mx-auto">
@@ -279,7 +304,14 @@ export async function CircuitDetailView({ slug, locale }: { slug: string; locale
                                 <div className="mt-10 pt-8 border-t border-border">
                                     {circuit.mapUrl && (
                                         <div className="relative w-full">
-                                            <Image src={circuit.mapUrl} alt={t.mapAlt} width={400} height={400} className="object-contain rounded-lg mb-6" />
+                                            <Image
+                                                src={circuit.mapUrl}
+                                                alt={t.mapAlt}
+                                                width={400}
+                                                height={400}
+                                                className="object-contain rounded-lg mb-6 cursor-zoom-in"
+                                                data-lightbox={circuit.mapUrl}
+                                            />
                                         </div>
                                     )}
                                     {circuit.itineraryDetail && (
@@ -289,7 +321,8 @@ export async function CircuitDetailView({ slug, locale }: { slug: string; locale
                                                 {t.detailedItinerary}
                                             </h3>
                                             <div
-                                                className="prose prose-gray max-w-none text-muted-foreground leading-relaxed"
+                                                className="prose prose-gray max-w-none text-muted-foreground leading-relaxed [&_img]:cursor-zoom-in"
+                                                data-lightbox-scope
                                                 dangerouslySetInnerHTML={{ __html: renderRichText(circuit.itineraryDetail) }}
                                             />
                                         </>
@@ -302,7 +335,8 @@ export async function CircuitDetailView({ slug, locale }: { slug: string; locale
                                 <div className="bg-card rounded-lg p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
                                     <h2 className="text-2xl font-semibold text-foreground mb-6">{t.importantNotes}</h2>
                                     <div
-                                        className="prose prose-gray max-w-none text-muted-foreground leading-relaxed"
+                                        className="prose prose-gray max-w-none text-muted-foreground leading-relaxed [&_img]:cursor-zoom-in"
+                                        data-lightbox-scope
                                         dangerouslySetInnerHTML={{ __html: renderRichText(circuit.additionalInfo) }}
                                     />
                                 </div>
@@ -384,6 +418,7 @@ export async function CircuitDetailView({ slug, locale }: { slug: string; locale
                     </div>
                 </div>
             </main>
+            </ImageLightbox>
 
             <BreadcrumbSchema
                 locale={locale}
