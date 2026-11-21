@@ -174,9 +174,9 @@ export const fr: Messages = {
         featuresHeading: "Pourquoi choisir Morocco Hive",
         features: [
             { title: "Circuits 100 % privés", desc: "Juste vous. Pas de groupe de touristes. Pas d'horaires de bus." },
-            { title: "Un guide local expert", desc: "Abdellatif a guidé plus de 200 voyageurs. Né et élevé au Maroc." },
+            { title: "Un guide local expert", desc: "Morocco Hive a guidé plus de 200 voyageurs à travers le pays, accompagnés par des guides passionnés nés et élevés au Maroc." },
             { title: "Entièrement personnalisable", desc: "Composez votre itinéraire. Changez d'avis en route. C'est votre voyage." },
-            { title: "Prix tout compris", desc: "Aucun frais caché. Guide, chauffeur, activités et la plupart des repas inclus." },
+            { title: "Prix transparents", desc: "Aucun frais caché. Des devis clairs et personnalisés, adaptés à vos préférences." },
         ],
         how: {
             eyebrow: "Votre voyage",
@@ -662,7 +662,7 @@ export const fr: Messages = {
         introTitle: "Créons ensemble le circuit de vos rêves au Maroc",
         introQuote:
             "« Bonjour, je suis Abdellatif, votre contact personnel chez Moroccohive ! Je vais vous guider dans ce formulaire pour construire votre circuit idéal en trois minutes environ. Une fois terminé, un expert local vous enverra une première proposition de voyage personnalisée sous 48 heures maximum (et souvent plus vite). »",
-        trust1: "Consultation gratuite ",
+        trust1: "· Consultation gratuite",
         trust2: "· Aucune carte bancaire requise",
         trust3: "· Réponse sous 48 h",
         steps: ["Style de voyage", "Quand et où", "Préférences", "Finaliser"],
@@ -707,7 +707,11 @@ export const fr: Messages = {
             subtitle: "Personnalisez votre expérience idéale",
             accommodationQuestion: "Quel type d'hébergement préférez-vous ?",
             accommodationLevels: { Standard: "Standard", Comfort: "Confort", Luxury: "Luxe" },
-            budget: "Budget (par personne)",
+            budget: "Quel est votre budget pour l'ensemble du voyage ? (par personne)",
+            budgetIncludedLabel: "Inclus :",
+            budgetIncluded: "Hébergement, transport local, activités et excursions.",
+            budgetNotIncludedLabel: "Non inclus :",
+            budgetNotIncluded: "Vols internationaux et assurance voyage.",
             selectBudget: "Choisir un budget",
             activities: "Activités d'aventure (facultatif)",
             experiencesQuestion: "Quelles expériences recherchez-vous au Maroc ? (facultatif)",

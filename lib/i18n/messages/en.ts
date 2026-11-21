@@ -165,9 +165,9 @@ export const en = {
         featuresHeading: "Why Choose Morocco Hive",
         features: [
             { title: "100% Private Tours", desc: "Just you. No group tourists. No bus schedules." },
-            { title: "Expert Local Guide", desc: "Abdellatif has guided 200+ travelers. Born and raised in Morocco." },
+            { title: "Expert Local Guide", desc: "Morocco Hive has guided over 200 travelers across the country, led by passionate guides born and raised in Morocco." },
             { title: "Fully Customizable", desc: "Build your own itinerary. Change plans on the fly. It's your tour." },
-            { title: "All-Inclusive Pricing", desc: "No hidden costs. Includes guide, driver, activities, and most meals." },
+            { title: "Transparent Pricing", desc: "No hidden costs. Clear, customized quotes tailored to your exact preferences." },
         ],
         how: {
             eyebrow: "Your Journey",
@@ -651,7 +651,7 @@ export const en = {
         introTitle: "Let's together create a dream Morocco tour",
         introQuote:
             "\"Hello, I'm Abdellatif, Moroccohive's personal contact! I'll walk you through the form to construct your ideal tour over the course of the next three minutes. After you're done, a local expert will respond to you with a first customized travel suggestion in no more than 48 hours (and often quicker).\"",
-        trust1: "Free consultation ",
+        trust1: "· Free consultation",
         trust2: "· No credit card required",
         trust3: "· Reply within 48h",
         steps: ["Travel Style", "When & Where", "Preferences", "Complete"],
@@ -696,7 +696,11 @@ export const en = {
             subtitle: "Customize your perfect experience",
             accommodationQuestion: "What is your preferred accommodation type?",
             accommodationLevels: { Standard: "Standard", Comfort: "Comfort", Luxury: "Luxury" } as Record<string, string>,
-            budget: "Budget Range (per person)",
+            budget: "What's your budget for the entire trip? (Per Person)",
+            budgetIncludedLabel: "Included:",
+            budgetIncluded: "Accommodation, local transportation, activities, and tours.",
+            budgetNotIncludedLabel: "Not Included:",
+            budgetNotIncluded: "International flights and trip insurance.",
             selectBudget: "Select budget",
             activities: "Adventure Activities (Optional)",
             experiencesQuestion: "What experiences are you looking for in Morocco? (Optional)",

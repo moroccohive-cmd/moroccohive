@@ -172,9 +172,9 @@ export const nl: Messages = {
         featuresHeading: "Waarom Morocco Hive",
         features: [
             { title: "100% privé rondreizen", desc: "Alleen jij. Geen groepen toeristen. Geen busschema's." },
-            { title: "Deskundige lokale gids", desc: "Abdellatif heeft al 200+ reizigers begeleid. Geboren en getogen in Marokko." },
+            { title: "Deskundige lokale gids", desc: "Morocco Hive heeft al meer dan 200 reizigers door het hele land begeleid, met gepassioneerde gidsen die in Marokko geboren en getogen zijn." },
             { title: "Volledig aanpasbaar", desc: "Stel je eigen reisroute samen. Pas je plannen onderweg aan. Het is jouw reis." },
-            { title: "Alles-inclusief prijzen", desc: "Geen verborgen kosten. Inclusief gids, chauffeur, activiteiten en de meeste maaltijden." },
+            { title: "Transparante prijzen", desc: "Geen verborgen kosten. Duidelijke offertes op maat, afgestemd op jouw wensen." },
         ],
         how: {
             eyebrow: "Jouw reis",
@@ -659,7 +659,7 @@ export const nl: Messages = {
         introTitle: "Laten we samen je droomreis door Marokko samenstellen",
         introQuote:
             "\"Hallo, ik ben Abdellatif, je persoonlijke contactpersoon bij Moroccohive! Ik loop in de komende drie minuten met je door het formulier om je ideale reis samen te stellen. Daarna stuurt een lokale expert je binnen maximaal 48 uur (en vaak sneller) een eerste reisvoorstel op maat.\"",
-        trust1: "Gratis advies ",
+        trust1: "· Gratis advies",
         trust2: "· Geen creditcard nodig",
         trust3: "· Antwoord binnen 48 uur",
         steps: ["Reisstijl", "Wanneer & waar", "Voorkeuren", "Afronden"],
@@ -704,7 +704,11 @@ export const nl: Messages = {
             subtitle: "Stel je perfecte ervaring samen",
             accommodationQuestion: "Welk type accommodatie heeft je voorkeur?",
             accommodationLevels: { Standard: "Standaard", Comfort: "Comfort", Luxury: "Luxe" },
-            budget: "Budget (per persoon)",
+            budget: "Wat is je budget voor de hele reis? (per persoon)",
+            budgetIncludedLabel: "Inbegrepen:",
+            budgetIncluded: "Accommodatie, lokaal vervoer, activiteiten en tours.",
+            budgetNotIncludedLabel: "Niet inbegrepen:",
+            budgetNotIncluded: "Internationale vluchten en reisverzekering.",
             selectBudget: "Kies een budget",
             activities: "Avontuurlijke activiteiten (optioneel)",
             experiencesQuestion: "Welke ervaringen zoek je in Marokko? (optioneel)",

@@ -109,18 +109,6 @@ export function PlanTripForm({ messages: t, payment }: { messages: PlanTripMessa
     const [submitting, setSubmitting] = useState(false)
     const [submitted, setSubmitted] = useState(false)
 
-    // Hardcoded payment method options with icons
-    const PAYMENT_METHODS = [
-        { value: "Deposit Payment", icon: "/deposit-payment-icon.png" },
-        { value: "Credit Cards", icon: "/credit-card-icon.svg" },
-        { value: "PayPal", icon: "/paypal-icon.svg" },
-        { value: "Payoneer", icon: "/payoneer-icon.svg" },
-        { value: "Wise", icon: "/wise-icon.svg" },
-        { value: "Mercury", icon: "/mercury-icon.svg" },
-    ].map((m) => ({ ...m, label: payment.paymentMethods[m.value] ?? m.value }))
-    const [paymentMethodsEnabled, setPaymentMethodsEnabled] = useState(true)
-    const [enabledPaymentMethods, setEnabledPaymentMethods] = useState<string[]>(PAYMENT_METHODS.map(m => m.value))
-
     // Budget settings from dashboard
     const [budgetType, setBudgetType] = useState<"dropdown" | "slider">("dropdown")
     const [budgetDropdownOptions, setBudgetDropdownOptions] = useState<string[]>([
@@ -171,15 +159,13 @@ export function PlanTripForm({ messages: t, payment }: { messages: PlanTripMessa
 
 
 
-    // Fetch site settings (payment methods + budget configuration)
+    // Fetch site settings (budget configuration)
     useEffect(() => {
         const fetchSiteSettings = async () => {
             try {
                 const res = await fetch("/api/settings")
                 if (res.ok) {
                     const data = await res.json()
-                    setPaymentMethodsEnabled(data.paymentMethodsEnabled ?? true)
-                    setEnabledPaymentMethods(data.enabledPaymentMethods ?? PAYMENT_METHODS.map(m => m.value))
 
                     if (data.budgetType) setBudgetType(data.budgetType)
                     if (Array.isArray(data.budgetDropdownOptions) && data.budgetDropdownOptions.length > 0) {
@@ -416,10 +402,14 @@ export function PlanTripForm({ messages: t, payment }: { messages: PlanTripMessa
         return Object.keys(newErrors).length === 0
     }
 
+    const scrollToFormTop = () => {
+        document.getElementById("plan-trip-steps")?.scrollIntoView({ behavior: "smooth", block: "start" })
+    }
+
     const nextStep = () => {
         if (validateStep(currentStep)) {
             setCurrentStep((prev) => Math.min(prev + 1, STEPS.length))
-            window.scrollTo({ top: 0, behavior: "smooth" })
+            scrollToFormTop()
         } else {
             // Scroll to first error with a slight delay to ensure UI updates
             setTimeout(() => {
@@ -433,7 +423,7 @@ export function PlanTripForm({ messages: t, payment }: { messages: PlanTripMessa
 
     const prevStep = () => {
         setCurrentStep((prev) => Math.max(prev - 1, 1))
-        window.scrollTo({ top: 0, behavior: "smooth" })
+        scrollToFormTop()
     }
 
     // Validate inline auth form
@@ -663,7 +653,7 @@ export function PlanTripForm({ messages: t, payment }: { messages: PlanTripMessa
                     </div>
 
                     {/* Progress Steps */}
-                    <div className="mb-12">
+                    <div id="plan-trip-steps" className="mb-12 scroll-mt-28">
                         <div className="flex items-center justify-between">
                             {STEPS.map((step, index) => {
                                 const Icon = step.icon
@@ -673,6 +663,12 @@ export function PlanTripForm({ messages: t, payment }: { messages: PlanTripMessa
                                 return (
                                     <div key={step.id} className="flex items-center flex-1">
                                         <div className="flex flex-col items-center relative flex-1">
+                                            {index < STEPS.length - 1 && (
+                                                <div
+                                                    aria-hidden="true"
+                                                    className={`absolute top-6 h-0.5 -translate-y-1/2 left-[calc(50%+1.75rem)] w-[calc(100%-3.5rem)] transition-colors ${isCompleted ? "bg-primary" : "bg-border"}`}
+                                                />
+                                            )}
                                             <div
                                                 className={`w-12 h-12 rounded-full flex items-center justify-center border-1 transition-all ${isCompleted
                                                     ? "bg-primary border-primary text-primary-foreground"
@@ -1018,6 +1014,10 @@ export function PlanTripForm({ messages: t, payment }: { messages: PlanTripMessa
                                         <DollarSign className="inline w-4 h-4 mr-1" />
                                         {t.step3.budget}
                                     </label>
+                                    <div className="text-xs text-muted-foreground mb-3 space-y-0.5">
+                                        <p><span className="font-semibold text-foreground">{t.step3.budgetIncludedLabel}</span> {t.step3.budgetIncluded}</p>
+                                        <p><span className="font-semibold text-foreground">{t.step3.budgetNotIncludedLabel}</span> {t.step3.budgetNotIncluded}</p>
+                                    </div>
 
                                     {budgetType === "slider" ? (
                                         <div className="p-5 bg-muted/30 rounded-lg border border-border">
@@ -1139,6 +1139,22 @@ export function PlanTripForm({ messages: t, payment }: { messages: PlanTripMessa
                                         ))}
                                     </div>
                                 </div>
+                            </div>
+                        )}
+
+                        {/* Step 4: Complete - Auth & Submit */}
+                        {currentStep === 4 && (
+                            <div className="space-y-6 animate-fade-in">
+                                <div className="text-center mb-6">
+                                    <Mail className="w-12 h-12 text-primary mx-auto mb-3" />
+                                    <h2 className="text-2xl font-bold mb-2">{t.step4.title}</h2>
+                                    <p className="text-muted-foreground">
+                                        {user?.emailVerified
+                                            ? t.step4.subtitleVerified
+                                            : t.step4.subtitleGuest
+                                        }
+                                    </p>
+                                </div>
 
                                 <div>
                                     <label className="block text-sm font-semibold mb-6 text-center">
@@ -1205,22 +1221,6 @@ export function PlanTripForm({ messages: t, payment }: { messages: PlanTripMessa
                                         <p className="text-sm text-destructive mt-2">{errors.desiredExperiences}</p>
                                     )}
                                 </div>
-                            </div>
-                        )}
-
-                        {/* Step 4: Complete - Auth & Submit */}
-                        {currentStep === 4 && (
-                            <div className="space-y-6 animate-fade-in">
-                                <div className="text-center mb-6">
-                                    <Mail className="w-12 h-12 text-primary mx-auto mb-3" />
-                                    <h2 className="text-2xl font-bold mb-2">{t.step4.title}</h2>
-                                    <p className="text-muted-foreground">
-                                        {user?.emailVerified
-                                            ? t.step4.subtitleVerified
-                                            : t.step4.subtitleGuest
-                                        }
-                                    </p>
-                                </div>
 
                                 {user?.emailVerified ? (
                                     // User is logged in and verified - show summary and submit
@@ -1238,33 +1238,6 @@ export function PlanTripForm({ messages: t, payment }: { messages: PlanTripMessa
                                             {t.step4.verifiedBody}
                                         </p>
 
-                                        {/* Payment Method Dropdown */}
-                                        {paymentMethodsEnabled && enabledPaymentMethods.length > 0 && (
-                                            <div className="mb-4 space-y-2">
-                                                <label className="block text-sm font-medium mb-2">{t.step4.paymentMethod}</label>
-                                                <select
-                                                    value={formData.preferredPaymentMethod}
-                                                    onChange={(e) => setFormData(prev => ({ ...prev, preferredPaymentMethod: e.target.value }))}
-                                                    className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background"
-                                                >
-                                                    <option value="">{payment.selectPayment}</option>
-                                                    {PAYMENT_METHODS.filter(m => enabledPaymentMethods.includes(m.value)).map((method) => (
-                                                        <option key={method.value} value={method.value}>{method.label}</option>
-                                                    ))}
-                                                </select>
-
-                                                {/* Deposit Payment Info */}
-                                                {formData.preferredPaymentMethod === "Deposit Payment" && (
-                                                    <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 text-sm space-y-1">
-                                                        <p className="font-semibold text-foreground">{payment.depositTitle}</p>
-                                                        <ul className="list-disc list-inside text-muted-foreground space-y-1">
-                                                            <li>{payment.depositLine1}</li>
-                                                            <li>{payment.depositLine2}</li>
-                                                        </ul>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )}
                                         <Button
                                             type="button"
                                             onClick={handleSubmit}
@@ -1331,32 +1304,6 @@ export function PlanTripForm({ messages: t, payment }: { messages: PlanTripMessa
                                             </div>
                                             {errors.phone && <p className="text-sm text-destructive mt-1">{errors.phone}</p>}
                                         </div>
-
-                                        {/* Payment Method Dropdown */}
-                                        {paymentMethodsEnabled && enabledPaymentMethods.length > 0 && (
-                                            <div className="space-y-2">
-                                                <label className="block text-sm font-medium mb-2">{t.step4.paymentMethod}</label>
-                                                <select
-                                                    value={formData.preferredPaymentMethod}
-                                                    onChange={(e) => setFormData(prev => ({ ...prev, preferredPaymentMethod: e.target.value }))}
-                                                    className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background"
-                                                >
-                                                    <option value="">{payment.selectPayment}</option>
-                                                    {PAYMENT_METHODS.filter(m => enabledPaymentMethods.includes(m.value)).map((method) => (
-                                                        <option key={method.value} value={method.value}>{method.label}</option>
-                                                    ))}
-                                                </select>
-                                                {formData.preferredPaymentMethod === "Deposit Payment" && (
-                                                    <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 text-sm space-y-1">
-                                                        <p className="font-semibold text-foreground">{payment.depositTitle}</p>
-                                                        <ul className="list-disc list-inside text-muted-foreground space-y-1">
-                                                            <li>{payment.depositLine1}</li>
-                                                            <li>{payment.depositLine2}</li>
-                                                        </ul>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )}
 
                                         <Button
                                             type="button"
