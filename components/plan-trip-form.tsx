@@ -661,26 +661,26 @@ export function PlanTripForm({ messages: t, payment }: { messages: PlanTripMessa
                                 const isCompleted = currentStep > step.id
 
                                 return (
-                                    <div key={step.id} className="flex items-center flex-1">
-                                        <div className="flex flex-col items-center relative flex-1">
+                                    <div key={step.id} className="flex items-center flex-1 min-w-0">
+                                        <div className="flex flex-col items-center relative flex-1 min-w-0">
                                             {index < STEPS.length - 1 && (
                                                 <div
                                                     aria-hidden="true"
-                                                    className={`absolute top-6 h-0.5 -translate-y-1/2 left-[calc(50%+1.75rem)] w-[calc(100%-3.5rem)] transition-colors ${isCompleted ? "bg-primary" : "bg-border"}`}
+                                                    className={`absolute top-5 sm:top-6 h-0.5 -translate-y-1/2 left-[calc(50%+1.5rem)] w-[calc(100%-3rem)] sm:left-[calc(50%+1.75rem)] sm:w-[calc(100%-3.5rem)] transition-colors ${isCompleted ? "bg-primary" : "bg-border"}`}
                                                 />
                                             )}
                                             <div
-                                                className={`w-12 h-12 rounded-full flex items-center justify-center border-1 transition-all ${isCompleted
+                                                className={`w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-full flex items-center justify-center border-1 transition-all ${isCompleted
                                                     ? "bg-primary border-primary text-primary-foreground"
                                                     : isActive
                                                         ? "bg-primary/10 border-primary text-primary"
                                                         : "bg-muted border-border text-muted-foreground"
                                                     }`}
                                             >
-                                                {isCompleted ? <Check className="w-6 h-6" /> : <Icon className="w-6 h-6" />}
+                                                {isCompleted ? <Check className="w-5 h-5 sm:w-6 sm:h-6" /> : <Icon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                             </div>
                                             <p
-                                                className={`mt-2 text-sm text-nowrap font-medium ${isActive ? "text-foreground" : "text-muted-foreground"
+                                                className={`mt-2 px-1 text-center text-xs sm:text-sm leading-tight font-medium ${isActive ? "text-foreground" : "text-muted-foreground"
                                                     }`}
                                             >
                                                 {t.steps[index]}
@@ -1139,23 +1139,6 @@ export function PlanTripForm({ messages: t, payment }: { messages: PlanTripMessa
                                         ))}
                                     </div>
                                 </div>
-                            </div>
-                        )}
-
-                        {/* Step 4: Complete - Auth & Submit */}
-                        {currentStep === 4 && (
-                            <div className="space-y-6 animate-fade-in">
-                                <div className="text-center mb-6">
-                                    <Mail className="w-12 h-12 text-primary mx-auto mb-3" />
-                                    <h2 className="text-2xl font-bold mb-2">{t.step4.title}</h2>
-                                    <p className="text-muted-foreground">
-                                        {user?.emailVerified
-                                            ? t.step4.subtitleVerified
-                                            : t.step4.subtitleGuest
-                                        }
-                                    </p>
-                                </div>
-
                                 <div>
                                     <label className="block text-sm font-semibold mb-6 text-center">
                                         {t.step3.factorsQuestion}
@@ -1202,6 +1185,23 @@ export function PlanTripForm({ messages: t, payment }: { messages: PlanTripMessa
                                             </div>
                                         ))}
                                     </div>
+                                </div>
+
+                            </div>
+                        )}
+
+                        {/* Step 4: Complete - Auth & Submit */}
+                        {currentStep === 4 && (
+                            <div className="space-y-6 animate-fade-in">
+                                <div className="text-center mb-6">
+                                    <Mail className="w-12 h-12 text-primary mx-auto mb-3" />
+                                    <h2 className="text-2xl font-bold mb-2">{t.step4.title}</h2>
+                                    <p className="text-muted-foreground">
+                                        {user?.emailVerified
+                                            ? t.step4.subtitleVerified
+                                            : t.step4.subtitleGuest
+                                        }
+                                    </p>
                                 </div>
 
                                 <div>
