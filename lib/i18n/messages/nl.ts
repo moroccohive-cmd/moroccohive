@@ -172,7 +172,7 @@ export const nl: Messages = {
         featuresHeading: "Waarom Morocco Hive",
         features: [
             { title: "100% privé rondreizen", desc: "Alleen jij. Geen groepen toeristen. Geen busschema's." },
-            { title: "Deskundige lokale gids", desc: "Morocco Hive heeft al meer dan 200 reizigers door het hele land begeleid, met gepassioneerde gidsen die in Marokko geboren en getogen zijn." },
+            { title: "Deskundige lokale gidsen", desc: "Morocco Hive heeft al meer dan 200 reizigers door het hele land begeleid, met gepassioneerde gidsen die in Marokko geboren en getogen zijn." },
             { title: "Volledig aanpasbaar", desc: "Stel je eigen reisroute samen. Pas je plannen onderweg aan. Het is jouw reis." },
             { title: "Transparante prijzen", desc: "Geen verborgen kosten. Duidelijke offertes op maat, afgestemd op jouw wensen." },
         ],

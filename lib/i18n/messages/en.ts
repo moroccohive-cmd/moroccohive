@@ -165,7 +165,7 @@ export const en = {
         featuresHeading: "Why Choose Morocco Hive",
         features: [
             { title: "100% Private Tours", desc: "Just you. No group tourists. No bus schedules." },
-            { title: "Expert Local Guide", desc: "Morocco Hive has guided over 200 travelers across the country, led by passionate guides born and raised in Morocco." },
+            { title: "Expert Local Guides", desc: "Morocco Hive has guided over 200 travelers across the country, led by passionate guides born and raised in Morocco." },
             { title: "Fully Customizable", desc: "Build your own itinerary. Change plans on the fly. It's your tour." },
             { title: "Transparent Pricing", desc: "No hidden costs. Clear, customized quotes tailored to your exact preferences." },
         ],

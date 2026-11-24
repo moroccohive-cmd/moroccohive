@@ -174,7 +174,7 @@ export const fr: Messages = {
         featuresHeading: "Pourquoi choisir Morocco Hive",
         features: [
             { title: "Circuits 100 % privés", desc: "Juste vous. Pas de groupe de touristes. Pas d'horaires de bus." },
-            { title: "Un guide local expert", desc: "Morocco Hive a guidé plus de 200 voyageurs à travers le pays, accompagnés par des guides passionnés nés et élevés au Maroc." },
+            { title: "Des guides locaux experts", desc: "Morocco Hive a guidé plus de 200 voyageurs à travers le pays, accompagnés par des guides passionnés nés et élevés au Maroc." },
             { title: "Entièrement personnalisable", desc: "Composez votre itinéraire. Changez d'avis en route. C'est votre voyage." },
             { title: "Prix transparents", desc: "Aucun frais caché. Des devis clairs et personnalisés, adaptés à vos préférences." },
         ],

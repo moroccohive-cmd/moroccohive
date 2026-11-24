@@ -654,14 +654,14 @@ export function PlanTripForm({ messages: t, payment }: { messages: PlanTripMessa
 
                     {/* Progress Steps */}
                     <div id="plan-trip-steps" className="mb-12 scroll-mt-28">
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-start justify-between">
                             {STEPS.map((step, index) => {
                                 const Icon = step.icon
                                 const isActive = currentStep === step.id
                                 const isCompleted = currentStep > step.id
 
                                 return (
-                                    <div key={step.id} className="flex items-center flex-1 min-w-0">
+                                    <div key={step.id} className="flex items-start flex-1 min-w-0">
                                         <div className="flex flex-col items-center relative flex-1 min-w-0">
                                             {index < STEPS.length - 1 && (
                                                 <div
@@ -680,7 +680,7 @@ export function PlanTripForm({ messages: t, payment }: { messages: PlanTripMessa
                                                 {isCompleted ? <Check className="w-5 h-5 sm:w-6 sm:h-6" /> : <Icon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                             </div>
                                             <p
-                                                className={`mt-2 px-1 text-center text-xs sm:text-sm leading-tight font-medium ${isActive ? "text-foreground" : "text-muted-foreground"
+                                                className={`mt-2 px-0.5 text-center text-[11px] sm:text-sm leading-tight font-medium break-words hyphens-auto ${isActive ? "text-foreground" : "text-muted-foreground"
                                                     }`}
                                             >
                                                 {t.steps[index]}
